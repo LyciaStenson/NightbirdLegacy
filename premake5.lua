@@ -10,7 +10,8 @@ project "Editor"
 	kind "ConsoleApp"
 	language "C++"
 
-	targetdir ("bin/" .. outputDir .. "/%{prj.name}")
+	targetdir ("out/bin/" .. outputDir .. "/%{prj.name}")
+	objdir ("out/obj/" .. outputDir .. "/%{prj.name}")
 
 	files { "**.h", "**.cpp" }
 
