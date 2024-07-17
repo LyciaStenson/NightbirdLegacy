@@ -1,24 +1,25 @@
 workspace "Nightbird"
-	architecture "x64"
+	architecture "x86_64"
+	startproject "Editor"
 
-	configurations { "Debug", "Release" }
+	configurations { "Debug", "Release", "Dist" }
 
-outputDir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
-
-project "Editor"
-	location "Editor"
-	kind "ConsoleApp"
-	language "C++"
-
-	targetdir ("out/bin/" .. outputDir .. "/%{prj.name}")
-	objdir ("out/obj/" .. outputDir .. "/%{prj.name}")
-
-	files { "**.h", "**.cpp" }
-
-	filter "configurations:Debug"
+	filter { "configurations:Debug"}
 		defines { "DEBUG" }
 		symbols "On"
 
-	filter "configurations:Release"
-		defines { "NDEBUG" }
+	filter { "configurations:Release" }
+		defines { "RELEASE" }
 		optimize "On"
+
+	filter { "configurations:Dist" }
+		defines { "DIST" }
+		optimize "On"
+	
+	filter { }
+
+	outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
+
+	include "vendor/glfw"
+	include "vendor/glad"
+	include "Editor"
