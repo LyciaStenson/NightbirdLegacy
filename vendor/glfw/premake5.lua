@@ -1,8 +1,8 @@
-project "glfw"
+project "GLFW"
 	kind "StaticLib"
 	language "C"
 	staticruntime "off"
-	--warnings "off"
+	warnings "off"
 
 	targetdir ("%{wks.location}/out/bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("%{wks.location}/out/obj/" .. outputdir .. "/%{prj.name}")
