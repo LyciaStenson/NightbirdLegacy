@@ -55,50 +55,7 @@ int main()
 
 	// BEGIN TRIANGLE
 
-	Shader thisShader("shader.vert", "shader.frag");
-
-	unsigned int vertexShader;
-	vertexShader = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-
-	int success;
-	char infoLog[512];
-	glCompileShader(vertexShader);
-	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-	if (!success)
-	{
-		glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-		std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n"
-				  << infoLog << std::endl;
-	}
-
-	unsigned int fragmentShader;
-	fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-	glCompileShader(fragmentShader);
-	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-	if (!success)
-	{
-		glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-		std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n"
-				  << infoLog << std::endl;
-	}
-
-	unsigned int shaderProgram;
-	shaderProgram = glCreateProgram();
-
-	glAttachShader(shaderProgram, vertexShader);
-	glAttachShader(shaderProgram, fragmentShader);
-	glLinkProgram(shaderProgram);
-
-	glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-	if (!success)
-	{
-		glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-	}
-
-	glDeleteShader(vertexShader);
-	glDeleteShader(fragmentShader);
+	Shader thisShader("thisShader.vert", "thisShader.frag");
 
 	float vertices[] = {
 		 0.5f,  0.5f, 0.0f, // top right
@@ -134,27 +91,20 @@ int main()
 	// Game loop
 	while (!glfwWindowShouldClose(window))
 	{
-		// Render
-		// Clear the colorbuffer
 		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		glUseProgram(shaderProgram);
+		//thisShader.use();
 		glBindVertexArray(VAO);
-
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-		// Swap the screen buffers
 		glfwSwapBuffers(window);
-
-		// Check if any events have been activated (key pressed, mouse moved etc.) and call corresponding response functions
 		glfwPollEvents();
 	}
 
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
 	glDeleteBuffers(1, &EBO);
-	glDeleteProgram(shaderProgram);
 
 	// Terminates GLFW, clearing any resources allocated by GLFW.
 	glfwTerminate();
