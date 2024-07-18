@@ -1,5 +1,7 @@
 #include "shader.h"
 
+#include <filesystem>
+
 Shader::Shader(const char* vertexPath, const char* fragmentPath)
 {
 	std::string vertexCode;
@@ -30,30 +32,29 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath)
 		std::cerr << "ERROR::SHADER::FILE_NOT_SUCCESSFULLY_READ: " << e.what() << std::endl;
 	}
 
-	//const char* vShaderCode = vertexCode.c_str();
-	//const char* fShaderCode = fragmentCode.c_str();
+	const char* vShaderCode = vertexCode.c_str();
+	const char* fShaderCode = fragmentCode.c_str();
 
-	//unsigned int vertex, fragment;
+	unsigned int vertex, fragment;
 
-	//vertex = glCreateShader(GL_VERTEX_SHADER);
-	//glShaderSource(vertex, 1, &vShaderCode, NULL);
-	//glCompileShader(vertex);
-	//checkCompileErrors(vertex, "VERTEX");
+	vertex = glCreateShader(GL_VERTEX_SHADER);
+	glShaderSource(vertex, 1, &vShaderCode, NULL);
+	glCompileShader(vertex);
+	checkCompileErrors(vertex, "VERTEX");
 
-	//fragment = glCreateShader(GL_FRAGMENT_SHADER);
-	//glShaderSource(fragment, 1, &fShaderCode, NULL);
-	//glCompileShader(fragment);
-	//checkCompileErrors(fragment, "FRAGMENT");
+	fragment = glCreateShader(GL_FRAGMENT_SHADER);
+	glShaderSource(fragment, 1, &fShaderCode, NULL);
+	glCompileShader(fragment);
+	checkCompileErrors(fragment, "FRAGMENT");
 
-	//ID = glCreateProgram();
-	//glAttachShader(ID, vertex);
-	//glAttachShader(ID, fragment);
-	//glLinkProgram(ID);
-	//checkCompileErrors(ID, "PROGRAM");
+	ID = glCreateProgram();
+	glAttachShader(ID, vertex);
+	glAttachShader(ID, fragment);
+	glLinkProgram(ID);
+	checkCompileErrors(ID, "PROGRAM");
 
-	//glDeleteShader(vertex);
-	//glDeleteShader(fragment);
-	
+	glDeleteShader(vertex);
+	glDeleteShader(fragment);
 }
 
 void Shader::use()
