@@ -1,6 +1,6 @@
 workspace "Nightbird"
 	architecture "x86_64"
-	startproject "Editor"
+	startproject "Nightbird"
 
 	configurations { "Debug", "Release", "Dist" }
 
@@ -22,4 +22,4 @@ workspace "Nightbird"
 
 	include "vendor/glfw"
 	include "vendor/glad"
-	include "Editor"
+	include "Nightbird"

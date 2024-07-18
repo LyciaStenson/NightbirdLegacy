@@ -1,4 +1,4 @@
-project "Editor"
+project "Nightbird"
 	kind "ConsoleApp"
 	language "C++"
 

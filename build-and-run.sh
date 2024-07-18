@@ -14,16 +14,16 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-cd out/bin/Debug-linux-x86_64/Editor
+cd out/bin/Debug-linux-x86_64/Nightbird
 
 if [ $? -ne 0 ]; then
-    echo "Failed to navigate to out/bin/Debug-linux-x86_64/Editor"
+    echo "Failed to navigate to out/bin/Debug-linux-x86_64/Nightbird"
     exit 1
 fi
 
-./Editor
+./Nightbird
 
 if [ $? -ne 0 ]; then
-    echo "Failed to run Nightbird Editor"
+    echo "Failed to run Nightbird"
     exit 1
 fi
