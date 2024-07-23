@@ -9,6 +9,6 @@ project "Nightbird"
 
 	defines { "GLFW_INCLUDE_NONE" }
 
-	includedirs { "%{wks.location}/vendor/glfw/include", "%{wks.location}/vendor/glad/include" }
+	includedirs { "%{wks.location}/vendor/glfw/include", "%{wks.location}/vendor/glad/include", "%{wks.location}/vendor/stb" }
 
 	links { "glfw", "glad", "GL", "X11" }
