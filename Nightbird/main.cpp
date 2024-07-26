@@ -3,6 +3,10 @@
 #include <glad/gl.h>
 #include <GLFW/glfw3.h>
 
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
@@ -59,14 +63,14 @@ int main()
 
 	Shader thisShader("thisShader.vert", "thisShader.frag");
 
-	thisShader.setVec3("thisColor", 1.0f, 1.0f, 1.0f);
+	//thisShader.setVec3("thisColor", 1.0f, 1.0f, 1.0f);
 
 	float vertices[] = {
-		// positions			// colors			// texture coords
-		 0.5f,  0.5f, 0.0f,		1.0f, 0.0f, 0.0f,	1.0f, 1.0f,	// top right
-		 0.5f, -0.5f, 0.0f,		0.0f, 1.0f, 0.0f,	1.0f, 0.0f,	// bottom right
-		-0.5f, -0.5f, 0.0f,		0.0f, 0.0f, 1.0f,	0.0f, 0.0f,	// bottom left
-		-0.5f,  0.5f, 0.0f,		1.0f, 1.0f, 0.0f,	0.0f, 1.0f	// top left
+		// positions			// texture coords
+		 0.5f,  0.5f, 0.0f,		1.0f, 1.0f,	// top right
+		 0.5f, -0.5f, 0.0f,		1.0f, 0.0f,	// bottom right
+		-0.5f, -0.5f, 0.0f,		0.0f, 0.0f,	// bottom left
+		-0.5f,  0.5f, 0.0f,		0.0f, 1.0f	// top left
 	};
 
 	unsigned int indices[] = {
@@ -88,16 +92,12 @@ int main()
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
 	// Position Attribute
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 
-	// Color Attribute
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-	glEnableVertexAttribArray(1);
-
 	// Texture Coord Attribute
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-	glEnableVertexAttribArray(2);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+	glEnableVertexAttribArray(1);
 
 	// TEXTURE
 	unsigned int texture;
@@ -110,7 +110,8 @@ int main()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 	int width, height, nrChannels;
-	unsigned char* data = stbi_load("Assets/Backgrounds/backgrounds.png", &width, &height, &nrChannels, 0);
+	stbi_set_flip_vertically_on_load(true);
+	unsigned char* data = stbi_load("Assets/Backgrounds/stevie-nicks.jpg", &width, &height, &nrChannels, 0);
 
 	if (data)
 	{
@@ -127,12 +128,30 @@ int main()
 	// Render loop
 	while (!glfwWindowShouldClose(window))
 	{
-		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+		glClearColor(0.55f, 0.55f, 0.55f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
+		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, texture);
 
 		thisShader.use();
+
+		glm::mat4 model = glm::mat4(1.0f);
+		glm::mat4 view = glm::mat4(1.0f);
+		glm::mat4 projection = glm::mat4(1.0f);
+		
+		model = glm::rotate(model, glm::radians(-35.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+		view = glm::translate(view, glm::vec3(0.0f, 0.0f, -1.3f));
+		projection = glm::perspective(glm::radians(60.0f), (float)WIDTH / (float)HEIGHT, 0.1f, 1000.0f);
+
+		unsigned int modelLoc = glGetUniformLocation(thisShader.ID, "model");
+		unsigned int viewLoc = glGetUniformLocation(thisShader.ID, "view");
+
+		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &view[0][0]);
+
+		thisShader.setMat4("projection", projection);
+
 		glBindVertexArray(VAO);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
