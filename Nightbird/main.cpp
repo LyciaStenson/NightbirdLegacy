@@ -260,6 +260,10 @@ void cursor_enter_callback(GLFWwindow* window, int entered)
 	{
 		std::cout << "mouse entered" << std::endl;
 		firstMouse = true;
+
+		int width, height;
+		glfwGetWindowSize(window, &width, &height);
+		glfwSetCursorPos(window, width / 2.0f, height / 2.0f);
 	}
 }
 
