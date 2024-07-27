@@ -19,19 +19,23 @@
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
-void mouse_callback(GLFWwindow *window, double xPos, double yPos);
+void window_focus_callback(GLFWwindow* window, int focused);
 
-void scroll_callback(GLFWwindow *window, double xOffset, double yOffset);
+void cursor_enter_callback(GLFWwindow* window, int entered);
 
-void processInput(GLFWwindow *window);
+void mouse_callback(GLFWwindow* window, double xPos, double yPos);
+
+void scroll_callback(GLFWwindow* window, double xOffset, double yOffset);
+
+void processInput(GLFWwindow* window);
 
 // Window dimensions
 const GLuint WIDTH = 1280, HEIGHT = 800;
 
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 
-float lastX = WIDTH / 2.0f;
-float lastY = HEIGHT / 2.0f;
+float lastX;
+float lastY;
 bool firstMouse = true;
 
 float deltaTime = 0.0f;
@@ -57,6 +61,8 @@ int main()
 	}
 	glfwMakeContextCurrent(window);
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+	glfwSetWindowFocusCallback(window, window_focus_callback);
+	glfwSetCursorEnterCallback(window, cursor_enter_callback);
 	glfwSetCursorPosCallback(window, mouse_callback);
 
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -248,9 +254,22 @@ int main()
 	return 0;
 }
 
-void framebuffer_size_callback(GLFWwindow *window, int width, int height)
+void cursor_enter_callback(GLFWwindow* window, int entered)
+{
+	if (entered)
+	{
+		std::cout << "mouse entered" << std::endl;
+		firstMouse = true;
+	}
+}
+
+void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
 	glViewport(0, 0, width, height);
+}
+
+void window_focus_callback(GLFWwindow* window, int focused)
+{
 }
 
 void mouse_callback(GLFWwindow* window, double xPosIn, double yPosIn)
@@ -260,6 +279,7 @@ void mouse_callback(GLFWwindow* window, double xPosIn, double yPosIn)
 	
 	if (firstMouse)
 	{
+		std::cout << "firstMouse" << std::endl;
 		lastX = xPos;
 		lastY = yPos;
 		firstMouse = false;
@@ -267,10 +287,13 @@ void mouse_callback(GLFWwindow* window, double xPosIn, double yPosIn)
 
 	float xOffset = xPos - lastX;
 	float yOffset = lastY - yPos;
+
 	lastX = xPos;
 	lastY = yPos;
 
-	camera.ProcessMouseMovement(xOffset, yOffset);
+	//std::cout << "xOffset >> " << xOffset << ", yOffset >> " << yOffset << std::endl;
+
+	camera.ProcessMouseMovement(xOffset, yOffset, GL_FALSE);
 }
 
 void scroll_callback(GLFWwindow* window, double xOffset, double yOffset)
