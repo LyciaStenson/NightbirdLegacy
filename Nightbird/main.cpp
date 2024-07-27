@@ -10,6 +10,8 @@
 
 #include "shader.h"
 
+#include "camera.h"
+
 #include <iostream>
 
 // Function prototypes
@@ -19,21 +21,18 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
 void mouse_callback(GLFWwindow *window, double xPos, double yPos);
 
-void processInput(GLFWwindow* window);
+void scroll_callback(GLFWwindow *window, double xOffset, double yOffset);
+
+void processInput(GLFWwindow *window);
 
 // Window dimensions
 const GLuint WIDTH = 1280, HEIGHT = 800;
 
-glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
-glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
-glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 
-bool firstMouse = true;
-float yaw = -90.0f;
-float pitch = 0.0f;
 float lastX = WIDTH / 2.0f;
 float lastY = HEIGHT / 2.0f;
-float fov = 60.0f;
+bool firstMouse = true;
 
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
@@ -210,10 +209,10 @@ int main()
 		float camX = sin(glfwGetTime()) * radius;
 		float camZ = cos(glfwGetTime()) * radius;
 
-		glm::mat4 projection = glm::perspective(glm::radians(fov), (float)WIDTH / (float)HEIGHT, 0.1f, 1000.0f);
+		glm::mat4 projection = glm::perspective(glm::radians(camera.Fov), (float)WIDTH / (float)HEIGHT, 0.1f, 1000.0f);
 		thisShader.setMat4("projection", projection);
 
-		glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+		glm::mat4 view = camera.GetViewMatrix();
 		thisShader.setMat4("view", view);
 
 		glBindVertexArray(VAO);
@@ -271,23 +270,12 @@ void mouse_callback(GLFWwindow* window, double xPosIn, double yPosIn)
 	lastX = xPos;
 	lastY = yPos;
 
-	float sensitivity = 0.1f;
-	xOffset *= sensitivity;
-	yOffset *= sensitivity;
+	camera.ProcessMouseMovement(xOffset, yOffset);
+}
 
-	yaw += xOffset;
-	pitch += yOffset;
-
-	if (pitch > 89.0f)
-		pitch = 89.0f;
-	if (pitch < -89.0f)
-		pitch = -89.0f;
-	
-	glm::vec3 front;
-	front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-	front.y = sin(glm::radians(pitch));
-	front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-	cameraFront = glm::normalize(front);
+void scroll_callback(GLFWwindow* window, double xOffset, double yOffset)
+{
+	camera.ProcessMouseScroll((float)yOffset);
 }
 
 void processInput(GLFWwindow* window)
@@ -297,15 +285,15 @@ void processInput(GLFWwindow* window)
 
 	float cameraSpeed = (float)(2.5 * deltaTime);
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-		cameraPos += cameraSpeed * cameraFront;
+		camera.ProcessKeyboard(FORWARD, deltaTime);
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-		cameraPos -= cameraSpeed * cameraFront;
+		camera.ProcessKeyboard(BACKWARD, deltaTime);
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-		cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+		camera.ProcessKeyboard(LEFT, deltaTime);
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-		cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+		camera.ProcessKeyboard(RIGHT, deltaTime);
 	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
-		cameraPos -= cameraSpeed * cameraUp;
+		camera.ProcessKeyboard(DOWN, deltaTime);
 	if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
-		cameraPos += cameraSpeed * cameraUp;
+		camera.ProcessKeyboard(UP, deltaTime);
 }
