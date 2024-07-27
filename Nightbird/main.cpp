@@ -297,7 +297,7 @@ void mouse_callback(GLFWwindow* window, double xPosIn, double yPosIn)
 
 	//std::cout << "xOffset >> " << xOffset << ", yOffset >> " << yOffset << std::endl;
 
-	camera.ProcessMouseMovement(xOffset, yOffset, GL_FALSE);
+	camera.ProcessMouseMovement(xOffset, yOffset);
 }
 
 void scroll_callback(GLFWwindow* window, double xOffset, double yOffset)
