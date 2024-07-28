@@ -84,48 +84,48 @@ int main()
 	Shader thisShader("thisShader.vert", "thisShader.frag");
 
 	float vertices[] = {
-		// Positions			// Texture Coords
-		-0.5f, -0.5f, -0.5f,//	0.0f, 0.0f,
-		 0.5f, -0.5f, -0.5f,//	1.0f, 0.0f,
-		 0.5f,  0.5f, -0.5f,//	1.0f, 1.0f,
-		 0.5f,  0.5f, -0.5f,//	1.0f, 1.0f,
-		-0.5f,  0.5f, -0.5f,//	0.0f, 1.0f,
-		-0.5f, -0.5f, -0.5f,//	0.0f, 0.0f,
+		// Positions			//Normals				// Texture Coords
+		-0.5f, -0.5f, -0.5f,	 0.0f,  0.0f, -1.0f,	0.0f, 0.0f,
+		 0.5f, -0.5f, -0.5f,	 0.0f,  0.0f, -1.0f,	1.0f, 0.0f,
+		 0.5f,  0.5f, -0.5f,	 0.0f,  0.0f, -1.0f,	1.0f, 1.0f,
+		 0.5f,  0.5f, -0.5f,	 0.0f,  0.0f, -1.0f,	1.0f, 1.0f,
+		-0.5f,  0.5f, -0.5f,	 0.0f,  0.0f, -1.0f,	0.0f, 1.0f,
+		-0.5f, -0.5f, -0.5f,	 0.0f,  0.0f, -1.0f,	0.0f, 0.0f,
 
-		-0.5f, -0.5f,  0.5f,//	0.0f, 0.0f,
-		 0.5f, -0.5f,  0.5f,//	1.0f, 0.0f,
-		 0.5f,  0.5f,  0.5f,//	1.0f, 1.0f,
-		 0.5f,  0.5f,  0.5f,//	1.0f, 1.0f,
-		-0.5f,  0.5f,  0.5f,//	0.0f, 1.0f,
-		-0.5f, -0.5f,  0.5f,//	0.0f, 0.0f,
+		-0.5f, -0.5f,  0.5f,	 0.0f,  0.0f,  1.0f,	0.0f, 0.0f,
+		 0.5f, -0.5f,  0.5f,	 0.0f,  0.0f,  1.0f,	1.0f, 0.0f,
+		 0.5f,  0.5f,  0.5f,	 0.0f,  0.0f,  1.0f,	1.0f, 1.0f,
+		 0.5f,  0.5f,  0.5f,	 0.0f,  0.0f,  1.0f,	1.0f, 1.0f,
+		-0.5f,  0.5f,  0.5f,	 0.0f,  0.0f,  1.0f,	0.0f, 1.0f,
+		-0.5f, -0.5f,  0.5f,	 0.0f,  0.0f,  1.0f,	0.0f, 0.0f,
 
-		-0.5f,  0.5f,  0.5f,//	1.0f, 0.0f,
-		-0.5f,  0.5f, -0.5f,//	1.0f, 1.0f,
-		-0.5f, -0.5f, -0.5f,//	0.0f, 1.0f,
-		-0.5f, -0.5f, -0.5f,//	0.0f, 1.0f,
-		-0.5f, -0.5f,  0.5f,//	0.0f, 0.0f,
-		-0.5f,  0.5f,  0.5f,//	1.0f, 0.0f,
+		-0.5f,  0.5f,  0.5f,	-1.0f,  0.0f,  0.0f,	1.0f, 0.0f,
+		-0.5f,  0.5f, -0.5f,	-1.0f,  0.0f,  0.0f,	1.0f, 1.0f,
+		-0.5f, -0.5f, -0.5f,	-1.0f,  0.0f,  0.0f,	0.0f, 1.0f,
+		-0.5f, -0.5f, -0.5f,	-1.0f,  0.0f,  0.0f,	0.0f, 1.0f,
+		-0.5f, -0.5f,  0.5f,	-1.0f,  0.0f,  0.0f,	0.0f, 0.0f,
+		-0.5f,  0.5f,  0.5f,	-1.0f,  0.0f,  0.0f,	1.0f, 0.0f,
 
-		 0.5f,  0.5f,  0.5f,//	1.0f, 0.0f,
-		 0.5f,  0.5f, -0.5f,//	1.0f, 1.0f,
-		 0.5f, -0.5f, -0.5f,//	0.0f, 1.0f,
-		 0.5f, -0.5f, -0.5f,//	0.0f, 1.0f,
-		 0.5f, -0.5f,  0.5f,//	0.0f, 0.0f,
-		 0.5f,  0.5f,  0.5f,//	1.0f, 0.0f,
+		 0.5f,  0.5f,  0.5f,	 1.0f,  0.0f,  0.0f,	1.0f, 0.0f,
+		 0.5f,  0.5f, -0.5f,	 1.0f,  0.0f,  0.0f,	1.0f, 1.0f,
+		 0.5f, -0.5f, -0.5f,	 1.0f,  0.0f,  0.0f,	0.0f, 1.0f,
+		 0.5f, -0.5f, -0.5f,	 1.0f,  0.0f,  0.0f,	0.0f, 1.0f,
+		 0.5f, -0.5f,  0.5f,	 1.0f,  0.0f,  0.0f,	0.0f, 0.0f,
+		 0.5f,  0.5f,  0.5f,	 1.0f,  0.0f,  0.0f,	1.0f, 0.0f,
 		
-		-0.5f, -0.5f, -0.5f,//	0.0f, 1.0f,
-		 0.5f, -0.5f, -0.5f,//	1.0f, 1.0f,
-		 0.5f, -0.5f,  0.5f,//	1.0f, 0.0f,
-		 0.5f, -0.5f,  0.5f,//	1.0f, 0.0f,
-		-0.5f, -0.5f,  0.5f,//	0.0f, 0.0f,
-		-0.5f, -0.5f, -0.5f,//	0.0f, 1.0f,
+		-0.5f, -0.5f, -0.5f,	 0.0f, -1.0f,  0.0f,	0.0f, 1.0f,
+		 0.5f, -0.5f, -0.5f,	 0.0f, -1.0f,  0.0f,	1.0f, 1.0f,
+		 0.5f, -0.5f,  0.5f,	 0.0f, -1.0f,  0.0f,	1.0f, 0.0f,
+		 0.5f, -0.5f,  0.5f,	 0.0f, -1.0f,  0.0f,	1.0f, 0.0f,
+		-0.5f, -0.5f,  0.5f,	 0.0f, -1.0f,  0.0f,	0.0f, 0.0f,
+		-0.5f, -0.5f, -0.5f,	 0.0f, -1.0f,  0.0f,	0.0f, 1.0f,
 
-		-0.5f,  0.5f, -0.5f,//	0.0f, 1.0f,
-		 0.5f,  0.5f, -0.5f,//	1.0f, 1.0f,
-		 0.5f,  0.5f,  0.5f,//	1.0f, 0.0f,
-		 0.5f,  0.5f,  0.5f,//	1.0f, 0.0f,
-		-0.5f,  0.5f,  0.5f,//	0.0f, 0.0f,
-		-0.5f,  0.5f, -0.5f,//	0.0f, 1.0f
+		-0.5f,  0.5f, -0.5f,	 0.0f,  1.0f,  0.0f,	0.0f, 1.0f,
+		 0.5f,  0.5f, -0.5f,	 0.0f,  1.0f,  0.0f,	1.0f, 1.0f,
+		 0.5f,  0.5f,  0.5f,	 0.0f,  1.0f,  0.0f,	1.0f, 0.0f,
+		 0.5f,  0.5f,  0.5f,	 0.0f,  1.0f,  0.0f,	1.0f, 0.0f,
+		-0.5f,  0.5f,  0.5f,	 0.0f,  1.0f,  0.0f,	0.0f, 0.0f,
+		-0.5f,  0.5f, -0.5f,	 0.0f,  1.0f,  0.0f,	0.0f, 1.0f
 	};
 
 	glm::vec3 cubePositions[] = {
@@ -151,8 +151,12 @@ int main()
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 	
 	// Position Attribute
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
+
+	// Normals Attribute
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+	glEnableVertexAttribArray(1);
 
 	// Texture Coord Attribute
 	//glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
@@ -193,13 +197,17 @@ int main()
 
 		processInput(window);
 
-		glClearColor(0.45f, 0.45f, 0.45f, 1.0f);
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		//glActiveTexture(GL_TEXTURE0);
 		//glBindTexture(GL_TEXTURE_2D, texture);
 
 		thisShader.use();
+
+		thisShader.setVec3("objectColor", glm::vec3(1.0f, 1.0f, 1.0f));
+		thisShader.setVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
+		thisShader.setVec3("lightPos", glm::vec3(1.2f, 1.0f, 2.0f));
 
 		const float radius = 10.0f;
 		float camX = sin(glfwGetTime()) * radius;
