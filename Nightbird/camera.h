@@ -16,7 +16,7 @@ enum Movement_Direction
 
 const float YAW = -90.0f;
 const float PITCH = 0.0f;
-const float MOVEMENT_SPEED = 2.5f;
+const float MOVEMENT_SPEED = 3.5f;
 const float SENSITIVITY = 0.1f;
 const float FOV = 45.0f;
 
