@@ -49,7 +49,14 @@ int main()
 	glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
 
 	// Create a GLFWwindow object that we can use for GLFW's functions
-	GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "Nightbird", NULL, NULL);
+
+	GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+	const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+
+	//GLFWwindow *window = glfwCreateWindow(WIDTH, HEIGHT, "Nightbird", NULL, NULL);
+	GLFWwindow *window = glfwCreateWindow(mode->width, mode->height, "Nightbird", monitor, NULL);
+
+	//GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "Nightbird", NULL, NULL);
 	if (window == NULL)
 	{
 		std::cout << "Failed to create GLFW window" << std::endl;
@@ -61,7 +68,7 @@ int main()
 	glfwSetWindowFocusCallback(window, window_focus_callback);
 	glfwSetCursorEnterCallback(window, cursor_enter_callback);
 	glfwSetCursorPosCallback(window, mouse_callback);
-
+	
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	glfwSetWindowSizeLimits(window, 304, 190, GLFW_DONT_CARE, GLFW_DONT_CARE);
