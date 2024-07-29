@@ -214,7 +214,9 @@ int main()
 
 		thisShader.setVec3("objectColor", glm::vec3(1.0f, 1.0f, 1.0f));
 		thisShader.setVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
-		thisShader.setVec3("lightPos", glm::vec3(0.0f, 10.0f, 0.0f));
+		thisShader.setVec3("lightPos", glm::vec3(3.0f, 10.0f, -10.0f));
+
+		thisShader.setVec3("viewPos", camera.Position);
 
 		const float radius = 10.0f;
 		float camX = sin(glfwGetTime()) * radius;
@@ -233,7 +235,7 @@ int main()
 			glm::mat4 model = glm::mat4(1.0f);
 			model = glm::translate(model, cubePositions[i]);
 			float angle = 20.0f * (i + 1);
-			model = glm::rotate(model, (float)glfwGetTime() * 0.05f * (i + 10) * glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+			model = glm::rotate(model, (float)glfwGetTime() * 0.005f * (i + 10) * glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
 			thisShader.setMat4("model", model);
 
 			glDrawArrays(GL_TRIANGLES, 0, 36);
