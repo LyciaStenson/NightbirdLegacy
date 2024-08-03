@@ -14,37 +14,37 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-cp Nightbird/thisShader.vert out/bin/Debug-linux-x86_64/Nightbird
+cp Engine/thisShader.vert out/bin/Debug-linux-x86_64/Engine
 
 if [ $? -ne 0 ]; then
-    echo "Failed to copy thisShader.vert to out/bin/Debug-linux-x86_64/Nightbird"
+    echo "Failed to copy thisShader.vert to out/bin/Debug-linux-x86_64/Engine"
     exit 1
 fi
 
-cp Nightbird/thisShader.frag out/bin/Debug-linux-x86_64/Nightbird
+cp Engine/thisShader.frag out/bin/Debug-linux-x86_64/Engine
 
 if [ $? -ne 0 ]; then
-    echo "Failed to copy thisShader.frag to out/bin/Debug-linux-x86_64/Nightbird"
+    echo "Failed to copy thisShader.frag to out/bin/Debug-linux-x86_64/Engine"
     exit 1
 fi
 
-cp -r Nightbird/Assets out/bin/Debug-linux-x86_64/Nightbird
+cp -r Engine/Assets out/bin/Debug-linux-x86_64/Engine
 
 if [ $? -ne 0 ]; then
-    echo "Failed to copy Assets directory to out/bin/Debug-linux-x86_64/Nightbird"
+    echo "Failed to copy Assets directory to out/bin/Debug-linux-x86_64/Engine"
     exit 1
 fi
 
-cd out/bin/Debug-linux-x86_64/Nightbird
+cd out/bin/Debug-linux-x86_64/Engine
 
 if [ $? -ne 0 ]; then
-    echo "Failed to navigate to out/bin/Debug-linux-x86_64/Nightbird"
+    echo "Failed to navigate to out/bin/Debug-linux-x86_64/Engine"
     exit 1
 fi
 
-./Nightbird
+./Engine
 
 if [ $? -ne 0 ]; then
-    echo "Failed to run Nightbird"
+    echo "Failed to run Engine"
     exit 1
 fi

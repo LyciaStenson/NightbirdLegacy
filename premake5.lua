@@ -1,6 +1,6 @@
 workspace "Nightbird"
 	architecture "x86_64"
-	startproject "Nightbird"
+	startproject "Engine"
 
 	configurations { "Debug", "Release", "Dist" }
 
@@ -20,6 +20,6 @@ workspace "Nightbird"
 
 	outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
-	include "vendor/glfw"
-	include "vendor/glad"
-	include "Nightbird"
+	include "Vendor/glfw"
+	include "Vendor/glad"
+	include "Engine"
