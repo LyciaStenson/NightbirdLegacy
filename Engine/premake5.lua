@@ -1,5 +1,5 @@
 project "Engine"
-	kind "ConsoleApp"
+	kind "StaticLib"
 	language "C++"
 
 	targetdir ("%{wks.location}/out/bin/" .. outputdir .. "/%{prj.name}")

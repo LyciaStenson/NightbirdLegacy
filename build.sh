@@ -14,16 +14,9 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-cp -r Engine/Assets out/bin/Debug-linux-x86_64/Engine
+cp -r Editor/Assets out/bin/Debug-linux-x86_64/Editor
 
 if [ $? -ne 0 ]; then
-    echo "Failed to copy Assets directory to out/bin/Debug-linux-x86_64/Engine"
-    exit 1
-fi
-
-cd out/bin/Debug-linux-x86_64/Engine
-
-if [ $? -ne 0 ]; then
-    echo "Failed to navigate to out/bin/Debug-linux-x86_64/Engine"
+    echo "Failed to copy Assets directory to out/bin/Debug-linux-x86_64/Editor"
     exit 1
 fi

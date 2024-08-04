@@ -1,15 +1,15 @@
 #!/bin/bash
 
-cd out/bin/Debug-linux-x86_64/Engine
+cd out/bin/Debug-linux-x86_64/Editor
 
 if [ $? -ne 0 ]; then
-    echo "Failed to navigate to out/bin/Debug-linux-x86_64/Engine"
+    echo "Failed to navigate to out/bin/Debug-linux-x86_64/Editor"
     exit 1
 fi
 
-./Engine
+./Editor
 
 if [ $? -ne 0 ]; then
-    echo "Failed to run Engine"
+    echo "Failed to run Editor"
     exit 1
 fi

@@ -1,6 +1,6 @@
 workspace "Nightbird"
 	architecture "x86_64"
-	startproject "Engine"
+	startproject "Editor"
 
 	configurations { "Debug", "Release", "Dist" }
 
@@ -24,3 +24,4 @@ workspace "Nightbird"
 	include "Vendor/glad"
 	include "Vendor/imgui"
 	include "Engine"
+	include "Editor"
