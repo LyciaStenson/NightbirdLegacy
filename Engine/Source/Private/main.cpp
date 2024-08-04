@@ -8,11 +8,14 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "shader.h"
+#include <shader.h>
 
-#include "camera.h"
+#include <camera.h>
 
 #include <iostream>
+
+#include <filesystem>
+namespace FileSystem = std::filesystem;
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
@@ -40,6 +43,15 @@ float lastFrame = 0.0f;
 
 int main()
 {
+	try
+	{
+		FileSystem::current_path("Assets");
+	}
+	catch(const std::exception& e)
+	{
+		std::cerr << "Failed to set working directory to Assets: " << e.what() << '\n';
+	}
+
 	// Init GLFW
 	glfwInit();
 	// Set all the required options for GLFW
@@ -181,7 +193,7 @@ int main()
 
 	int width, height, nrChannels;
 	stbi_set_flip_vertically_on_load(true);
-	unsigned char* data = stbi_load("Assets/stevie-nicks.jpg", &width, &height, &nrChannels, 0);
+	unsigned char* data = stbi_load("stevie-nicks.jpg", &width, &height, &nrChannels, 0);
 
 	if (data)
 	{

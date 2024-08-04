@@ -9,6 +9,6 @@ project "Engine"
 
 	defines { "GLFW_INCLUDE_NONE" }
 
-	includedirs { "Public", "%{wks.location}/Vendor/glfw/include", "%{wks.location}/Vendor/glad/include", "%{wks.location}/Vendor/glm", "%{wks.location}/Vendor/stb" }
+	includedirs { "Source/Public", "%{wks.location}/Vendor/glfw/include", "%{wks.location}/Vendor/glad/include", "%{wks.location}/Vendor/glm", "%{wks.location}/Vendor/stb" }
 
 	links { "glfw", "glad", "GL", "X11" }

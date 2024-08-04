@@ -15,7 +15,7 @@ workspace "Nightbird"
 	filter { "configurations:Dist" }
 		defines { "DIST" }
 		optimize "On"
-	
+
 	filter { }
 
 	outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
