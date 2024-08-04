@@ -22,4 +22,5 @@ workspace "Nightbird"
 
 	include "Vendor/glfw"
 	include "Vendor/glad"
+	include "Vendor/imgui"
 	include "Engine"

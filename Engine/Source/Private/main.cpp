@@ -51,22 +51,19 @@ int main()
 	{
 		std::cerr << "Failed to set working directory to Assets: " << e.what() << '\n';
 	}
-
-	// Init GLFW
+	
 	glfwInit();
-	// Set all the required options for GLFW
+
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
 
-	// Create a GLFWwindow object that we can use for GLFW's functions
+	//GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+	//const GLFWvidmode* mode = glfwGetVideoMode(monitor);
 
-	GLFWmonitor* monitor = glfwGetPrimaryMonitor();
-	const GLFWvidmode* mode = glfwGetVideoMode(monitor);
-
-	//GLFWwindow *window = glfwCreateWindow(WIDTH, HEIGHT, "Nightbird", NULL, NULL);
-	GLFWwindow *window = glfwCreateWindow(mode->width, mode->height, "Nightbird", monitor, NULL);
+	GLFWwindow *window = glfwCreateWindow(WIDTH, HEIGHT, "Nightbird", NULL, NULL);
+	//GLFWwindow *window = glfwCreateWindow(mode->width, mode->height, "Nightbird", monitor, NULL);
 
 	//GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "Nightbird", NULL, NULL);
 	if (window == NULL)
@@ -81,7 +78,7 @@ int main()
 	glfwSetCursorEnterCallback(window, cursor_enter_callback);
 	glfwSetCursorPosCallback(window, mouse_callback);
 	
-	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	//glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	glfwSetWindowSizeLimits(window, 304, 190, GLFW_DONT_CARE, GLFW_DONT_CARE);
 
