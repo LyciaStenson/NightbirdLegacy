@@ -13,8 +13,9 @@
 
 #include <Camera.h>
 
+#include <RenderTarget.h>
+
 #include <filesystem>
-//namespace FileSystem = std::filesystem;
 
 class Engine
 {
@@ -28,30 +29,29 @@ public:
 	float deltaTime;
 	float lastFrame;
 
-	Engine();
+	Engine(GLFWwindow *aWindow, RenderTarget *aRenderTarget);
 	~Engine();
 
 	bool Init();
 	void Terminate();
 	//void SetWindow(GLFWwindow* aWindow);
 	//void CreateWindow(int width, int height, const char* title);
-	void Tick();
+	void MainLoop();
 
 private:
 	GLFWwindow* window;
+
+	RenderTarget* renderTarget;
 
 	unsigned int texture;
 
 	Shader cubeShader;
 
-	Shader screenShader;
-
-	unsigned int VBO, VAO, screenVAO, framebuffer, framebufferTexture;
-
+	unsigned int VBO, VAO, framebuffer;
+	
 	glm::vec3 cubePositions[10];
 
 	static void framebufferSizeCallback(GLFWwindow *window, int width, int height);
-	//static void windowFocusCallback(GLFWwindow *window, int focused);
 	static void cursorEnterCallback(GLFWwindow *window, int entered);
 	static void mouseCallback(GLFWwindow *window, double xPos, double yPos);
 	static void scrollCallback(GLFWwindow *window, double xOffset, double yOffset);
