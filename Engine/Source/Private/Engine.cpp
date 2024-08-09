@@ -1,4 +1,4 @@
-#include <engine.h>
+#include <Engine.h>
 
 Engine::Engine()
 {
@@ -30,6 +30,8 @@ bool Engine::Init()
 
 	// GLFWmonitor* monitor = glfwGetPrimaryMonitor();
 	// const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+
+	//window = aWindow;
 
 	window = glfwCreateWindow(1280, 800, "Nightbird", NULL, NULL);
 	// GLFWwindow* window = glfwCreateWindow(mode->width, mode->height, "Nightbird", monitor, NULL);
@@ -223,25 +225,20 @@ void Engine::Terminate()
 	glfwTerminate();
 }
 
-void Engine::CreateWindow(int width, int height, const char* title)
-{
-	window = glfwCreateWindow(width, height, title, NULL, NULL);
-}
+//void Engine::SetWindow(GLFWwindow* aWindow)
+//{
+	//window = aWindow;
+//}
 
-void Engine::MainLoop()
+//void Engine::CreateWindow(int width, int height, const char* title)
+//{
+	//window = glfwCreateWindow(width, height, title, NULL, NULL);
+//}
+
+void Engine::Tick()
 {
-	// Render loop
 	while (!glfwWindowShouldClose(window))
 	{
-		// ImGui_ImplOpenGL3_NewFrame();
-		// ImGui_ImplGlfw_NewFrame();
-		// ImGui::NewFrame();
-
-		// ImGui::Begin("Viewport");
-		// ImGui::SetWindowSize(ImVec2(800, 500), ImGuiCond_Once);
-
-		// ImGui::End();
-
 		float currentFrame = (float)glfwGetTime();
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
@@ -251,7 +248,7 @@ void Engine::MainLoop()
 		glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
 		glEnable(GL_DEPTH_TEST);
 
-		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		glActiveTexture(GL_TEXTURE0);
@@ -261,7 +258,7 @@ void Engine::MainLoop()
 
 		cubeShader.setVec3("objectColor", glm::vec3(1.0f, 1.0f, 1.0f));
 		cubeShader.setVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
-		cubeShader.setVec3("lightPos", glm::vec3(3.0f, 10.0f, -10.0f));
+		cubeShader.setVec3("lightPos", glm::vec3(3.0f, 10.0f, 10.0f));
 
 		cubeShader.setVec3("viewPos", camera.Position);
 
@@ -301,9 +298,6 @@ void Engine::MainLoop()
 		glBindVertexArray(screenVAO);
 		glBindTexture(GL_TEXTURE_2D, framebufferTexture);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
-
-		// ImGui::Render();
-		// ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();

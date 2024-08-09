@@ -9,9 +9,9 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include <shader.h>
+#include <Shader.h>
 
-#include <camera.h>
+#include <Camera.h>
 
 #include <filesystem>
 //namespace FileSystem = std::filesystem;
@@ -33,8 +33,9 @@ public:
 
 	bool Init();
 	void Terminate();
-	void CreateWindow(int width, int height, const char* title);
-	void MainLoop();
+	//void SetWindow(GLFWwindow* aWindow);
+	//void CreateWindow(int width, int height, const char* title);
+	void Tick();
 
 private:
 	GLFWwindow* window;
