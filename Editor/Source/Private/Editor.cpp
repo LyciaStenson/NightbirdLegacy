@@ -9,6 +9,9 @@ Editor::Editor()
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
 
+	int WIDTH = 1280;
+	int HEIGHT = 800;
+
 	GLFWwindow* window = glfwCreateWindow(1280, 800, "Nightbird", NULL, NULL);
 
 	if (window == NULL)
@@ -18,8 +21,8 @@ Editor::Editor()
 	}
 	glfwMakeContextCurrent(window);
 
-	//GameRenderTarget* renderTarget = new GameRenderTarget();
-	EditorRenderTarget* renderTarget = new EditorRenderTarget(window);
+	GameRenderTarget* renderTarget = new GameRenderTarget(WIDTH, HEIGHT);
+	//EditorRenderTarget* renderTarget = new EditorRenderTarget(window);
 	engine = new Engine(window, renderTarget);
 	engine->Init();
 	engine->MainLoop();

@@ -56,9 +56,8 @@ private:
 	static void mouseCallback(GLFWwindow *window, double xPos, double yPos);
 	static void scrollCallback(GLFWwindow *window, double xOffset, double yOffset);
 
-	void handleFramebuffer();
-	void handleWindow_focus();
-	void handleCursor_enter();
+	void handleFramebuffer(int width, int height);
+	void handleCursorEnter();
 	void handleMouse();
 	void handleScroll();
 

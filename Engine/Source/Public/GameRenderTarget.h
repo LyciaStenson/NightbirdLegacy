@@ -9,10 +9,13 @@
 class GameRenderTarget : public RenderTarget
 {
 public:
+	GameRenderTarget(int aWidth, int aHeight);
 	void Init() override;
 	void Bind() override;
 	void Unbind() override;
 	void Render() override;
+
+	void SetWindowSize(int aWidth, int aHeight) override;
 
 private:
 	unsigned int framebuffer;

@@ -34,6 +34,8 @@ bool Engine::Init()
 
 	// GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "Nightbird", NULL, NULL);
 
+	glfwSetWindowUserPointer(window, this);
+
 	glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
 	glfwSetCursorEnterCallback(window, cursorEnterCallback);
 	glfwSetCursorPosCallback(window, mouseCallback);
@@ -244,7 +246,11 @@ void Engine::cursorEnterCallback(GLFWwindow* window, int entered)
 
 void Engine::framebufferSizeCallback(GLFWwindow* window, int width, int height)
 {
-	glViewport(0, 0, width, height);
+	Engine* engine = (Engine*)glfwGetWindowUserPointer(window);
+	if (engine)
+	{
+		engine->handleFramebuffer(width, height);
+	}
 }
 
 void Engine::mouseCallback(GLFWwindow* window, double xPosIn, double yPosIn)
@@ -271,6 +277,30 @@ void Engine::mouseCallback(GLFWwindow* window, double xPosIn, double yPosIn)
 void Engine::scrollCallback(GLFWwindow* window, double xOffset, double yOffset)
 {
 	//camera.ProcessMouseScroll((float)yOffset);
+}
+
+void Engine::handleFramebuffer(int width, int height)
+{
+	glViewport(0, 0, width, height);
+
+	renderTarget->SetWindowSize(width, height);
+
+	std::cout << "width >> " << width << ", height >> " << height << std::endl;
+}
+
+void Engine::handleMouse()
+{
+
+}
+
+void Engine::handleCursorEnter()
+{
+
+}
+
+void Engine::handleScroll()
+{
+
 }
 
 void Engine::processInput(GLFWwindow* window)
