@@ -9,7 +9,7 @@ project "ImGui"
 
     includedirs
     {
-        "%{wks.location}/Vendor/glfw/include"
+        "%{wks.location}/Engine/Vendor/glfw/include"
     }
 
     filter "configurations:Debug"
