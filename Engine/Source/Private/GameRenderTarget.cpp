@@ -78,7 +78,7 @@ void GameRenderTarget::Render()
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
-void GameRenderTarget::SetWindowSize(int aWidth, int aHeight)
+void GameRenderTarget::WindowResize(int aWidth, int aHeight)
 {
 	width = aWidth;
 	height = aHeight;
@@ -103,4 +103,6 @@ void GameRenderTarget::SetWindowSize(int aWidth, int aHeight)
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 		std::cerr << "Framebuffer is not complete" << std::endl;
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	glViewport(0, 0, width, height);
 }

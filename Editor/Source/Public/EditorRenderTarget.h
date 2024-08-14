@@ -18,11 +18,16 @@ public:
 	void Unbind() override;
 	void Render() override;
 
-	void SetWindowSize(int aWidth, int aHeight) override;
+	void WindowResize(int aWidth, int aHeight) override;
+
+	void SceneWindowResize(int aWidth, int aHeight);
 
 private:
+	bool showAboutWindow = false;
+
 	GLFWwindow* window;
 
 	unsigned int framebuffer;
 	unsigned int framebufferTexture;
+	unsigned int rbo;
 };

@@ -48,7 +48,7 @@ bool Engine::Init()
 	int version = gladLoadGL(glfwGetProcAddress);
 	if (version == 0)
 	{
-		std::cout << "Failed to initialize OpenGL context" << std::endl;
+		std::cout << "Failed to initialize glad" << std::endl;
 		return false;
 	}
 
@@ -58,7 +58,7 @@ bool Engine::Init()
 
 	cubeShader = Shader("CubeShader.vert", "CubeShader.frag");
 
-	float vertices[] =
+	float cubeVertices[] =
 	{
 		// Positions			//Normals					// Texture Coords
 		-0.5f, -0.5f, -0.5f,	 0.0f,  0.0f, -1.0f,		0.0f, 0.0f,
@@ -119,7 +119,7 @@ bool Engine::Init()
 	glGenBuffers(1, &VBO);
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices), cubeVertices, GL_STATIC_DRAW);
 
 	// Position Attribute
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)0);
@@ -281,11 +281,7 @@ void Engine::scrollCallback(GLFWwindow* window, double xOffset, double yOffset)
 
 void Engine::handleFramebuffer(int width, int height)
 {
-	glViewport(0, 0, width, height);
-
-	renderTarget->SetWindowSize(width, height);
-
-	std::cout << "width >> " << width << ", height >> " << height << std::endl;
+	renderTarget->WindowResize(width, height);
 }
 
 void Engine::handleMouse()
@@ -305,9 +301,6 @@ void Engine::handleScroll()
 
 void Engine::processInput(GLFWwindow* window)
 {
-	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-		glfwSetWindowShouldClose(window, true);
-
 	float cameraSpeed = (float)(2.5 * deltaTime);
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 		camera.ProcessKeyboard(FORWARD, deltaTime);

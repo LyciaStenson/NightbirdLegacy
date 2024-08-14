@@ -15,7 +15,7 @@ public:
 	void Unbind() override;
 	void Render() override;
 
-	void SetWindowSize(int aWidth, int aHeight) override;
+	void WindowResize(int aWidth, int aHeight) override;
 
 private:
 	unsigned int framebuffer;
