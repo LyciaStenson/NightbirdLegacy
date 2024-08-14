@@ -8,6 +8,8 @@ rm Engine/Makefile
 
 rm Editor/Makefile
 
-rm Vendor/glad/Makefile
+rm Engine/Vendor/glad/Makefile
 
-rm Vendor/glfw/Makefile
+rm Engine/Vendor/glfw/Makefile
+
+rm Editor/Vendor/imgui/Makefile

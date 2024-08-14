@@ -10,9 +10,9 @@ Editor::Editor()
 	glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
 
 	int WIDTH = 1280;
-	int HEIGHT = 800;
+	int HEIGHT = 720;
 
-	GLFWwindow* window = glfwCreateWindow(1280, 800, "Nightbird", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "Nightbird", NULL, NULL);
 
 	if (window == NULL)
 	{

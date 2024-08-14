@@ -5,11 +5,11 @@
 			"includePath": [
 				"${workspaceFolder}/Engine/Source/Public",
 				"${workspaceFolder}/Editor/Source/Public",
-				"${workspaceFolder}/Vendor/glfw/include",
-				"${workspaceFolder}/Vendor/glad/include",
-				"${workspaceFolder}/Vendor/glm",
-				"${workspaceFolder}/Vendor/stb",
-				"${workspaceFolder}/Vendor/imgui"
+				"${workspaceFolder}/Engine/Vendor/glfw/include",
+				"${workspaceFolder}/Engine/Vendor/glad/include",
+				"${workspaceFolder}/Engine/Vendor/glm",
+				"${workspaceFolder}/Engine/Vendor/stb",
+				"${workspaceFolder}/Editor/Vendor/imgui"
 			],
 			"defines": [],
 			"compilerPath": "/usr/bin/gcc",
