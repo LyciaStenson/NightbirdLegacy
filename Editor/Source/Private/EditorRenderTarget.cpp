@@ -75,24 +75,26 @@ void EditorRenderTarget::Render()
 	ImGui::NewFrame();
 
 	ImGuiStyle& style = ImGui::GetStyle();
+
+	style.TabRounding = 8.0f;
+	style.FrameRounding = 8.0f;
+	style.GrabRounding = 8.0f;
+	style.WindowRounding = 8.0f;
+	style.PopupRounding = 8.0f;
+
+	style.WindowPadding = ImVec2(10.0f, 10.0f);
+	style.CellPadding = ImVec2(10.0f, 10.0f);
+
 	ImVec4* colors = style.Colors;
 
-	colors[ImGuiCol_WindowBg] = ImVec4(0.1f, 0.1f, 0.1f, 1.0f);		 // Dark gray background
-	colors[ImGuiCol_Text] = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);			 // White text
-	colors[ImGuiCol_Button] = ImVec4(0.2f, 0.2f, 0.7f, 1.0f);		 // Blue button
-	colors[ImGuiCol_ButtonHovered] = ImVec4(0.3f, 0.3f, 0.8f, 1.0f); // Lighter blue when hovered
-	colors[ImGuiCol_ButtonActive] = ImVec4(0.1f, 0.1f, 0.5f, 1.0f);	 // Darker blue when pressed
-	colors[ImGuiCol_Header] = ImVec4(0.2f, 0.2f, 0.4f, 1.0f);		 // Header color
-	colors[ImGuiCol_HeaderHovered] = ImVec4(0.3f, 0.3f, 0.5f, 1.0f); // Header when hovered
-	colors[ImGuiCol_HeaderActive] = ImVec4(0.1f, 0.1f, 0.3f, 1.0f);	 // Header when active
-
-	//style.WindowTitleAlign = ImGuiAlign_Center;
-
-	// Styling
-	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(10, 10));
-	ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(10, 10));
-
-	//ImGui::PushStyleVar(ImGuiStyleVar_WindowTitleAlign, )
+	colors[ImGuiCol_WindowBg] = ImVec4(0.05f, 0.05f, 0.05f, 1.0f);		 // Dark gray background
+	//colors[ImGuiCol_Text] = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);			 // White text
+	//colors[ImGuiCol_Button] = ImVec4(0.2f, 0.2f, 0.2f, 1.0f);		 // Blue button
+	//colors[ImGuiCol_ButtonHovered] = ImVec4(0.3f, 0.3f, 0.8f, 1.0f); // Lighter blue when hovered
+	//colors[ImGuiCol_ButtonActive] = ImVec4(0.1f, 0.1f, 0.5f, 1.0f);	 // Darker blue when pressed
+	colors[ImGuiCol_Header] = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);		 // Header color
+	//colors[ImGuiCol_HeaderHovered] = ImVec4(0.3f, 0.3f, 0.5f, 1.0f); // Header when hovered
+	//colors[ImGuiCol_HeaderActive] = ImVec4(0.03f, 0.03f, 0.03f, 1.0f);	 // Header when active
 	
 	ImGui::DockSpaceOverViewport(ImGui::GetID("Dockspace"));
 
@@ -102,15 +104,15 @@ void EditorRenderTarget::Render()
 		{
 			if (ImGui::MenuItem("New", "Ctrl+N"))
 			{
-				std::cout << "New" << std::endl;
+				Log("New");
 			}
 			if (ImGui::MenuItem("Open", "Ctrl+O"))
 			{
-				std::cout << "Open" << std::endl;
+				Log("Open");
 			}
 			if (ImGui::MenuItem("Save", "Ctrl+S"))
 			{
-				std::cout << "Save" << std::endl;
+				Log("Save");
 			}
 			if (ImGui::MenuItem("Exit", "Ctrl+Q"))
 			{
@@ -122,23 +124,23 @@ void EditorRenderTarget::Render()
 		{
 			if (ImGui::MenuItem("Undo", "Ctrl+Z"))
 			{
-				std::cout << "Undo" << std::endl;
+				Log("Undo");
 			}
 			if (ImGui::MenuItem("Redo", "Ctrl+Y"))
 			{
-				std::cout << "Redo" << std::endl;
+				Log("Undo");
 			}
 			if (ImGui::MenuItem("Cut", "Ctrl+X"))
 			{
-				std::cout << "Cut" << std::endl;
+				Log("Cut");
 			}
 			if (ImGui::MenuItem("Copy", "Ctrl+C"))
 			{
-				std::cout << "Save" << std::endl;
+				Log("Copy");
 			}
 			if (ImGui::MenuItem("Paste", "Ctrl+V"))
 			{
-				std::cout << "Paste" << std::endl;
+				Log("Paste");
 			}
 			ImGui::EndMenu();
 		}
@@ -155,7 +157,7 @@ void EditorRenderTarget::Render()
 
 	if (showAboutWindow)
 	{
-		ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDocking;
+		ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoResize;
 		ImGui::Begin("About Nightbird", &showAboutWindow, windowFlags);
 		ImGui::Text("Nightbird Dev 0.0.1");
 		ImGui::Text("MIT License");
@@ -164,24 +166,43 @@ void EditorRenderTarget::Render()
 
 	ImGui::Begin("Scene");
 
-	//ImVec2 newSize = ImGui::GetContentRegionAvail();
-	//if ((int)newSize.x != width || (int)newSize.y != height)
-	//{
-		//SceneWindowResize((int)newSize.x, (int)newSize.y);
-	//}
-	//glViewport(0, 0, width, height);
-	//ImGui::Image((void*)(intptr_t)framebufferTexture, newSize);
+	ImVec2 newSize = ImGui::GetContentRegionAvail();
+	if ((int)newSize.x != width || (int)newSize.y != height)
+	{
+		SceneWindowResize((int)newSize.x, (int)newSize.y);
+	}
+	glViewport(0, 0, width, height);
+	ImGui::Image((void*)(intptr_t)framebufferTexture, newSize);
 	ImGui::End();
 
 	ImGui::Begin("Entities");
 	ImGui::End();
 
 	ImGui::Begin("Inspector");
+	if (ImGui::Button("Something"))
+	{
+		test++;
+		std::string text = "Something " + std::to_string(test);
+		Log(text);
+	}
+	ImGui::End();
+
+	ImGui::Begin("File Browser");
+	ImGui::End();
+
+	ImGui::Begin("Console");
+	for (std::string text : consoleText)
+	{
+		ImGui::Text(text.c_str());
+	}
+	ImGui::End();
+
+	ImGui::Begin("Terminal");
 	ImGui::End();
 
 	// Pop styling
-	ImGui::PopStyleVar();
-	ImGui::PopStyleVar();
+	//ImGui::PopStyleVar();
+	//ImGui::PopStyleVar();
 
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -194,6 +215,7 @@ void EditorRenderTarget::WindowResize(int aWidth, int aHeight)
 
 void EditorRenderTarget::SceneWindowResize(int aWidth, int aHeight)
 {
+	/*
 	width = aWidth;
 	height = aHeight;
 
@@ -218,4 +240,11 @@ void EditorRenderTarget::SceneWindowResize(int aWidth, int aHeight)
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 		std::cerr << "Framebuffer is not complete" << std::endl;
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	*/
+}
+
+void EditorRenderTarget::Log(const std::string& text)
+{
+	consoleText.push_back(std::move(text));
+	std::cout << text << std::endl;
 }

@@ -7,6 +7,7 @@
 #include <imgui_impl_opengl3.h>
 
 #include <iostream>
+#include <vector>
 
 class EditorRenderTarget : public RenderTarget
 {
@@ -23,6 +24,9 @@ public:
 	void SceneWindowResize(int aWidth, int aHeight);
 
 private:
+	int test = 0;
+	std::vector<std::string> consoleText;
+
 	bool showAboutWindow = false;
 
 	GLFWwindow* window;
@@ -30,4 +34,6 @@ private:
 	unsigned int framebuffer;
 	unsigned int framebufferTexture;
 	unsigned int rbo;
+
+	void Log(const std::string& text);
 };
