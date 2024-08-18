@@ -11,7 +11,7 @@ project "Engine"
 
 	includedirs { "Source/Public", "Vendor/glfw/include", "Vendor/glad/include", "Vendor/glm", "Vendor/stb" }
 
-	links { "glfw", "glad", "GL", "X11" }
+	links { "glfw", "glad" }
 	
 	include "Vendor/glfw"
 	include "Vendor/glad"
