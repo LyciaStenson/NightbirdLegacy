@@ -1,5 +1,7 @@
 #include <Camera.h>
 
+#include <iostream>
+
 Camera::Camera(
 	glm::vec3 positon,
 	glm::vec3 worldUp,
@@ -15,7 +17,7 @@ Camera::Camera(
 	WorldUp = worldUp;
 	Yaw = yaw;
 	Pitch = pitch;
-	updateCameraVectors();
+	UpdateCameraVectors();
 }
 
 Camera::Camera(
@@ -37,12 +39,29 @@ Camera::Camera(
 	WorldUp = glm::vec3(upX, upY, upZ);
 	Yaw = yaw;
 	Pitch = pitch;
-	updateCameraVectors();
+	UpdateCameraVectors();
 }
 
 glm::mat4 Camera::GetViewMatrix()
 {
 	return glm::lookAt(Position, Position + Front, Up);
+}
+
+void Camera::ProcessInput(GLFWwindow* window, float deltaTime)
+{
+	float cameraSpeed = (float)(2.5 * deltaTime);
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+		ProcessKeyboard(FORWARD, deltaTime);
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+		ProcessKeyboard(BACKWARD, deltaTime);
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+		ProcessKeyboard(LEFT, deltaTime);
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+		ProcessKeyboard(RIGHT, deltaTime);
+	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
+		ProcessKeyboard(DOWN, deltaTime);
+	if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
+		ProcessKeyboard(UP, deltaTime);
 }
 
 void Camera::ProcessKeyboard(Movement_Direction direction, float deltaTime)
@@ -77,7 +96,7 @@ void Camera::ProcessMouseMovement(float xOffset, float yOffset, GLboolean constr
 		if (Pitch < -89.0f)
 			Pitch = -89.0f;
 	}
-	updateCameraVectors();
+	UpdateCameraVectors();
 }
 
 void Camera::ProcessMouseScroll(float yOffset)
@@ -91,7 +110,7 @@ void Camera::ProcessMouseScroll(float yOffset)
 
 //private
 
-void Camera::updateCameraVectors()
+void Camera::UpdateCameraVectors()
 {
 	glm::vec3 front;
 	front.x = cos(glm::radians(Yaw)) * cos(glm::radians(Pitch));

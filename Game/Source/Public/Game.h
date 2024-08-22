@@ -2,15 +2,15 @@
 
 #include <Engine.h>
 
-#include <EditorRenderTarget.h>
+#include <GameRenderTarget.h>
 
 #include <iostream>
 
-class Editor
+class Game
 {
 public:
-	Editor();
-	~Editor();
+	Game();
+	~Game();
 
 private:
 	Engine* engine;

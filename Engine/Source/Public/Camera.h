@@ -1,6 +1,8 @@
 #pragma once
 
 #include <glad/gl.h>
+
+#include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -56,13 +58,14 @@ public:
 
 	glm::mat4 GetViewMatrix();
 
+	void ProcessInput(GLFWwindow* window, float deltaTime);
+
+private:
+	void UpdateCameraVectors();
+
 	void ProcessKeyboard(Movement_Direction direction, float deltaTime);
 
 	void ProcessMouseMovement(float xOffset, float yOffset, GLboolean constrainPitch = true);
 
 	void ProcessMouseScroll(float yOffset);
-
-private:
-	void updateCameraVectors();
-
 };

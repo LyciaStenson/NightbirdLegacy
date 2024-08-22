@@ -4,7 +4,9 @@
 			"name": "Linux",
 			"includePath": [
 				"${workspaceFolder}/Engine/Source/Public",
+				"${workspaceFolder}/Engine/Source/Public/Components",
 				"${workspaceFolder}/Editor/Source/Public",
+				"${workspaceFolder}/Game/Source/Public",
 				"${workspaceFolder}/Engine/Vendor/glfw/include",
 				"${workspaceFolder}/Engine/Vendor/glad/include",
 				"${workspaceFolder}/Engine/Vendor/glm",

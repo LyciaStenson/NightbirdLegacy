@@ -1,10 +1,10 @@
 #include <Engine.h>
 
-Engine::Engine(GLFWwindow *aWindow, RenderTarget *aRenderTarget)
+Engine::Engine(GLFWwindow* aWindow, RenderTarget* aRenderTarget)
 {
 	camera = Camera(glm::vec3(0.0f, 0.0f, 3.0f));
 
-	window = aWindow;
+	Window = aWindow;
 
 	renderTarget = aRenderTarget;
 }
@@ -20,31 +20,19 @@ bool Engine::Init()
 	{
 		std::filesystem::current_path("Assets");
 	}
-	catch (const std::exception &e)
+	catch (const std::exception& e)
 	{
 		std::cerr << "Failed to set working directory to Assets: " << e.what() << '\n';
 	}
 
-	// GLFWmonitor* monitor = glfwGetPrimaryMonitor();
-	// const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+	glfwSetWindowUserPointer(Window, this);
 
-	//window = aWindow;
+	glfwSetFramebufferSizeCallback(Window, FramebufferSizeCallback);
+	glfwSetCursorEnterCallback(Window, CursorEnterCallback);
+	glfwSetCursorPosCallback(Window, MouseCallback);
 
-	// GLFWwindow* window = glfwCreateWindow(mode->width, mode->height, "Nightbird", monitor, NULL);
+	glfwSetWindowSizeLimits(Window, 304, 190, GLFW_DONT_CARE, GLFW_DONT_CARE);
 
-	// GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "Nightbird", NULL, NULL);
-
-	glfwSetWindowUserPointer(window, this);
-
-	glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
-	glfwSetCursorEnterCallback(window, cursorEnterCallback);
-	glfwSetCursorPosCallback(window, mouseCallback);
-
-	// glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-
-	glfwSetWindowSizeLimits(window, 304, 190, GLFW_DONT_CARE, GLFW_DONT_CARE);
-
-	// Load OpenGL functions, gladLoadGL returns the loaded version, 0 on error.
 	int version = gladLoadGL(glfwGetProcAddress);
 	if (version == 0)
 	{
@@ -56,91 +44,84 @@ bool Engine::Init()
 
 	glEnable(GL_DEPTH_TEST);
 
-	cubeShader = Shader("CubeShader.vert", "CubeShader.frag");
+	CubeShader = Shader("CubeShader.vert", "CubeShader.frag");
 
-	float cubeVertices[] =
-	{
-		// Positions			//Normals					// Texture Coords
-		-0.5f, -0.5f, -0.5f,	 0.0f,  0.0f, -1.0f,		0.0f, 0.0f,
-		 0.5f, -0.5f, -0.5f,	 0.0f,  0.0f, -1.0f,		1.0f, 0.0f,
-		 0.5f,  0.5f, -0.5f,	 0.0f,  0.0f, -1.0f,		1.0f, 1.0f,
-		 0.5f,  0.5f, -0.5f,	 0.0f,  0.0f, -1.0f,		1.0f, 1.0f,
-		-0.5f,  0.5f, -0.5f,	 0.0f,  0.0f, -1.0f,		0.0f, 1.0f,
-		-0.5f, -0.5f, -0.5f,	 0.0f,  0.0f, -1.0f,		0.0f, 0.0f,
+	/*
+	stevieNicksCubes[0] = StevieNicksCube(glm::vec3(0.0f, 0.0f, 0.0f));
+	stevieNicksCubes[1] = StevieNicksCube(glm::vec3(2.0f, 5.0f, -15.0f));
+	stevieNicksCubes[2] = StevieNicksCube(glm::vec3(-1.5f, -2.2f, -2.5f));
+	stevieNicksCubes[3] = StevieNicksCube(glm::vec3(-3.8f, -2.0f, -12.3f));
+	stevieNicksCubes[4] = StevieNicksCube(glm::vec3(2.4f, -0.4f, -3.5f));
+	stevieNicksCubes[5] = StevieNicksCube(glm::vec3(-1.7f, 3.0f, -7.5f));
+	stevieNicksCubes[6] = StevieNicksCube(glm::vec3(1.3f, -2.0f, -2.5f));
+	stevieNicksCubes[7] = StevieNicksCube(glm::vec3(1.5f, 2.0f, -2.5f));
+	stevieNicksCubes[8] = StevieNicksCube(glm::vec3(1.5f, 0.2f, -1.5f));
+	stevieNicksCubes[9] = StevieNicksCube(glm::vec3(-1.3f, 1.0f, -1.5f));
+	*/
 
-		-0.5f, -0.5f,  0.5f,	 0.0f,  0.0f,  1.0f,		0.0f, 0.0f,
-		 0.5f, -0.5f,  0.5f,	 0.0f,  0.0f,  1.0f,		1.0f, 0.0f,
-		 0.5f,  0.5f,  0.5f,	 0.0f,  0.0f,  1.0f,		1.0f, 1.0f,
-		 0.5f,  0.5f,  0.5f,	 0.0f,  0.0f,  1.0f,		1.0f, 1.0f,
-		-0.5f,  0.5f,  0.5f,	 0.0f,  0.0f,  1.0f,		0.0f, 1.0f,
-		-0.5f, -0.5f,  0.5f,	 0.0f,  0.0f,  1.0f,		0.0f, 0.0f,
+	// Init TransformComponents
+	TransformComponents.push_back(TransformComponent());
+	TransformComponents[0].Position = glm::vec3(0.0f, 0.0f, 0.0f);
 
-		-0.5f,  0.5f,  0.5f,	-1.0f,  0.0f,  0.0f,		1.0f, 0.0f,
-		-0.5f,  0.5f, -0.5f,	-1.0f,  0.0f,  0.0f,		1.0f, 1.0f,
-		-0.5f, -0.5f, -0.5f,	-1.0f,  0.0f,  0.0f,		0.0f, 1.0f,
-		-0.5f, -0.5f, -0.5f,	-1.0f,  0.0f,  0.0f,		0.0f, 1.0f,
-		-0.5f, -0.5f,  0.5f,	-1.0f,  0.0f,  0.0f,		0.0f, 0.0f,
-		-0.5f,  0.5f,  0.5f,	-1.0f,  0.0f,  0.0f,		1.0f, 0.0f,
+	TransformComponents.push_back(TransformComponent());
+	TransformComponents[1].Position = glm::vec3(2.0f, 5.0f, -15.0f);
 
-		 0.5f,  0.5f,  0.5f,	 1.0f,  0.0f,  0.0f,		1.0f, 0.0f,
-		 0.5f,  0.5f, -0.5f,	 1.0f,  0.0f,  0.0f,		1.0f, 1.0f,
-		 0.5f, -0.5f, -0.5f,	 1.0f,  0.0f,  0.0f,		0.0f, 1.0f,
-		 0.5f, -0.5f, -0.5f,	 1.0f,  0.0f,  0.0f,		0.0f, 1.0f,
-		 0.5f, -0.5f,  0.5f,	 1.0f,  0.0f,  0.0f,		0.0f, 0.0f,
-		 0.5f,  0.5f,  0.5f,	 1.0f,  0.0f,  0.0f,		1.0f, 0.0f,
+	TransformComponents.push_back(TransformComponent());
+	TransformComponents[2].Position = glm::vec3(-1.5f, -2.2f, -2.5f);
 
-		-0.5f, -0.5f, -0.5f,	 0.0f, -1.0f,  0.0f,		0.0f, 1.0f,
-		 0.5f, -0.5f, -0.5f,	 0.0f, -1.0f,  0.0f,		1.0f, 1.0f,
-		 0.5f, -0.5f,  0.5f,	 0.0f, -1.0f,  0.0f,		1.0f, 0.0f,
-		 0.5f, -0.5f,  0.5f,	 0.0f, -1.0f,  0.0f,		1.0f, 0.0f,
-		-0.5f, -0.5f,  0.5f,	 0.0f, -1.0f,  0.0f,		0.0f, 0.0f,
-		-0.5f, -0.5f, -0.5f,	 0.0f, -1.0f,  0.0f,		0.0f, 1.0f,
+	TransformComponents.push_back(TransformComponent());
+	TransformComponents[3].Position = glm::vec3(-3.8f, -2.0f, -12.3f);
 
-		-0.5f,  0.5f, -0.5f,	 0.0f,  1.0f,  0.0f,		0.0f, 1.0f,
-		 0.5f,  0.5f, -0.5f,	 0.0f,  1.0f,  0.0f,		1.0f, 1.0f,
-		 0.5f,  0.5f,  0.5f,	 0.0f,  1.0f,  0.0f,		1.0f, 0.0f,
-		 0.5f,  0.5f,  0.5f,	 0.0f,  1.0f,  0.0f,		1.0f, 0.0f,
-		-0.5f,  0.5f,  0.5f,	 0.0f,  1.0f,  0.0f,		0.0f, 0.0f,
-		-0.5f,  0.5f, -0.5f,	 0.0f,  1.0f,  0.0f,		0.0f, 1.0f
-	};
+	TransformComponents.push_back(TransformComponent());
+	TransformComponents[4].Position = glm::vec3(2.4f, -0.4f, -3.5f);
 
-	cubePositions[0] = glm::vec3(0.0f, 0.0f, 0.0f);
-	cubePositions[1] = glm::vec3(2.0f, 5.0f, -15.0f);
-	cubePositions[2] = glm::vec3(-1.5f, -2.2f, -2.5f);
-	cubePositions[3] = glm::vec3(-3.8f, -2.0f, -12.3f);
-	cubePositions[4] = glm::vec3(2.4f, -0.4f, -3.5f);
-	cubePositions[5] = glm::vec3(-1.7f, 3.0f, -7.5f);
-	cubePositions[6] = glm::vec3(1.3f, -2.0f, -2.5f);
-	cubePositions[7] = glm::vec3(1.5f, 2.0f, -2.5f);
-	cubePositions[8] = glm::vec3(1.5f, 0.2f, -1.5f);
-	cubePositions[9] = glm::vec3(-1.3f, 1.0f, -1.5f);
+	TransformComponents.push_back(TransformComponent());
+	TransformComponents[5].Position = glm::vec3(-1.7f, 3.0f, -7.5f);
+
+	TransformComponents.push_back(TransformComponent());
+	TransformComponents[6].Position = glm::vec3(1.3f, -2.0f, -2.5f);
+
+	TransformComponents.push_back(TransformComponent());
+	TransformComponents[7].Position = glm::vec3(1.5f, 2.0f, -2.5f);
+
+	TransformComponents.push_back(TransformComponent());
+	TransformComponents[8].Position = glm::vec3(1.5f, 0.2f, -1.5f);
+
+	TransformComponents.push_back(TransformComponent());
+	TransformComponents[9].Position = glm::vec3(-1.3f, 1.0f, -1.5f);
 	
-	glGenVertexArrays(1, &VAO);
-	glGenBuffers(1, &VBO);
-	glBindVertexArray(VAO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices), cubeVertices, GL_STATIC_DRAW);
+	// Init MeshComponents
+	//for (int i = 0; i < 10; i++)
+	//{
+		//MeshComponents.push_back(MeshComponent());
 
-	// Position Attribute
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)0);
-	glEnableVertexAttribArray(0);
+		glGenVertexArrays(1, &VAO);
+		glGenBuffers(1, &VBO);
+		glBindVertexArray(VAO);
+		glBindBuffer(GL_ARRAY_BUFFER, VBO);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(CubeVertices), &CubeVertices[0], GL_STATIC_DRAW);
 
-	// Normals Attribute
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(3 * sizeof(float)));
-	glEnableVertexAttribArray(1);
+		// Position Attribute
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+		glEnableVertexAttribArray(0);
 
-	// Texture Coord Attribute
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(6 * sizeof(float)));
-	glEnableVertexAttribArray(2);
+		// Normals Attribute
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+		glEnableVertexAttribArray(1);
 
-	// TEXTURE
-	glGenTextures(1, &texture);
-	glBindTexture(GL_TEXTURE_2D, texture);
+		// Texture Coord Attribute
+		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+		glEnableVertexAttribArray(2);
 
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		// TEXTURE
+		glGenTextures(1, &texture);
+		glBindTexture(GL_TEXTURE_2D, texture);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	//}
 
 	int width, height, nrChannels;
 	stbi_set_flip_vertically_on_load(true);
@@ -157,7 +138,7 @@ bool Engine::Init()
 	}
 
 	stbi_image_free(data);
-	
+
 	renderTarget->Init();
 
 	return true;
@@ -165,95 +146,100 @@ bool Engine::Init()
 
 void Engine::Terminate()
 {
-	glDeleteVertexArrays(1, &VAO);
-	glDeleteBuffers(1, &VBO);
-
+	//for (int i = 0; i < 10; i++)
+	//{
+		glDeleteVertexArrays(1, &VAO);
+		glDeleteBuffers(1, &VBO);
+	//}
 	glfwTerminate();
 }
 
 void Engine::MainLoop()
 {
-	while (!glfwWindowShouldClose(window))
+	while (!glfwWindowShouldClose(Window))
 	{
 		float currentFrame = (float)glfwGetTime();
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 
-		processInput(window);
+		ProcessInput(Window);
 
 		renderTarget->Bind();
 
-		glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
+		glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, texture);
+		//for (int i = 0; i < 10; i++)
+		//{
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, texture);
 
-		cubeShader.use();
+			CubeShader.use();
 
-		cubeShader.setVec3("objectColor", glm::vec3(1.0f, 1.0f, 1.0f));
-		cubeShader.setVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
-		cubeShader.setVec3("lightPos", glm::vec3(3.0f, 10.0f, 10.0f));
+			CubeShader.setVec3("objectColor", glm::vec3(1.0f, 1.0f, 1.0f));
+			CubeShader.setVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
+			CubeShader.setVec3("lightPos", glm::vec3(3.0f, 10.0f, 10.0f));
 
-		cubeShader.setVec3("viewPos", camera.Position);
+			CubeShader.setVec3("viewPos", camera.Position);
 
-		const float radius = 10.0f;
-		float camX = sin(glfwGetTime()) * radius;
-		float camZ = cos(glfwGetTime()) * radius;
+			const float radius = 10.0f;
+			float camX = sin(glfwGetTime()) * radius;
+			float camZ = cos(glfwGetTime()) * radius;
 
-		int width, height;
-		glfwGetWindowSize(window, &width, &height);
+			int width, height;
+			glfwGetWindowSize(Window, &width, &height);
 
-		glm::mat4 projection = glm::perspective(glm::radians(camera.Fov), (float)width / (float)height, 0.1f, 1000.0f);
-		cubeShader.setMat4("projection", projection);
+			glm::mat4 projection = glm::perspective(glm::radians(camera.Fov), (float)width / (float)height, 0.1f, 1000.0f);
+			CubeShader.setMat4("projection", projection);
 
-		glm::mat4 view = camera.GetViewMatrix();
-		cubeShader.setMat4("view", view);
+			glm::mat4 view = camera.GetViewMatrix();
+			CubeShader.setMat4("view", view);
 
-		glBindVertexArray(VAO);
+			glBindVertexArray(VAO);
 
-		for (unsigned int i = 0; i < 10; i++)
-		{
-			glm::mat4 model = glm::mat4(1.0f);
-			model = glm::translate(model, cubePositions[i]);
-			float angle = 20.0f * (i + 1);
-			model = glm::rotate(model, (float)glfwGetTime() * 0.005f * (i + 10) * glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
-			cubeShader.setMat4("model", model);
+			for (unsigned int i = 0; i < 10; i++)
+			{
+				glm::mat4 model = glm::mat4(1.0f);
+				model = glm::translate(model, TransformComponents[i].Position);
+				float angle = 20.0f * (i + 1);
+				model = glm::rotate(model, (float)glfwGetTime() * 0.005f * (i + 10) * glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+				CubeShader.setMat4("model", model);
 
-			glDrawArrays(GL_TRIANGLES, 0, 36);
-		}
-
-		renderTarget->Unbind();
+				glDrawArrays(GL_TRIANGLES, 0, 36);
+			}
+		//}
 		
+		renderTarget->Unbind();
+
 		renderTarget->Render();
 
-		glfwSwapBuffers(window);
+		glfwSwapBuffers(Window);
 		glfwPollEvents();
 	}
 }
 
-void Engine::cursorEnterCallback(GLFWwindow* window, int entered)
+void Engine::CursorEnterCallback(GLFWwindow* window, int entered)
 {
-	if (entered)
-	{
+	//if (entered)
+	//{
 		//firstMouse = true;
 
 		//int width, height;
 		//glfwGetWindowSize(window, &width, &height);
 		//glfwSetCursorPos(window, width / 2.0f, height / 2.0f);
-	}
+	//}
 }
 
-void Engine::framebufferSizeCallback(GLFWwindow* window, int width, int height)
+void Engine::FramebufferSizeCallback(GLFWwindow* window, int width, int height)
 {
 	Engine* engine = (Engine*)glfwGetWindowUserPointer(window);
 	if (engine)
 	{
-		engine->handleFramebuffer(width, height);
+		engine->HandleFramebuffer(width, height);
 	}
 }
 
-void Engine::mouseCallback(GLFWwindow* window, double xPosIn, double yPosIn)
+void Engine::MouseCallback(GLFWwindow* window, double xPosIn, double yPosIn)
 {
 	//float xPos = (float)xPosIn;
 	//float yPos = (float)yPosIn;
@@ -271,47 +257,35 @@ void Engine::mouseCallback(GLFWwindow* window, double xPosIn, double yPosIn)
 	//lastX = xPos;
 	//lastY = yPos;
 
-	// camera.ProcessMouseMovement(xOffset, yOffset);
+	//camera.ProcessMouseMovement(xOffset, yOffset);
 }
 
-void Engine::scrollCallback(GLFWwindow* window, double xOffset, double yOffset)
+void Engine::ScrollCallback(GLFWwindow* window, double xOffset, double yOffset)
 {
 	//camera.ProcessMouseScroll((float)yOffset);
 }
 
-void Engine::handleFramebuffer(int width, int height)
+void Engine::HandleFramebuffer(int width, int height)
 {
 	renderTarget->WindowResize(width, height);
 }
 
-void Engine::handleMouse()
+void Engine::HandleMouse()
 {
 
 }
 
-void Engine::handleCursorEnter()
+void Engine::HandleCursorEnter()
 {
 
 }
 
-void Engine::handleScroll()
+void Engine::HandleScroll()
 {
 
 }
 
-void Engine::processInput(GLFWwindow* window)
+void Engine::ProcessInput(GLFWwindow* window)
 {
-	float cameraSpeed = (float)(2.5 * deltaTime);
-	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-		camera.ProcessKeyboard(FORWARD, deltaTime);
-	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-		camera.ProcessKeyboard(BACKWARD, deltaTime);
-	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-		camera.ProcessKeyboard(LEFT, deltaTime);
-	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-		camera.ProcessKeyboard(RIGHT, deltaTime);
-	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
-		camera.ProcessKeyboard(DOWN, deltaTime);
-	if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
-		camera.ProcessKeyboard(UP, deltaTime);
+	camera.ProcessInput(window, deltaTime);
 }
