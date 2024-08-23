@@ -178,11 +178,11 @@ void EditorRenderTarget::Render()
 	ImGui::Begin("Entities");
 	ImGui::End();
 
-	ImGui::Begin("Inspector");
-	if (ImGui::Button("Something"))
+	ImGui::Begin("Components");
+	if (ImGui::Button("Test"))
 	{
 		test++;
-		std::string text = "Something " + std::to_string(test);
+		std::string text = "Test " + std::to_string(test);
 		Log(text);
 	}
 	ImGui::End();
@@ -196,14 +196,7 @@ void EditorRenderTarget::Render()
 		ImGui::Text(text.c_str());
 	}
 	ImGui::End();
-
-	ImGui::Begin("Terminal");
-	ImGui::End();
-
-	// Pop styling
-	//ImGui::PopStyleVar();
-	//ImGui::PopStyleVar();
-
+	
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
