@@ -7,6 +7,7 @@
 #include <imgui_impl_opengl3.h>
 
 #include <iostream>
+#include <string>
 #include <vector>
 
 class EditorRenderTarget : public RenderTarget
