@@ -20,6 +20,9 @@ workspace "Nightbird"
 
 	outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
+	include "Engine/Vendor/glfw"
+	include "Engine/Vendor/glad"
+
 	include "Engine"
 	include "Editor"
 	include "Game"

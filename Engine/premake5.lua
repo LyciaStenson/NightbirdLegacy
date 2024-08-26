@@ -13,6 +13,3 @@ project "Engine"
 	includedirs { "Source/Public", "Source/Public/Components", "Vendor/glfw/include", "Vendor/glad/include", "Vendor/glm", "Vendor/stb" }
 
 	links { "glfw", "glad" }
-	
-	include "Vendor/glfw"
-	include "Vendor/glad"
