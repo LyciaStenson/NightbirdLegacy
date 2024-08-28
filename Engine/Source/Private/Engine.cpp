@@ -184,7 +184,7 @@ void Engine::MainLoop()
 
 			glBindVertexArray(VAO);
 
-			for (unsigned int i = 0; i < 10; i++)
+			for (unsigned int i = 0; i < TransformComponents.size(); i++)
 			{
 				glm::mat4 model = glm::mat4(1.0f);
 				model = glm::translate(model, TransformComponents[i].Position);

@@ -30,6 +30,6 @@ group "Nightbird"
 	include "Editor"
 group ""
 
-group "Game"
+group "Projects"
 	include "Game"
 group ""
