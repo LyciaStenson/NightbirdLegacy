@@ -9,7 +9,7 @@ EditorRenderTarget::EditorRenderTarget(GLFWwindow* aWindow)
 	
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
-	ImGuiIO &io = ImGui::GetIO();
+	ImGuiIO& io = ImGui::GetIO();
 	(void)io;
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
@@ -77,25 +77,29 @@ void EditorRenderTarget::Render()
 	ImGuiStyle& style = ImGui::GetStyle();
 
 	style.TabRounding = 8.0f;
-	style.FrameRounding = 8.0f;
-	style.GrabRounding = 8.0f;
+	//style.FrameRounding = 8.0f;
+	//style.GrabRounding = 8.0f;
 	style.WindowRounding = 8.0f;
-	style.PopupRounding = 8.0f;
+	//style.PopupRounding = 8.0f;
 
-	style.WindowPadding = ImVec2(10.0f, 10.0f);
-	style.CellPadding = ImVec2(10.0f, 10.0f);
+	style.WindowPadding = ImVec2(15.0f, 15.0f);
+	style.CellPadding = ImVec2(15.0f, 15.0f);
+	style.ItemSpacing = ImVec2(10.0f, 5.0f);
 
 	ImVec4* colors = style.Colors;
 
-	colors[ImGuiCol_WindowBg] = ImVec4(0.05f, 0.05f, 0.05f, 1.0f);		 // Dark gray background
-	//colors[ImGuiCol_Text] = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);			 // White text
-	//colors[ImGuiCol_Button] = ImVec4(0.2f, 0.2f, 0.2f, 1.0f);		 // Blue button
-	//colors[ImGuiCol_ButtonHovered] = ImVec4(0.3f, 0.3f, 0.8f, 1.0f); // Lighter blue when hovered
-	//colors[ImGuiCol_ButtonActive] = ImVec4(0.1f, 0.1f, 0.5f, 1.0f);	 // Darker blue when pressed
-	colors[ImGuiCol_Header] = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);		 // Header color
-	//colors[ImGuiCol_HeaderHovered] = ImVec4(0.3f, 0.3f, 0.5f, 1.0f); // Header when hovered
-	//colors[ImGuiCol_HeaderActive] = ImVec4(0.03f, 0.03f, 0.03f, 1.0f);	 // Header when active
-	
+	colors[ImGuiCol_WindowBg] = ImVec4(0.05f, 0.05f, 0.05f, 0.8f);
+	colors[ImGuiCol_Text] = ImVec4(0.8f, 0.8f, 0.8f, 1.0f);
+	colors[ImGuiCol_Button] = ImVec4(0.25f, 0.25f, 0.25f, 1.0f);
+	//colors[ImGuiCol_ButtonHovered] = ImVec4(0.3f, 0.3f, 0.8f, 1.0f);
+	//colors[ImGuiCol_ButtonActive] = ImVec4(0.1f, 0.1f, 0.5f, 1.0f);
+	//colors[ImGuiCol_Header] = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
+	//colors[ImGuiCol_Header] = ImVec4(1.0f, 0.0f, 0.0f, 1.0f);
+	//colors[ImGuiCol_HeaderHovered] = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
+	//colors[ImGuiCol_HeaderActive] = ImVec4(0.0f, 0.0f, 0.0f, 1.0f);
+	colors[ImGuiCol_TitleBg] = ImVec4(0.05f, 0.05f, 0.05f, 1.0f);
+	colors[ImGuiCol_TitleBgActive] = ImVec4(0.1f, 0.1f, 0.1f, 1.0f);
+
 	ImGui::DockSpaceOverViewport(ImGui::GetID("Dockspace"));
 
 	if (ImGui::BeginMainMenuBar())
@@ -158,22 +162,25 @@ void EditorRenderTarget::Render()
 	if (showAboutWindow)
 	{
 		ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoResize;
+		ImGui::SetNextWindowSize(ImVec2(0.0f, 0.0f), ImGuiCond_Always);
 		ImGui::Begin("About Nightbird", &showAboutWindow, windowFlags);
 		ImGui::Text("Nightbird Dev 0.0.1");
 		ImGui::Text("MIT License");
 		ImGui::End();
 	}
 
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
 	ImGui::Begin("Scene");
 
 	ImVec2 newSize = ImGui::GetContentRegionAvail();
 	if ((int)newSize.x != width || (int)newSize.y != height)
 	{
-		SceneWindowResize((int)newSize.x, (int)newSize.y);
+		//SceneWindowResize((int)newSize.x, (int)newSize.y);
+		glViewport(0, 0, width, height);
 	}
-	glViewport(0, 0, width, height);
 	ImGui::Image((void*)(intptr_t)framebufferTexture, newSize);
 	ImGui::End();
+	ImGui::PopStyleVar();
 
 	ImGui::Begin("Entities");
 	ImGui::End();
@@ -187,7 +194,7 @@ void EditorRenderTarget::Render()
 	}
 	ImGui::End();
 
-	ImGui::Begin("File Browser");
+	ImGui::Begin("Asset Browser");
 	ImGui::End();
 
 	ImGui::Begin("Console");
@@ -208,7 +215,6 @@ void EditorRenderTarget::WindowResize(int aWidth, int aHeight)
 
 void EditorRenderTarget::SceneWindowResize(int aWidth, int aHeight)
 {
-	/*
 	width = aWidth;
 	height = aHeight;
 
@@ -233,7 +239,6 @@ void EditorRenderTarget::SceneWindowResize(int aWidth, int aHeight)
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 		std::cerr << "Framebuffer is not complete" << std::endl;
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	*/
 }
 
 void EditorRenderTarget::Log(const std::string& text)
