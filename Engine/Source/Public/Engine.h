@@ -26,9 +26,9 @@ class Engine
 public:
 	Camera camera;
 
-	//float lastX;
-	//float lastY;
-	//bool firstMouse;
+	float lastX;
+	float lastY;
+	bool firstMouse;
 
 	float deltaTime;
 	float lastFrame;
@@ -109,7 +109,7 @@ private:
 
 	void HandleFramebuffer(int width, int height);
 	void HandleCursorEnter();
-	void HandleMouse();
+	void HandleMouse(GLFWwindow* window, double xPos, double yPos);
 	void HandleScroll();
 
 	void ProcessInput(GLFWwindow* window);

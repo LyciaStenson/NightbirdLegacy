@@ -89,15 +89,15 @@ bool Engine::Init()
 		glBufferData(GL_ARRAY_BUFFER, sizeof(CubeVertices), &CubeVertices[0], GL_STATIC_DRAW);
 
 		// Position Attribute
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 8, (void*)0);
 		glEnableVertexAttribArray(0);
 
 		// Normals Attribute
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 8, (void*)(3 * sizeof(float)));
 		glEnableVertexAttribArray(1);
 
 		// Texture Coord Attribute
-		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 8, (void*)(6 * sizeof(float)));
 		glEnableVertexAttribArray(2);
 
 		// TEXTURE
@@ -228,23 +228,11 @@ void Engine::FramebufferSizeCallback(GLFWwindow* window, int width, int height)
 
 void Engine::MouseCallback(GLFWwindow* window, double xPosIn, double yPosIn)
 {
-	//float xPos = (float)xPosIn;
-	//float yPos = (float)yPosIn;
-
-	//if (firstMouse)
-	//{
-		//lastX = xPos;
-		//lastY = yPos;
-		//firstMouse = false;
-	//}
-
-	//float xOffset = xPos - lastX;
-	//float yOffset = lastY - yPos;
-
-	//lastX = xPos;
-	//lastY = yPos;
-
-	//camera.ProcessMouseMovement(xOffset, yOffset);
+	Engine* engine = (Engine*)glfwGetWindowUserPointer(window);
+	if (engine)
+	{
+		engine->HandleMouse(window, xPosIn, yPosIn);
+	}
 }
 
 void Engine::ScrollCallback(GLFWwindow* window, double xOffset, double yOffset)
@@ -257,9 +245,25 @@ void Engine::HandleFramebuffer(int width, int height)
 	renderTarget->WindowResize(width, height);
 }
 
-void Engine::HandleMouse()
+void Engine::HandleMouse(GLFWwindow* window, double xPosIn, double yPosIn)
 {
+	float xPos = (float)xPosIn;
+	float yPos = (float)yPosIn;
 
+	if (firstMouse)
+	{
+		lastX = xPos;
+		lastY = yPos;
+		firstMouse = false;
+	}
+
+	float xOffset = xPos - lastX;
+	float yOffset = lastY - yPos;
+
+	lastX = xPos;
+	lastY = yPos;
+
+	camera.ProcessMouseMovement(window, xOffset, yOffset);
 }
 
 void Engine::HandleCursorEnter()

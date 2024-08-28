@@ -60,12 +60,12 @@ public:
 
 	void ProcessInput(GLFWwindow* window, float deltaTime);
 
+	void ProcessMouseMovement(GLFWwindow* window, float xOffset, float yOffset, bool constrainPitch = true);
+
 private:
 	void UpdateCameraVectors();
 
 	void ProcessKeyboard(Movement_Direction direction, float deltaTime);
-
-	void ProcessMouseMovement(float xOffset, float yOffset, GLboolean constrainPitch = true);
 
 	void ProcessMouseScroll(float yOffset);
 };

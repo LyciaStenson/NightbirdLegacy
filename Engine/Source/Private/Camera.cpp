@@ -81,22 +81,25 @@ void Camera::ProcessKeyboard(Movement_Direction direction, float deltaTime)
 		Position -= Up * speed;
 }
 
-void Camera::ProcessMouseMovement(float xOffset, float yOffset, GLboolean constrainPitch)
+void Camera::ProcessMouseMovement(GLFWwindow* window, float xOffset, float yOffset, bool constrainPitch)
 {
-	xOffset *= Sensitivity;
-	yOffset *= Sensitivity;
-
-	Yaw += xOffset;
-	Pitch += yOffset;
-
-	if (constrainPitch)
+	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_2) == GLFW_PRESS)
 	{
-		if (Pitch > 89.0f)
-			Pitch = 89.0f;
-		if (Pitch < -89.0f)
-			Pitch = -89.0f;
+		xOffset *= Sensitivity;
+		yOffset *= Sensitivity;
+
+		Yaw += xOffset;
+		Pitch -= yOffset;
+
+		if (constrainPitch)
+		{
+			if (Pitch > 89.0f)
+				Pitch = 89.0f;
+			if (Pitch < -89.0f)
+				Pitch = -89.0f;
+		}
+		UpdateCameraVectors();
 	}
-	UpdateCameraVectors();
 }
 
 void Camera::ProcessMouseScroll(float yOffset)
