@@ -27,9 +27,6 @@ group ""
 
 group "Nightbird"
 	include "Engine"
-group ""
-
-group "Editor"
 	include "Editor"
 group ""
 
