@@ -76,39 +76,33 @@ bool Engine::Init()
 
 	TransformComponents.push_back(TransformComponent());
 	TransformComponents[9].Position = glm::vec3(-1.3f, 1.0f, -1.5f);
-	
-	// Init MeshComponents
-	//for (int i = 0; i < 10; i++)
-	//{
-		//MeshComponents.push_back(MeshComponent());
 
-		glGenVertexArrays(1, &VAO);
-		glGenBuffers(1, &VBO);
-		glBindVertexArray(VAO);
-		glBindBuffer(GL_ARRAY_BUFFER, VBO);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(CubeVertices), &CubeVertices[0], GL_STATIC_DRAW);
+	glGenVertexArrays(1, &VAO);
+	glGenBuffers(1, &VBO);
+	glBindVertexArray(VAO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(CubeVertices), &CubeVertices[0], GL_STATIC_DRAW);
 
-		// Position Attribute
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 8, (void*)0);
-		glEnableVertexAttribArray(0);
+	// Position Attribute
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 8, (void*)0);
+	glEnableVertexAttribArray(0);
 
-		// Normals Attribute
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 8, (void*)(3 * sizeof(float)));
-		glEnableVertexAttribArray(1);
+	// Normals Attribute
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 8, (void*)(3 * sizeof(float)));
+	glEnableVertexAttribArray(1);
 
-		// Texture Coord Attribute
-		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 8, (void*)(6 * sizeof(float)));
-		glEnableVertexAttribArray(2);
+	// Texture Coord Attribute
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 8, (void*)(6 * sizeof(float)));
+	glEnableVertexAttribArray(2);
 
-		// TEXTURE
-		glGenTextures(1, &texture);
-		glBindTexture(GL_TEXTURE_2D, texture);
+	// TEXTURE
+	glGenTextures(1, &texture);
+	glBindTexture(GL_TEXTURE_2D, texture);
 
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	//}
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 	int width, height, nrChannels;
 	stbi_set_flip_vertically_on_load(true);
@@ -133,21 +127,22 @@ bool Engine::Init()
 
 void Engine::Terminate()
 {
-	//for (int i = 0; i < 10; i++)
-	//{
-		glDeleteVertexArrays(1, &VAO);
-		glDeleteBuffers(1, &VBO);
-	//}
+	glDeleteVertexArrays(1, &VAO);
+	glDeleteBuffers(1, &VBO);
+
 	glfwTerminate();
 }
 
 void Engine::MainLoop()
 {
+	lastFrameTime = glfwGetTime();
 	while (!glfwWindowShouldClose(Window))
 	{
-		float currentFrame = (float)glfwGetTime();
-		deltaTime = currentFrame - lastFrame;
-		lastFrame = currentFrame;
+		double currentFrameTime = glfwGetTime();
+		deltaTime = currentFrameTime - lastFrameTime;
+		lastFrameTime = currentFrameTime;
+
+		fps = 1.0f / deltaTime;
 
 		ProcessInput(Window);
 
@@ -155,46 +150,43 @@ void Engine::MainLoop()
 
 		glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, texture);
 
-		//for (int i = 0; i < 10; i++)
-		//{
-			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, texture);
+		CubeShader.use();
 
-			CubeShader.use();
+		CubeShader.setVec3("objectColor", glm::vec3(1.0f, 1.0f, 1.0f));
+		CubeShader.setVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
+		CubeShader.setVec3("lightPos", glm::vec3(3.0f, 10.0f, 10.0f));
 
-			CubeShader.setVec3("objectColor", glm::vec3(1.0f, 1.0f, 1.0f));
-			CubeShader.setVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
-			CubeShader.setVec3("lightPos", glm::vec3(3.0f, 10.0f, 10.0f));
+		CubeShader.setVec3("viewPos", camera.Position);
 
-			CubeShader.setVec3("viewPos", camera.Position);
+		const float radius = 10.0f;
+		float camX = sin(glfwGetTime()) * radius;
+		float camZ = cos(glfwGetTime()) * radius;
 
-			const float radius = 10.0f;
-			float camX = sin(glfwGetTime()) * radius;
-			float camZ = cos(glfwGetTime()) * radius;
+		int width, height;
+		glfwGetWindowSize(Window, &width, &height);
 
-			int width, height;
-			glfwGetWindowSize(Window, &width, &height);
+		glm::mat4 projection = glm::perspective(glm::radians(camera.Fov), (float)width / (float)height, 0.1f, 1000.0f);
+		CubeShader.setMat4("projection", projection);
 
-			glm::mat4 projection = glm::perspective(glm::radians(camera.Fov), (float)width / (float)height, 0.1f, 1000.0f);
-			CubeShader.setMat4("projection", projection);
+		glm::mat4 view = camera.GetViewMatrix();
+		CubeShader.setMat4("view", view);
 
-			glm::mat4 view = camera.GetViewMatrix();
-			CubeShader.setMat4("view", view);
+		glBindVertexArray(VAO);
 
-			glBindVertexArray(VAO);
+		for (unsigned int i = 0; i < TransformComponents.size(); i++)
+		{
+			glm::mat4 model = glm::mat4(1.0f);
+			model = glm::translate(model, TransformComponents[i].Position);
+			float angle = 20.0f * (i + 1);
+			model = glm::rotate(model, (float)glfwGetTime() * 0.005f * (i + 10) * glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+			CubeShader.setMat4("model", model);
 
-			for (unsigned int i = 0; i < TransformComponents.size(); i++)
-			{
-				glm::mat4 model = glm::mat4(1.0f);
-				model = glm::translate(model, TransformComponents[i].Position);
-				float angle = 20.0f * (i + 1);
-				//model = glm::rotate(model, (float)glfwGetTime() * 0.005f * (i + 10) * glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
-				CubeShader.setMat4("model", model);
-
-				glDrawArrays(GL_TRIANGLES, 0, 36);
-			}
-		//}
+			glDrawArrays(GL_TRIANGLES, 0, 36);
+		}
 		
 		renderTarget->Unbind();
 
@@ -247,23 +239,30 @@ void Engine::HandleFramebuffer(int width, int height)
 
 void Engine::HandleMouse(GLFWwindow* window, double xPosIn, double yPosIn)
 {
-	float xPos = (float)xPosIn;
-	float yPos = (float)yPosIn;
-
-	if (firstMouse)
+	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_2) == GLFW_PRESS)
 	{
+		float xPos = (float)xPosIn;
+		float yPos = (float)yPosIn;
+
+		if (!mouseDown)
+		{
+			lastX = xPos;
+			lastY = yPos;
+			mouseDown = true;
+		}
+
+		float xOffset = xPos - lastX;
+		float yOffset = lastY - yPos;
+
 		lastX = xPos;
 		lastY = yPos;
-		firstMouse = false;
+		
+		camera.ProcessMouseMovement(window, xOffset, yOffset);
 	}
-
-	float xOffset = xPos - lastX;
-	float yOffset = lastY - yPos;
-
-	lastX = xPos;
-	lastY = yPos;
-
-	camera.ProcessMouseMovement(window, xOffset, yOffset);
+	else if (mouseDown)
+	{
+		mouseDown = false;
+	}
 }
 
 void Engine::HandleCursorEnter()
@@ -278,5 +277,8 @@ void Engine::HandleScroll()
 
 void Engine::ProcessInput(GLFWwindow* window)
 {
-	camera.ProcessInput(window, deltaTime);
+	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_2) == GLFW_PRESS)
+	{
+		camera.ProcessInput(window, deltaTime);
+	}
 }

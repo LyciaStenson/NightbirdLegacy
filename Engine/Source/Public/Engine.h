@@ -26,12 +26,13 @@ class Engine
 public:
 	Camera camera;
 
-	float lastX;
-	float lastY;
-	bool firstMouse;
+	float lastX = 0.0f;
+	float lastY = 0.0f;
+	bool mouseDown = false;
 
-	float deltaTime;
-	float lastFrame;
+	double deltaTime = 0.0;
+	double lastFrameTime = 0.0;
+	double fps = 0.0;
 
 	Engine(GLFWwindow* aWindow, RenderTarget* aRenderTarget);
 	~Engine();

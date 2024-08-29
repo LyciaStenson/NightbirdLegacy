@@ -3,9 +3,11 @@
 EditorRenderTarget::EditorRenderTarget(GLFWwindow* aWindow)
 {
 	window = aWindow;
+
+	engine = (Engine*)glfwGetWindowUserPointer(aWindow);
 	
 	width = 1280;
-	height = 800;
+	height = 720;
 	
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
@@ -67,6 +69,8 @@ void EditorRenderTarget::Unbind()
 
 void EditorRenderTarget::Render()
 {
+	//Log("FPS > ");// + std::to_string(engine->fps));
+
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -76,88 +80,114 @@ void EditorRenderTarget::Render()
 
 	ImGuiStyle& style = ImGui::GetStyle();
 
-	style.TabRounding = 8.0f;
+	style.TabRounding = 4.0f;
 	//style.FrameRounding = 8.0f;
 	//style.GrabRounding = 8.0f;
-	style.WindowRounding = 8.0f;
+	style.WindowRounding = 6.0f;
 	//style.PopupRounding = 8.0f;
 
-	style.WindowPadding = ImVec2(15.0f, 15.0f);
-	style.CellPadding = ImVec2(15.0f, 15.0f);
+	style.WindowPadding = ImVec2(10.0f, 10.0f);
+	//style.CellPadding = ImVec2(150.0f, 150.0f);
 	style.ItemSpacing = ImVec2(10.0f, 5.0f);
+	style.FramePadding = ImVec2(5.0f, 5.0f);
+
+	style.TabBarBorderSize = 0.0f;
+	style.WindowBorderSize = 0.0f;
 
 	ImVec4* colors = style.Colors;
 
-	colors[ImGuiCol_WindowBg] = ImVec4(0.05f, 0.05f, 0.05f, 0.8f);
+	colors[ImGuiCol_WindowBg] = ImVec4(0.1f, 0.1f, 0.1f, 0.8f);
 	colors[ImGuiCol_Text] = ImVec4(0.8f, 0.8f, 0.8f, 1.0f);
-	colors[ImGuiCol_Button] = ImVec4(0.25f, 0.25f, 0.25f, 1.0f);
+	colors[ImGuiCol_Button] = ImVec4(0.35f, 0.35f, 0.35f, 1.0f);
 	//colors[ImGuiCol_ButtonHovered] = ImVec4(0.3f, 0.3f, 0.8f, 1.0f);
 	//colors[ImGuiCol_ButtonActive] = ImVec4(0.1f, 0.1f, 0.5f, 1.0f);
-	//colors[ImGuiCol_Header] = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
-	//colors[ImGuiCol_Header] = ImVec4(1.0f, 0.0f, 0.0f, 1.0f);
+	colors[ImGuiCol_Header] = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
 	//colors[ImGuiCol_HeaderHovered] = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
 	//colors[ImGuiCol_HeaderActive] = ImVec4(0.0f, 0.0f, 0.0f, 1.0f);
 	colors[ImGuiCol_TitleBg] = ImVec4(0.05f, 0.05f, 0.05f, 1.0f);
-	colors[ImGuiCol_TitleBgActive] = ImVec4(0.1f, 0.1f, 0.1f, 1.0f);
+	colors[ImGuiCol_TitleBgActive] = ImVec4(0.05f, 0.05f, 0.05f, 1.0f);
+	colors[ImGuiCol_MenuBarBg] = ImVec4(0.1f, 0.1f, 0.1f, 1.0f);
 
 	ImGui::DockSpaceOverViewport(ImGui::GetID("Dockspace"));
 
-	if (ImGui::BeginMainMenuBar())
+	ImGui::BeginMainMenuBar();
+	if(ImGui::BeginMenu("File"))
 	{
-		if(ImGui::BeginMenu("File"))
+		if (ImGui::MenuItem("New", "Ctrl+N"))
 		{
-			if (ImGui::MenuItem("New", "Ctrl+N"))
-			{
-				Log("New");
-			}
-			if (ImGui::MenuItem("Open", "Ctrl+O"))
-			{
-				Log("Open");
-			}
-			if (ImGui::MenuItem("Save", "Ctrl+S"))
-			{
-				Log("Save");
-			}
-			if (ImGui::MenuItem("Exit", "Ctrl+Q"))
-			{
-				glfwSetWindowShouldClose(window, true);
-			}
-			ImGui::EndMenu();
+			Log("New");
 		}
-		if (ImGui::BeginMenu("Edit"))
+		if (ImGui::MenuItem("Open", "Ctrl+O"))
 		{
-			if (ImGui::MenuItem("Undo", "Ctrl+Z"))
-			{
-				Log("Undo");
-			}
-			if (ImGui::MenuItem("Redo", "Ctrl+Y"))
-			{
-				Log("Undo");
-			}
-			if (ImGui::MenuItem("Cut", "Ctrl+X"))
-			{
-				Log("Cut");
-			}
-			if (ImGui::MenuItem("Copy", "Ctrl+C"))
-			{
-				Log("Copy");
-			}
-			if (ImGui::MenuItem("Paste", "Ctrl+V"))
-			{
-				Log("Paste");
-			}
-			ImGui::EndMenu();
+			Log("Open");
 		}
-		if (ImGui::BeginMenu("Help"))
+		if (ImGui::MenuItem("Save", "Ctrl+S"))
 		{
-			if (ImGui::MenuItem("About"))
-			{
-				showAboutWindow = true;
-			}
-			ImGui::EndMenu();
+			Log("Save");
 		}
-		ImGui::EndMainMenuBar();
+		if (ImGui::MenuItem("Exit", "Ctrl+Q"))
+		{
+			glfwSetWindowShouldClose(window, true);
+		}
+		ImGui::EndMenu();
 	}
+	if (ImGui::BeginMenu("Edit"))
+	{
+		if (ImGui::MenuItem("Undo", "Ctrl+Z"))
+		{
+			Log("Undo");
+		}
+		if (ImGui::MenuItem("Redo", "Ctrl+Y"))
+		{
+			Log("Undo");
+		}
+		if (ImGui::MenuItem("Cut", "Ctrl+X"))
+		{
+			Log("Cut");
+		}
+		if (ImGui::MenuItem("Copy", "Ctrl+C"))
+		{
+			Log("Copy");
+		}
+		if (ImGui::MenuItem("Paste", "Ctrl+V"))
+		{
+			Log("Paste");
+		}
+		ImGui::EndMenu();
+	}
+	if (ImGui::BeginMenu("Window"))
+	{
+		if (ImGui::MenuItem("Entities"))
+		{
+			showEntitiesWindow = true;
+		}
+		if (ImGui::MenuItem("Components"))
+		{
+			showComponentsWindow = true;
+		}
+		if (ImGui::MenuItem("Asset Browser"))
+		{
+			showAssetBrowserWindow = true;
+		}
+		if (ImGui::MenuItem("Console"))
+		{
+			showConsoleWindow = true;
+		}
+		if (ImGui::MenuItem("Scene"))
+		{
+			showSceneWindow = true;
+		}
+		ImGui::EndMenu();
+	}
+	if (ImGui::BeginMenu("Help"))
+	{
+		if (ImGui::MenuItem("About"))
+		{
+			showAboutWindow = true;
+		}
+		ImGui::EndMenu();
+	}
+	ImGui::EndMainMenuBar();
 
 	if (showAboutWindow)
 	{
@@ -170,40 +200,54 @@ void EditorRenderTarget::Render()
 	}
 
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-	ImGui::Begin("Scene");
-
-	ImVec2 newSize = ImGui::GetContentRegionAvail();
-	if ((int)newSize.x != width || (int)newSize.y != height)
+	if (showSceneWindow)
 	{
-		//SceneWindowResize((int)newSize.x, (int)newSize.y);
-		glViewport(0, 0, width, height);
+		ImGui::Begin("Scene", &showSceneWindow);
+
+		ImVec2 newSize = ImGui::GetContentRegionAvail();
+		if ((int)newSize.x != width || (int)newSize.y != height)
+		{
+			//SceneWindowResize((int)newSize.x, (int)newSize.y);
+			glViewport(0, 0, width, height);
+		}
+		ImGui::Image((void*)(intptr_t)framebufferTexture, newSize);
+		ImGui::End();
 	}
-	ImGui::Image((void*)(intptr_t)framebufferTexture, newSize);
-	ImGui::End();
 	ImGui::PopStyleVar();
 
-	ImGui::Begin("Entities");
-	ImGui::End();
-
-	ImGui::Begin("Components");
-	if (ImGui::Button("Test"))
+	if (showEntitiesWindow)
 	{
-		test++;
-		std::string text = "Test " + std::to_string(test);
-		Log(text);
+		ImGui::Begin("Entities", &showEntitiesWindow);
+		ImGui::End();
 	}
-	ImGui::End();
 
-	ImGui::Begin("Asset Browser");
-	ImGui::End();
-
-	ImGui::Begin("Console");
-	for (std::string text : consoleText)
+	if (showComponentsWindow)
 	{
-		ImGui::Text(text.c_str());
+		ImGui::Begin("Components", &showComponentsWindow);
+		if (ImGui::Button("Test"))
+		{
+			Log("Test");
+		}
+		ImGui::End();
 	}
-	ImGui::End();
-	
+
+	if (showAssetBrowserWindow)
+	{
+		ImGui::Begin("Asset Browser", &showAssetBrowserWindow);
+		ImGui::End();
+	}
+
+	if (showConsoleWindow)
+	{
+		ImGui::Begin("Console", &showConsoleWindow);
+		for (std::string text : consoleText)
+		{
+			ImGui::Text(text.c_str());
+		}
+		//ImGui::SetScrollHereY(0.0f);
+		ImGui::End();
+	}
+
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }

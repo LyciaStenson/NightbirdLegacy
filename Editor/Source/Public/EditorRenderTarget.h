@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Engine.h>
+
 #include <RenderTarget.h>
 
 #include <imgui.h>
@@ -25,10 +27,16 @@ public:
 	void SceneWindowResize(int aWidth, int aHeight);
 
 private:
-	int test = 0;
+	Engine* engine;
+
 	std::vector<std::string> consoleText;
 
 	bool showAboutWindow = false;
+	bool showEntitiesWindow = true;
+	bool showComponentsWindow = true;
+	bool showAssetBrowserWindow = true;
+	bool showConsoleWindow = true;
+	bool showSceneWindow = true;
 
 	GLFWwindow* window;
 
