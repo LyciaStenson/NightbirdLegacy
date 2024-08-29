@@ -94,9 +94,11 @@ private:
 		-0.5f,  0.5f, -0.5f,	 0.0f,  1.0f,  0.0f,		0.0f, 1.0f
 	};
 	
-	unsigned int texture;
+	unsigned int texture = 0;
 
-	unsigned int VBO, VAO, framebuffer;
+	unsigned int VBO = 0;
+	unsigned int VAO = 0;
+	unsigned int framebuffer = 0;
 	
 	Shader CubeShader;
 
