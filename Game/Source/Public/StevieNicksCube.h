@@ -18,5 +18,5 @@ public:
 
 private:
 
-	Shader cubeShader;
+	NBShader cubeShader;
 };

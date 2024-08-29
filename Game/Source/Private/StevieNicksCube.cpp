@@ -50,7 +50,7 @@ StevieNicksCube::StevieNicksCube(glm::vec3 aPosition)
 		-0.5f,  0.5f, -0.5f,	 0.0f,  1.0f,  0.0f,		0.0f, 1.0f
 	};
 
-	cubeShader = Shader("CubeShader.vert", "CubeShader.frag");
+	cubeShader = NBShader("CubeShader.vert", "CubeShader.frag");
 }
 
 StevieNicksCube::~StevieNicksCube()

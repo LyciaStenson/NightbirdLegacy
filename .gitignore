@@ -4,6 +4,8 @@
 *vcxproj
 *vcxproj.*
 
+*.ini
+
 /out
 
 Makefile

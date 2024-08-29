@@ -31,10 +31,10 @@ void GameRenderTarget::Init()
 	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void *)(2 * sizeof(float)));
 
-	screenShader = Shader("ScreenShader.vert", "ScreenShader.frag");
+	screenShader = NBShader("ScreenShader.vert", "ScreenShader.frag");
 
-	screenShader.use();
-	screenShader.setInt("screenTexture", 0);
+	screenShader.Use();
+	screenShader.SetInt("screenTexture", 0);
 
 	glGenFramebuffers(1, &framebuffer);
 	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
@@ -72,7 +72,7 @@ void GameRenderTarget::Unbind()
 
 void GameRenderTarget::Render()
 {
-	screenShader.use();
+	screenShader.Use();
 	glBindVertexArray(screenVAO);
 	glBindTexture(GL_TEXTURE_2D, framebufferTexture);
 	glDrawArrays(GL_TRIANGLES, 0, 6);

@@ -44,38 +44,38 @@ bool Engine::Init()
 
 	glEnable(GL_DEPTH_TEST);
 
-	CubeShader = Shader("CubeShader.vert", "CubeShader.frag");
+	CubeShader = NBShader("CubeShader.vert", "CubeShader.frag");
 
 	// Init TransformComponents
-	TransformComponents.push_back(TransformComponent());
-	TransformComponents[0].Position = glm::vec3(0.0f, 0.0f, 0.0f);
+	Scene.TransformComponents.push_back(TransformComponent());
+	Scene.TransformComponents[0].Position = glm::vec3(0.0f, 0.0f, 0.0f);
 
-	TransformComponents.push_back(TransformComponent());
-	TransformComponents[1].Position = glm::vec3(2.0f, 5.0f, -15.0f);
+	Scene.TransformComponents.push_back(TransformComponent());
+	Scene.TransformComponents[1].Position = glm::vec3(2.0f, 5.0f, -15.0f);
 
-	TransformComponents.push_back(TransformComponent());
-	TransformComponents[2].Position = glm::vec3(-1.5f, -2.2f, -2.5f);
+	Scene.TransformComponents.push_back(TransformComponent());
+	Scene.TransformComponents[2].Position = glm::vec3(-1.5f, -2.2f, -2.5f);
 
-	TransformComponents.push_back(TransformComponent());
-	TransformComponents[3].Position = glm::vec3(-3.8f, -2.0f, -12.3f);
+	Scene.TransformComponents.push_back(TransformComponent());
+	Scene.TransformComponents[3].Position = glm::vec3(-3.8f, -2.0f, -12.3f);
 
-	TransformComponents.push_back(TransformComponent());
-	TransformComponents[4].Position = glm::vec3(2.4f, -0.4f, -3.5f);
+	Scene.TransformComponents.push_back(TransformComponent());
+	Scene.TransformComponents[4].Position = glm::vec3(2.4f, -0.4f, -3.5f);
 
-	TransformComponents.push_back(TransformComponent());
-	TransformComponents[5].Position = glm::vec3(-1.7f, 3.0f, -7.5f);
+	Scene.TransformComponents.push_back(TransformComponent());
+	Scene.TransformComponents[5].Position = glm::vec3(-1.7f, 3.0f, -7.5f);
 
-	TransformComponents.push_back(TransformComponent());
-	TransformComponents[6].Position = glm::vec3(1.3f, -2.0f, -2.5f);
+	Scene.TransformComponents.push_back(TransformComponent());
+	Scene.TransformComponents[6].Position = glm::vec3(1.3f, -2.0f, -2.5f);
 
-	TransformComponents.push_back(TransformComponent());
-	TransformComponents[7].Position = glm::vec3(1.5f, 2.0f, -2.5f);
+	Scene.TransformComponents.push_back(TransformComponent());
+	Scene.TransformComponents[7].Position = glm::vec3(1.5f, 2.0f, -2.5f);
 
-	TransformComponents.push_back(TransformComponent());
-	TransformComponents[8].Position = glm::vec3(1.5f, 0.2f, -1.5f);
+	Scene.TransformComponents.push_back(TransformComponent());
+	Scene.TransformComponents[8].Position = glm::vec3(1.5f, 0.2f, -1.5f);
 
-	TransformComponents.push_back(TransformComponent());
-	TransformComponents[9].Position = glm::vec3(-1.3f, 1.0f, -1.5f);
+	Scene.TransformComponents.push_back(TransformComponent());
+	Scene.TransformComponents[9].Position = glm::vec3(-1.3f, 1.0f, -1.5f);
 
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
@@ -154,13 +154,13 @@ void Engine::MainLoop()
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, texture);
 
-		CubeShader.use();
+		CubeShader.Use();
 
-		CubeShader.setVec3("objectColor", glm::vec3(1.0f, 1.0f, 1.0f));
-		CubeShader.setVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
-		CubeShader.setVec3("lightPos", glm::vec3(3.0f, 10.0f, 10.0f));
+		CubeShader.SetVec3("objectColor", glm::vec3(1.0f, 1.0f, 1.0f));
+		CubeShader.SetVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
+		CubeShader.SetVec3("lightPos", glm::vec3(3.0f, 10.0f, 10.0f));
 
-		CubeShader.setVec3("viewPos", camera.Position);
+		CubeShader.SetVec3("viewPos", camera.Position);
 
 		const float radius = 10.0f;
 		float camX = sin(glfwGetTime()) * radius;
@@ -170,20 +170,20 @@ void Engine::MainLoop()
 		glfwGetWindowSize(Window, &width, &height);
 
 		glm::mat4 projection = glm::perspective(glm::radians(camera.Fov), (float)width / (float)height, 0.1f, 1000.0f);
-		CubeShader.setMat4("projection", projection);
+		CubeShader.SetMat4("projection", projection);
 
 		glm::mat4 view = camera.GetViewMatrix();
-		CubeShader.setMat4("view", view);
+		CubeShader.SetMat4("view", view);
 
 		glBindVertexArray(VAO);
 
-		for (unsigned int i = 0; i < TransformComponents.size(); i++)
+		for (unsigned int i = 0; i < Scene.TransformComponents.size(); i++)
 		{
 			glm::mat4 model = glm::mat4(1.0f);
-			model = glm::translate(model, TransformComponents[i].Position);
+			model = glm::translate(model, Scene.TransformComponents[i].Position);
 			float angle = 20.0f * (i + 1);
 			model = glm::rotate(model, (float)glfwGetTime() * 0.005f * (i + 10) * glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
-			CubeShader.setMat4("model", model);
+			CubeShader.SetMat4("model", model);
 
 			glDrawArrays(GL_TRIANGLES, 0, 36);
 		}

@@ -13,8 +13,7 @@
 
 #include <Camera.h>
 
-#include <TransformComponent.h>
-#include <MeshComponent.h>
+#include <Scene.h>
 
 #include <RenderTarget.h>
 
@@ -39,8 +38,6 @@ public:
 
 	bool Init();
 	void Terminate();
-	//void SetWindow(GLFWwindow* aWindow);
-	//void CreateWindow(int width, int height, const char* title);
 	void MainLoop();
 
 private:
@@ -100,10 +97,9 @@ private:
 	unsigned int VAO = 0;
 	unsigned int framebuffer = 0;
 	
-	Shader CubeShader;
+	NBShader CubeShader;
 
-	std::vector<TransformComponent> TransformComponents;
-	//std::vector<MeshComponent> MeshComponents;
+	NBScene Scene;
 
 	static void FramebufferSizeCallback(GLFWwindow* window, int width, int height);
 	static void CursorEnterCallback(GLFWwindow* window, int entered);
