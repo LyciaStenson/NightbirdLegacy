@@ -23,7 +23,7 @@ workspace "Nightbird"
 group "Dependencies"
 	include "Engine/Vendor/glfw"
 	include "Engine/Vendor/glad"
-	include "Editor/Vendor/glfw"
+	include "Editor/Vendor/imgui"
 group ""
 
 group "Nightbird"
