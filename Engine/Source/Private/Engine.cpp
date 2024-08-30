@@ -58,32 +58,32 @@ bool Engine::Init()
 	Scene.AddComponent(0, TransformComponent());
 	Scene.GetComponent<TransformComponent>(0).Position = glm::vec3(0.0f, 0.0f, 0.0f);
 
-	Scene.AddComponent(1, TransformComponent());
-	Scene.GetComponent<TransformComponent>(1).Position = glm::vec3(2.0f, 5.0f, -15.0f);
+	//Scene.AddComponent(1, TransformComponent());
+	//Scene.GetComponent<TransformComponent>(1).Position = glm::vec3(2.0f, 5.0f, -15.0f);
 
-	Scene.AddComponent(2, TransformComponent());
-	Scene.GetComponent<TransformComponent>(2).Position = glm::vec3(-1.5f, -2.2f, -2.5f);
+	//Scene.AddComponent(2, TransformComponent());
+	//Scene.GetComponent<TransformComponent>(2).Position = glm::vec3(-1.5f, -2.2f, -2.5f);
 
-	Scene.AddComponent(3, TransformComponent());
-	Scene.GetComponent<TransformComponent>(3).Position = glm::vec3(-3.8f, -2.0f, -12.3f);
+	//Scene.AddComponent(3, TransformComponent());
+	//Scene.GetComponent<TransformComponent>(3).Position = glm::vec3(-3.8f, -2.0f, -12.3f);
 
-	Scene.AddComponent(4, TransformComponent());
-	Scene.GetComponent<TransformComponent>(4).Position = glm::vec3(2.4f, -0.4f, -3.5f);
+	//Scene.AddComponent(4, TransformComponent());
+	//Scene.GetComponent<TransformComponent>(4).Position = glm::vec3(2.4f, -0.4f, -3.5f);
 
-	Scene.AddComponent(5, TransformComponent());
-	Scene.GetComponent<TransformComponent>(5).Position = glm::vec3(-1.7f, 3.0f, -7.5f);
+	//Scene.AddComponent(5, TransformComponent());
+	//Scene.GetComponent<TransformComponent>(5).Position = glm::vec3(-1.7f, 3.0f, -7.5f);
 
-	Scene.AddComponent(6, TransformComponent());
-	Scene.GetComponent<TransformComponent>(6).Position = glm::vec3(1.3f, -2.0f, -2.5f);
+	//Scene.AddComponent(6, TransformComponent());
+	//Scene.GetComponent<TransformComponent>(6).Position = glm::vec3(1.3f, -2.0f, -2.5f);
 
-	Scene.AddComponent(7, TransformComponent());
-	Scene.GetComponent<TransformComponent>(7).Position = glm::vec3(1.5f, 2.0f, -2.5f);
+	//Scene.AddComponent(7, TransformComponent());
+	//Scene.GetComponent<TransformComponent>(7).Position = glm::vec3(1.5f, 2.0f, -2.5f);
 
-	Scene.AddComponent(8, TransformComponent());
-	Scene.GetComponent<TransformComponent>(8).Position = glm::vec3(1.5f, 0.2f, -1.5f);
+	//Scene.AddComponent(8, TransformComponent());
+	//Scene.GetComponent<TransformComponent>(8).Position = glm::vec3(1.5f, 0.2f, -1.5f);
 
-	Scene.AddComponent(9, TransformComponent());
-	Scene.GetComponent<TransformComponent>(9).Position = glm::vec3(-1.3f, 1.0f, -1.5f);
+	//Scene.AddComponent(9, TransformComponent());
+	//Scene.GetComponent<TransformComponent>(9).Position = glm::vec3(-1.3f, 1.0f, -1.5f);
 
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
@@ -185,7 +185,7 @@ void Engine::MainLoop()
 
 		glBindVertexArray(VAO);
 
-		for (unsigned int i = 0; i < 10; i++)
+		for (unsigned int i = 0; i < 1; i++)
 		{
 			glm::mat4 model = glm::mat4(1.0f);
 			model = glm::translate(model, Scene.GetComponent<TransformComponent>(i).Position);

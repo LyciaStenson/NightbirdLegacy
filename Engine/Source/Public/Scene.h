@@ -11,10 +11,13 @@
 #include <iostream>
 #include <typeindex>
 
+using EntityId = std::uint32_t;
+using ComponentId = std::type_index;
+
 class NBScene
 {
 private:
-	std::unordered_map<uint32_t, std::unordered_map<std::type_index, std::any>> Components;
+	std::unordered_map<EntityId, std::unordered_map<ComponentId, std::any>> Components;
 	//std::vector<TransformComponent> TransformComponents;
 	//std::vector<MeshComponent> MeshComponents;
 
