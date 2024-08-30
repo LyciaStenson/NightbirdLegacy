@@ -46,36 +46,44 @@ bool Engine::Init()
 
 	CubeShader = NBShader("CubeShader.vert", "CubeShader.frag");
 
+	//TransformComponent transformComponent1 = TransformComponent();
+	//transformComponent1.Position = glm::vec3(56.0f, 23.0f, 90.0f);
+	//Scene.AddComponent<TransformComponent>(0, transformComponent1);
+
+	//const TransformComponent& transformComponent2 = Scene.GetComponent<TransformComponent>(0);
+	//std::cout << "transformComponent2.Position > " << transformComponent2.Position.x << ", " << transformComponent2.Position.y << ", " << transformComponent2.Position.z << std::endl;
+
 	// Init TransformComponents
-	Scene.TransformComponents.push_back(TransformComponent());
-	Scene.TransformComponents[0].Position = glm::vec3(0.0f, 0.0f, 0.0f);
 
-	Scene.TransformComponents.push_back(TransformComponent());
-	Scene.TransformComponents[1].Position = glm::vec3(2.0f, 5.0f, -15.0f);
+	Scene.AddComponent(0, TransformComponent());
+	Scene.GetComponent<TransformComponent>(0).Position = glm::vec3(0.0f, 0.0f, 0.0f);
 
-	Scene.TransformComponents.push_back(TransformComponent());
-	Scene.TransformComponents[2].Position = glm::vec3(-1.5f, -2.2f, -2.5f);
+	Scene.AddComponent(1, TransformComponent());
+	Scene.GetComponent<TransformComponent>(1).Position = glm::vec3(2.0f, 5.0f, -15.0f);
 
-	Scene.TransformComponents.push_back(TransformComponent());
-	Scene.TransformComponents[3].Position = glm::vec3(-3.8f, -2.0f, -12.3f);
+	Scene.AddComponent(2, TransformComponent());
+	Scene.GetComponent<TransformComponent>(2).Position = glm::vec3(-1.5f, -2.2f, -2.5f);
 
-	Scene.TransformComponents.push_back(TransformComponent());
-	Scene.TransformComponents[4].Position = glm::vec3(2.4f, -0.4f, -3.5f);
+	Scene.AddComponent(3, TransformComponent());
+	Scene.GetComponent<TransformComponent>(3).Position = glm::vec3(-3.8f, -2.0f, -12.3f);
 
-	Scene.TransformComponents.push_back(TransformComponent());
-	Scene.TransformComponents[5].Position = glm::vec3(-1.7f, 3.0f, -7.5f);
+	Scene.AddComponent(4, TransformComponent());
+	Scene.GetComponent<TransformComponent>(4).Position = glm::vec3(2.4f, -0.4f, -3.5f);
 
-	Scene.TransformComponents.push_back(TransformComponent());
-	Scene.TransformComponents[6].Position = glm::vec3(1.3f, -2.0f, -2.5f);
+	Scene.AddComponent(5, TransformComponent());
+	Scene.GetComponent<TransformComponent>(5).Position = glm::vec3(-1.7f, 3.0f, -7.5f);
 
-	Scene.TransformComponents.push_back(TransformComponent());
-	Scene.TransformComponents[7].Position = glm::vec3(1.5f, 2.0f, -2.5f);
+	Scene.AddComponent(6, TransformComponent());
+	Scene.GetComponent<TransformComponent>(6).Position = glm::vec3(1.3f, -2.0f, -2.5f);
 
-	Scene.TransformComponents.push_back(TransformComponent());
-	Scene.TransformComponents[8].Position = glm::vec3(1.5f, 0.2f, -1.5f);
+	Scene.AddComponent(7, TransformComponent());
+	Scene.GetComponent<TransformComponent>(7).Position = glm::vec3(1.5f, 2.0f, -2.5f);
 
-	Scene.TransformComponents.push_back(TransformComponent());
-	Scene.TransformComponents[9].Position = glm::vec3(-1.3f, 1.0f, -1.5f);
+	Scene.AddComponent(8, TransformComponent());
+	Scene.GetComponent<TransformComponent>(8).Position = glm::vec3(1.5f, 0.2f, -1.5f);
+
+	Scene.AddComponent(9, TransformComponent());
+	Scene.GetComponent<TransformComponent>(9).Position = glm::vec3(-1.3f, 1.0f, -1.5f);
 
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
@@ -177,10 +185,10 @@ void Engine::MainLoop()
 
 		glBindVertexArray(VAO);
 
-		for (unsigned int i = 0; i < Scene.TransformComponents.size(); i++)
+		for (unsigned int i = 0; i < 10; i++)
 		{
 			glm::mat4 model = glm::mat4(1.0f);
-			model = glm::translate(model, Scene.TransformComponents[i].Position);
+			model = glm::translate(model, Scene.GetComponent<TransformComponent>(i).Position);
 			float angle = 20.0f * (i + 1);
 			model = glm::rotate(model, (float)glfwGetTime() * 0.005f * (i + 10) * glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
 			CubeShader.SetMat4("model", model);
