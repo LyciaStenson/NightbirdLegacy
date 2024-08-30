@@ -8,7 +8,7 @@ project "Jolt"
 	objdir ("%{wks.location}/out/obj/" .. outputdir .. "/%{prj.name}")
 
 	includedirs {
-		"Jolt"
+		""
 	}
 
 	files {
