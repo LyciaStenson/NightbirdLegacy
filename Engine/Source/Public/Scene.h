@@ -27,14 +27,14 @@ public:
 	{
 		std::type_index typeIndex = std::type_index(typeid(T));
 		Components[entity][typeIndex] = component;
-		std::cout << "AddComponent > " << typeIndex.name() << std::endl;
+		//std::cout << "AddComponent > " << typeIndex.name() << std::endl;
 	}
 
 	template<typename T>
 	T& GetComponent(uint32_t entity)
 	{
 		std::type_index typeIndex = std::type_index(typeid(T));
-		std::cout << "GetComponent > " << typeIndex.name() << std::endl;
+		//std::cout << "GetComponent > " << typeIndex.name() << std::endl;
 		auto entityIt = Components.find(entity);
 		if (entityIt != Components.end())
 		{

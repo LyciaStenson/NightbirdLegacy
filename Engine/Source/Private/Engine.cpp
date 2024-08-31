@@ -55,8 +55,14 @@ bool Engine::Init()
 
 	// Init TransformComponents
 
-	Scene.AddComponent(0, TransformComponent());
-	Scene.GetComponent<TransformComponent>(0).Position = glm::vec3(0.0f, 0.0f, 0.0f);
+	for (int i = 0; i < 2500; i++)
+	{
+		Scene.AddComponent(i, TransformComponent());
+		Scene.GetComponent<TransformComponent>(i).Position = glm::vec3(i, 1.0f, 0.0f);
+	}
+
+	//Scene.AddComponent(0, TransformComponent());
+	//Scene.GetComponent<TransformComponent>(0).Position = glm::vec3(0.0f, 0.0f, 0.0f);
 
 	//Scene.AddComponent(1, TransformComponent());
 	//Scene.GetComponent<TransformComponent>(1).Position = glm::vec3(2.0f, 5.0f, -15.0f);
@@ -152,6 +158,8 @@ void Engine::MainLoop()
 
 		fps = 1.0f / deltaTime;
 
+		std::cout << "fps > " << fps << std::endl;
+
 		ProcessInput(Window);
 
 		renderTarget->Bind();
@@ -185,7 +193,8 @@ void Engine::MainLoop()
 
 		glBindVertexArray(VAO);
 
-		for (unsigned int i = 0; i < 1; i++)
+		/*
+		for (unsigned int i = 0; i < 2500; i++)
 		{
 			glm::mat4 model = glm::mat4(1.0f);
 			model = glm::translate(model, Scene.GetComponent<TransformComponent>(i).Position);
@@ -195,9 +204,10 @@ void Engine::MainLoop()
 
 			glDrawArrays(GL_TRIANGLES, 0, 36);
 		}
+		*/
 		
 		renderTarget->Unbind();
-
+		
 		renderTarget->Render();
 
 		glfwSwapBuffers(Window);
