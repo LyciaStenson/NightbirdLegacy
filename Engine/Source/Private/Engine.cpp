@@ -193,18 +193,16 @@ void Engine::MainLoop()
 
 		glBindVertexArray(VAO);
 
-		/*
 		for (unsigned int i = 0; i < 2500; i++)
 		{
 			glm::mat4 model = glm::mat4(1.0f);
 			model = glm::translate(model, Scene.GetComponent<TransformComponent>(i).Position);
 			float angle = 20.0f * (i + 1);
-			model = glm::rotate(model, (float)glfwGetTime() * 0.005f * (i + 10) * glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+			//model = glm::rotate(model, (float)glfwGetTime() * 0.005f * (i + 10) * glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
 			CubeShader.SetMat4("model", model);
 
 			glDrawArrays(GL_TRIANGLES, 0, 36);
 		}
-		*/
 		
 		renderTarget->Unbind();
 		
