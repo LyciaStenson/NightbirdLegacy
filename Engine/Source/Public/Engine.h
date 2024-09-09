@@ -16,6 +16,9 @@
 
 #include <Scene.h>
 
+#include <TransformComponent.h>
+#include <MeshComponent.h>
+
 #include <RenderTarget.h>
 
 #include <vector>

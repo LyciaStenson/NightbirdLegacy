@@ -79,6 +79,8 @@
 		"shared_mutex": "cpp",
 		"typeindex": "cpp",
 		"valarray": "cpp",
-		"filesystem": "cpp"
+		"filesystem": "cpp",
+		"any": "cpp",
+		"unordered_set": "cpp"
 	}
 }

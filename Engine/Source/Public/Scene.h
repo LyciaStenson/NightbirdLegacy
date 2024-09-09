@@ -1,9 +1,7 @@
 #pragma once
 
-#include <TransformComponent.h>
-#include <MeshComponent.h>
+#include <cstdint>
 
-#include <vector>
 #include <unordered_map>
 
 #include <any>
@@ -11,15 +9,13 @@
 #include <iostream>
 #include <typeindex>
 
-using EntityId = std::uint32_t;
+using EntityId = uint32_t;
 using ComponentId = std::type_index;
 
 class NBScene
 {
 private:
 	std::unordered_map<EntityId, std::unordered_map<ComponentId, std::any>> Components;
-	//std::vector<TransformComponent> TransformComponents;
-	//std::vector<MeshComponent> MeshComponents;
 
 public:
 	template<typename T>
