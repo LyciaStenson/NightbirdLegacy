@@ -10,6 +10,6 @@ project "Game"
 
 	defines { "GLFW_INCLUDE_NONE" }
 
-	includedirs { "Source/Public", "%{wks.location}/Engine/Source/Public", "%{wks.location}/Engine/Source/Public/Components", "%{wks.location}/Engine/Vendor/glfw/include", "%{wks.location}/Engine/Vendor/glad/include", "%{wks.location}/Engine/Vendor/glm", "%{wks.location}/Engine/Vendor/stb" }
+	includedirs { "Source/Public", "%{wks.location}/Engine/Source/Public", "%{wks.location}/Engine/Source/Public/Components", "%{wks.location}/Engine/Vendor/glfw/include", "%{wks.location}/Engine/Vendor/glad/include", "%{wks.location}/Engine/Vendor/flecs/include", "%{wks.location}/Engine/Vendor/glm", "%{wks.location}/Engine/Vendor/stb" }
 
 	links { "Engine", "glfw", "glad", "flecs" }
