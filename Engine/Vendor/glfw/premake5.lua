@@ -1,8 +1,8 @@
 project "GLFW"
 	kind "StaticLib"
 	language "C"
-	staticruntime "off"
-	warnings "off"
+	staticruntime "Off"
+	warnings "Off"
 
 	targetdir ("%{wks.location}/out/bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("%{wks.location}/out/obj/" .. outputdir .. "/%{prj.name}")
@@ -100,11 +100,11 @@ project "GLFW"
 
 	filter "configurations:Debug"
 		runtime "Debug"
-		symbols "on"
+		symbols "On"
 
 	filter { "system:windows", "configurations:Debug-AS" }
 		runtime "Debug"
-		symbols "on"
+		symbols "On"
 		sanitize { "Address" }
 		flags { "NoRuntimeChecks", "NoIncrementalLink" }
 
@@ -112,7 +112,7 @@ project "GLFW"
 		runtime "Release"
 		optimize "Speed"
 
-    filter "configurations:Dist"
+	filter "configurations:Dist"
 		runtime "Release"
 		optimize "Speed"
-        symbols "off"
+		symbols "Off"

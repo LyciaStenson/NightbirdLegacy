@@ -1,7 +1,7 @@
 project "flecs"
 	kind "StaticLib"
 	language "C"
-	staticruntime "off"
+	staticruntime "On"
 
 	targetdir ("%{wks.location}/out/bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("%{wks.location}/out/obj/" .. outputdir .. "/%{prj.name}")
