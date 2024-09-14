@@ -14,7 +14,7 @@ project "flecs"
 
 	includedirs
 	{
-		""
+		"include/flecs"
 	}
 
 	filter { "system:linux", "action:gmake2" }
