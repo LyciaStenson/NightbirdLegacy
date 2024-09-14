@@ -8,8 +8,8 @@ project "flecs"
 
 	files
 	{
-		"flecs.c",
-		"flecs.h"
+		"src/flecs.c",
+		"include/flecs/flecs.h"
 	}
 
 	includedirs

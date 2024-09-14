@@ -10,6 +10,6 @@ project "Engine"
 
 	defines { "GLFW_INCLUDE_NONE" }
 
-	includedirs { "Source/Public", "Source/Public/Components", "Source/Public/Systems", "Vendor/jolt", "Vendor/glm", "Vendor/stb", "Vendor/glfw/include", "Vendor/glad/include" }
+	includedirs { "Source/Public", "Source/Public/Components", "Source/Public/Systems", "Vendor/jolt", "Vendor/glm", "Vendor/stb", "Vendor/glfw/include", "Vendor/glad/include", "Vendor/flecs/include" }
 
-	links { "glfw", "glad" }
+	links { "glfw", "glad", "flecs" }
