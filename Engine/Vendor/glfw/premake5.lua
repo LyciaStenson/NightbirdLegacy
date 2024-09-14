@@ -110,9 +110,9 @@ project "GLFW"
 
 	filter "configurations:Release"
 		runtime "Release"
-		optimize "speed"
+		optimize "Speed"
 
     filter "configurations:Dist"
 		runtime "Release"
-		optimize "speed"
+		optimize "Speed"
         symbols "off"
