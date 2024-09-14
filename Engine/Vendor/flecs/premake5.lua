@@ -1,16 +1,15 @@
-project "glad"
+project "flecs"
 	kind "StaticLib"
 	language "C"
-	staticruntime "Off"
+	staticruntime "off"
 
 	targetdir ("%{wks.location}/out/bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("%{wks.location}/out/obj/" .. outputdir .. "/%{prj.name}")
 
 	files
 	{
-		"include/glad/gl.h",
-		"include/KHR/khrplatform.h",
-		"src/gl.c"
+		"**.c",
+		"**.h"
 	}
 
 	includedirs
