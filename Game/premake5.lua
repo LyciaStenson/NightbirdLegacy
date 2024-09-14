@@ -12,4 +12,4 @@ project "Game"
 
 	includedirs { "Source/Public", "%{wks.location}/Engine/Source/Public", "%{wks.location}/Engine/Source/Public/Components", "%{wks.location}/Engine/Vendor/glfw/include", "%{wks.location}/Engine/Vendor/glad/include", "%{wks.location}/Engine/Vendor/glm", "%{wks.location}/Engine/Vendor/stb" }
 
-	links { "Engine", "glfw", "glad" }
+	links { "Engine", "glfw", "glad", "flecs" }

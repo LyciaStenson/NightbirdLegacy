@@ -10,11 +10,13 @@
 #include <glm/gtx/quaternion.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include <flecs/flecs.h>
+
 #include <Shader.h>
 
 #include <Camera.h>
 
-#include <Scene.h>
+//#include <Scene.h>
 
 #include <TransformComponent.h>
 #include <MeshComponent.h>
@@ -103,7 +105,7 @@ private:
 	
 	NBShader CubeShader;
 
-	NBScene Scene;
+	//NBScene Scene;
 
 	static void FramebufferSizeCallback(GLFWwindow* window, int width, int height);
 	static void CursorEnterCallback(GLFWwindow* window, int entered);
