@@ -7,14 +7,17 @@ workspace "Nightbird"
 	filter { "configurations:Debug"}
 		defines { "DEBUG" }
 		symbols "On"
+		runtime "Debug"
 
 	filter { "configurations:Release" }
 		defines { "RELEASE" }
 		optimize "On"
+		runtime "Release"
 
 	filter { "configurations:Dist" }
 		defines { "DIST" }
 		optimize "On"
+		runtime "Release"
 
 	filter { }
 
