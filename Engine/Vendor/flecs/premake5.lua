@@ -8,11 +8,16 @@ project "flecs"
 
 	files
 	{
-		"**.c",
-		"**.h"
+		"flecs.c",
+		"flecs.h"
 	}
 
 	includedirs
 	{
-		"include"
+		""
 	}
+
+	filter { "system:linux", "action:gmake2" }
+		buildoptions { "-std=gnu99" }
+
+	filter { }
