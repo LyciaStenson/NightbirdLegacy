@@ -14,6 +14,5 @@ project "flecs"
 
 	includedirs
 	{
-		"",
 		"include"
 	}
