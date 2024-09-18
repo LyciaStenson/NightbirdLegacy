@@ -2,6 +2,7 @@
 
 #include <iostream>
 
+/*
 Camera::Camera(
 	glm::vec3 positon,
 	glm::vec3 worldUp,
@@ -120,3 +121,4 @@ void Camera::UpdateCameraVectors()
 	Right = glm::normalize(glm::cross(Front, WorldUp));
 	Up = glm::normalize(glm::cross(Right, Front));
 }
+*/

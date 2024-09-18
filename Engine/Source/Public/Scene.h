@@ -12,7 +12,7 @@
 //using EntityId = uint32_t;
 //using ComponentId = std::type_index;
 //
-//class NBScene
+//class Scene
 //{
 //private:
 //	std::unordered_map<EntityId, std::unordered_map<ComponentId, std::any>> Components;

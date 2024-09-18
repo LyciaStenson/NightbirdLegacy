@@ -31,7 +31,7 @@ void GameRenderTarget::Init()
 	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void *)(2 * sizeof(float)));
 
-	screenShader = NBShader("ScreenShader.vert", "ScreenShader.frag");
+	screenShader = Shader("ScreenShader.vert", "ScreenShader.frag");
 
 	screenShader.Use();
 	screenShader.SetInt("screenTexture", 0);

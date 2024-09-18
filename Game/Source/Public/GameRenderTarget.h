@@ -21,5 +21,5 @@ private:
 	unsigned int framebuffer;
 	unsigned int framebufferTexture;
 	unsigned int screenVAO;
-	NBShader screenShader;
+	Shader screenShader;
 };

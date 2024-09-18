@@ -2,12 +2,12 @@
 
 #include <filesystem>
 
-NBShader::NBShader()
+Shader::Shader()
 {
 	
 }
 
-NBShader::NBShader(const char* vertexPath, const char* fragmentPath)
+Shader::Shader(const char* vertexPath, const char* fragmentPath)
 {
 	std::string vertexCode;
 	std::string fragmentCode;
@@ -62,60 +62,60 @@ NBShader::NBShader(const char* vertexPath, const char* fragmentPath)
 	glDeleteShader(fragment);
 }
 
-void NBShader::Use()
+void Shader::Use()
 {
 	glUseProgram(ID);
 }
 
-void NBShader::SetBool(const std::string &name, bool value) const
+void Shader::SetBool(const std::string &name, bool value) const
 {
 	glUniform1i(glGetUniformLocation(ID, name.c_str()), (int)value);
 }
 
-void NBShader::SetInt(const std::string &name, int value) const
+void Shader::SetInt(const std::string &name, int value) const
 {
 	glUniform1i(glGetUniformLocation(ID, name.c_str()), value);
 }
 
-void NBShader::SetFloat(const std::string &name, float value) const
+void Shader::SetFloat(const std::string &name, float value) const
 {
 	glUniform1f(glGetUniformLocation(ID, name.c_str()), value);
 }
 
-void NBShader::SetVec3(const std::string &name, const glm::vec3 &value) const
+void Shader::SetVec3(const std::string &name, const glm::vec3 &value) const
 {
 	glUniform3fv(glGetUniformLocation(ID, name.c_str()), 1, &value[0]);
 }
 
-void NBShader::SetVec3(const std::string &name, float x, float y, float z) const
+void Shader::SetVec3(const std::string &name, float x, float y, float z) const
 {
 	glUniform3f(glGetUniformLocation(ID, name.c_str()), x, y, z);
 }
 
-void NBShader::SetVec4(const std::string &name, const glm::vec4 &value) const
+void Shader::SetVec4(const std::string &name, const glm::vec4 &value) const
 {
 	glUniform4fv(glGetUniformLocation(ID, name.c_str()), 1, &value[0]);
 }
 
-void NBShader::SetVec4(const std::string &name, float x, float y, float z, float w) const
+void Shader::SetVec4(const std::string &name, float x, float y, float z, float w) const
 {
 	glUniform4f(glGetUniformLocation(ID, name.c_str()), x, y, z, w);
 }
 
-void NBShader::SetMat2(const std::string &name, const glm::mat2 &mat) const
+void Shader::SetMat2(const std::string &name, const glm::mat2 &mat) const
 {
 	glUniformMatrix2fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, &mat[0][0]);
 }
-void NBShader::SetMat3(const std::string &name, const glm::mat3 &mat) const
+void Shader::SetMat3(const std::string &name, const glm::mat3 &mat) const
 {
 	glUniformMatrix3fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, &mat[0][0]);
 }
-void NBShader::SetMat4(const std::string &name, const glm::mat4 &mat) const
+void Shader::SetMat4(const std::string &name, const glm::mat4 &mat) const
 {
 	glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, &mat[0][0]);
 }
 
-void NBShader::CheckCompileErrors(unsigned int shader, std::string type)
+void Shader::CheckCompileErrors(unsigned int shader, std::string type)
 {
 	int success;
 	char infoLog[1024];

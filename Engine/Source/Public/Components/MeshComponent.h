@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Shader.h>
+
 struct MeshComponent
 {
 	float vertices[288] =
@@ -49,5 +51,7 @@ struct MeshComponent
 	};
 
 	unsigned int texture, VBO, VAO;
+
+	Shader shader;
 
 };

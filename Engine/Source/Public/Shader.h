@@ -8,13 +8,13 @@
 #include <sstream>
 #include <iostream>
 
-class NBShader
+class Shader
 {
 public:
 	unsigned int ID;
 
-	NBShader();
-	NBShader(const char* vertexPath, const char* fragmentPath);
+	Shader();
+	Shader(const char* vertexPath, const char* fragmentPath);
 
 	void Use();
 
