@@ -16,7 +16,7 @@ GLenum glCheckError_(const char* file, int line)
 		case GL_OUT_OF_MEMORY:                 error = "OUT_OF_MEMORY"; break;
 		case GL_INVALID_FRAMEBUFFER_OPERATION: error = "INVALID_FRAMEBUFFER_OPERATION"; break;
 		}
-		//std::cout << error << " | " << file << " (" << line << ")" << std::endl;
+		std::cout << error << " | " << file << " (" << line << ")" << std::endl;
 	}
 	return errorCode;
 }
@@ -66,13 +66,6 @@ bool Engine::Init()
 	stevieNicksCube.add<MeshComponent>();
 
 	//flecs::entity camera = world.entity("MainCamera");
-	
-	logTextureSystem = world.system<MeshComponent>()
-		.each([](MeshComponent& meshComponent)
-			{
-				std::cout << "texture > " << meshComponent.texture << std::endl;
-			}
-		);
 
 	flecs::system renderInitSystem = world.system<MeshComponent>()
 		.each([](MeshComponent& meshComponent)
@@ -109,10 +102,8 @@ bool Engine::Init()
 				glCheckError();
 
 				// TEXTURE
-				std::cout << "texture before > " << meshComponent.texture << std::endl;
 				glGenTextures(1, &meshComponent.texture);
 				glCheckError();
-				std::cout << "texture after > " << meshComponent.texture << std::endl;
 				glBindTexture(GL_TEXTURE_2D, meshComponent.texture);
 				glCheckError();
 
@@ -220,7 +211,6 @@ void Engine::MainLoop()
 	lastFrameTime = glfwGetTime();
 	while (!glfwWindowShouldClose(m_Window))
 	{
-		logTextureSystem.run();
 		double currentFrameTime = glfwGetTime();
 		deltaTime = currentFrameTime - lastFrameTime;
 		lastFrameTime = currentFrameTime;

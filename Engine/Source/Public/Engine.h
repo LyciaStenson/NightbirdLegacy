@@ -49,9 +49,7 @@ public:
 
 private:
 	flecs::world world;
-
-	flecs::system logTextureSystem;
-
+	
 	flecs::system renderSystem;
 
 	flecs::system renderShutdownSystem;
