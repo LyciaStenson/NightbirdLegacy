@@ -2,23 +2,22 @@
 
 out vec4 FragColor;
 
-//in vec3 Normal;
-//in vec3 FragPos;
+in vec3 Normal;
+in vec3 FragPos;
 
-//in vec2 texCoord;
+in vec2 texCoord;
 
-//uniform sampler2D ourTexture;
+uniform sampler2D ourTexture;
 
-//uniform vec3 lightPos;
+uniform vec3 lightPos;
 
-//uniform vec3 objectColor;
-//uniform vec3 lightColor;
+uniform vec3 objectColor;
+uniform vec3 lightColor;
 
-//uniform vec3 viewPos;
+uniform vec3 viewPos;
 
 void main()
 {
-	/*
 	float ambientStrength = 0.1f;
 	vec3 ambient = ambientStrength * lightColor;
 
@@ -39,7 +38,5 @@ void main()
 	vec4 texColor = texture(ourTexture, texCoord);
 
 	FragColor = vec4(lighting, 1.0f) * texColor;
-	*/
 
-	FragColor = vec4(1.0f, 1.0f, 1.0f, 1.0f);
 }

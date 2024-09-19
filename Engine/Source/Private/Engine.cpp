@@ -1,10 +1,32 @@
 #include <Engine.h>
 
-Engine::Engine(GLFWwindow* aWindow, RenderTarget* aRenderTarget)
+GLenum glCheckError_(const char* file, int line)
 {
-	m_Window = aWindow;
+	GLenum errorCode;
+	while ((errorCode = glGetError()) != GL_NO_ERROR)
+	{
+		std::string error;
+		switch (errorCode)
+		{
+		case GL_INVALID_ENUM:                  error = "INVALID_ENUM"; break;
+		case GL_INVALID_VALUE:                 error = "INVALID_VALUE"; break;
+		case GL_INVALID_OPERATION:             error = "INVALID_OPERATION"; break;
+		case GL_STACK_OVERFLOW:                error = "STACK_OVERFLOW"; break;
+		case GL_STACK_UNDERFLOW:               error = "STACK_UNDERFLOW"; break;
+		case GL_OUT_OF_MEMORY:                 error = "OUT_OF_MEMORY"; break;
+		case GL_INVALID_FRAMEBUFFER_OPERATION: error = "INVALID_FRAMEBUFFER_OPERATION"; break;
+		}
+		//std::cout << error << " | " << file << " (" << line << ")" << std::endl;
+	}
+	return errorCode;
+}
+#define glCheckError() glCheckError_(__FILE__, __LINE__)
 
-	renderTarget = aRenderTarget;
+Engine::Engine(GLFWwindow* window, RenderTarget* renderTarget)
+{
+	m_Window = window;
+
+	m_RenderTarget = renderTarget;
 }
 
 Engine::~Engine()
@@ -36,59 +58,72 @@ bool Engine::Init()
 	std::cout << "Loaded OpenGL " << GLAD_VERSION_MAJOR(version) << "." << GLAD_VERSION_MINOR(version) << std::endl;
 
 	glEnable(GL_DEPTH_TEST);
+	glCheckError();
+
+	flecs::entity stevieNicksCube = world.entity("StevieNicksCube");
+
+	stevieNicksCube.add<TransformComponent>();
+	stevieNicksCube.add<MeshComponent>();
+
+	//flecs::entity camera = world.entity("MainCamera");
 	
-	flecs::entity e = world.entity();
-
-	e.add<TransformComponent>();
-	e.add<MeshComponent>();
-
-	auto camera = world.entity("MainCamera");
-
-	flecs::system shaderInitSystem = world.system<MeshComponent>()
-		.each([](MeshComponent meshComponent)
+	logTextureSystem = world.system<MeshComponent>()
+		.each([](MeshComponent& meshComponent)
 			{
-				meshComponent.shader = Shader("CubeShader.vert", "CubeShader.frag");
+				std::cout << "texture > " << meshComponent.texture << std::endl;
 			}
 		);
-	shaderInitSystem.run();
-
-	flecs::system transformInitSystem = world.system<TransformComponent>()
-		.each([](TransformComponent transformComponent)
-			{
-				transformComponent.Position = glm::vec3(0.0f, 0.0f, 10.0f);
-			}
-		);
-	transformInitSystem.run();
 
 	flecs::system renderInitSystem = world.system<MeshComponent>()
-		.each([](MeshComponent meshComponent)
+		.each([](MeshComponent& meshComponent)
 			{
+				meshComponent.shader = Shader("CubeShader.vert", "CubeShader.frag");
+
 				glGenVertexArrays(1, &meshComponent.VAO);
+				glCheckError();
 				glGenBuffers(1, &meshComponent.VBO);
+				glCheckError();
 				glBindVertexArray(meshComponent.VAO);
+				glCheckError();
 				glBindBuffer(GL_ARRAY_BUFFER, meshComponent.VBO);
+				glCheckError();
 				glBufferData(GL_ARRAY_BUFFER, sizeof(meshComponent.vertices), &meshComponent.vertices[0], GL_STATIC_DRAW);
+				glCheckError();
 
 				// Position Attribute
 				glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 8, (void*)0);
+				glCheckError();
 				glEnableVertexAttribArray(0);
+				glCheckError();
 
 				// Normals Attribute
 				glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 8, (void*)(3 * sizeof(float)));
+				glCheckError();
 				glEnableVertexAttribArray(1);
+				glCheckError();
 
 				// Texture Coord Attribute
 				glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 8, (void*)(6 * sizeof(float)));
+				glCheckError();
 				glEnableVertexAttribArray(2);
+				glCheckError();
 
 				// TEXTURE
+				std::cout << "texture before > " << meshComponent.texture << std::endl;
 				glGenTextures(1, &meshComponent.texture);
+				glCheckError();
+				std::cout << "texture after > " << meshComponent.texture << std::endl;
 				glBindTexture(GL_TEXTURE_2D, meshComponent.texture);
+				glCheckError();
 
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+				glCheckError();
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+				glCheckError();
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+				glCheckError();
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+				glCheckError();
 
 				int width, height, nrChannels;
 				stbi_set_flip_vertically_on_load(true);
@@ -97,7 +132,9 @@ bool Engine::Init()
 				if (data)
 				{
 					glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+					glCheckError();
 					glGenerateMipmap(GL_TEXTURE_2D);
+					glCheckError();
 				}
 				else
 				{
@@ -109,26 +146,29 @@ bool Engine::Init()
 		);
 	renderInitSystem.run();
 
-	renderTarget->Init();
+	m_RenderTarget->Init();
 
 	renderSystem = world.system<TransformComponent, MeshComponent>()
-		.each([](TransformComponent transformComponent, MeshComponent meshComponent)
+		.each([](TransformComponent& transformComponent, MeshComponent& meshComponent)
 			{
 				glActiveTexture(GL_TEXTURE0);
+				glCheckError();
 				glBindTexture(GL_TEXTURE_2D, meshComponent.texture);
+				glBindTexture(GL_TEXTURE_2D, 1);
+				glCheckError();
 
 				meshComponent.shader.Use();
 
-				//meshComponent.shader.SetVec3("objectColor", glm::vec3(1.0f, 1.0f, 1.0f));
-				//meshComponent.shader.SetVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
-				//meshComponent.shader.SetVec3("lightPos", glm::vec3(3.0f, 10.0f, 10.0f));
+				meshComponent.shader.SetVec3("objectColor", glm::vec3(1.0f, 1.0f, 1.0f));
+				meshComponent.shader.SetVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
+				meshComponent.shader.SetVec3("lightPos", glm::vec3(3.0f, 10.0f, -10.0f));
 
-				//meshComponent.shader.SetVec3("viewPos", glm::vec3(0.0f, 0.0f, -10.0f));
+				meshComponent.shader.SetVec3("viewPos", glm::vec3(0.0f, 0.0f, -10.0f));
 
 				//const float radius = 10.0f;
 				//float camX = sin(glfwGetTime()) * radius;
 				//float camZ = cos(glfwGetTime()) * radius;
-				
+
 				int width = 1280;
 				int height = 720;
 				//glfwGetWindowSize(m_Window, &width, &height);
@@ -137,9 +177,10 @@ bool Engine::Init()
 				meshComponent.shader.SetMat4("projection", projection);
 
 				//glm::mat4 view = camera.GetViewMatrix();
-				meshComponent.shader.SetMat4("view", glm::lookAt(glm::vec3(0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
+				meshComponent.shader.SetMat4("view", glm::lookAt(glm::vec3(0.0f, 0.0f, -10.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
 
 				glBindVertexArray(meshComponent.VAO);
+				glCheckError();
 
 				glm::mat4 model = glm::mat4(1.0f);
 				model = glm::translate(model, transformComponent.Position);
@@ -148,16 +189,19 @@ bool Engine::Init()
 				//float angle = 20.0f * (i + 1);
 				//model = glm::rotate(model, (float)glfwGetTime() * 0.005f * (i + 10) * glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
 				meshComponent.shader.SetMat4("model", model);
-				
+
 				glDrawArrays(GL_TRIANGLES, 0, 36);
+				glCheckError();
 			}
 		);
 
 	renderShutdownSystem = world.system<MeshComponent>()
-		.each([](MeshComponent meshComponent)
+		.each([](MeshComponent& meshComponent)
 			{
 				glDeleteVertexArrays(1, &meshComponent.VAO);
+				glCheckError();
 				glDeleteBuffers(1, &meshComponent.VBO);
+				glCheckError();
 			}
 		);
 
@@ -176,6 +220,7 @@ void Engine::MainLoop()
 	lastFrameTime = glfwGetTime();
 	while (!glfwWindowShouldClose(m_Window))
 	{
+		logTextureSystem.run();
 		double currentFrameTime = glfwGetTime();
 		deltaTime = currentFrameTime - lastFrameTime;
 		lastFrameTime = currentFrameTime;
@@ -186,16 +231,18 @@ void Engine::MainLoop()
 
 		ProcessInput(m_Window);
 
-		renderTarget->Bind();
+		m_RenderTarget->Bind();
 
 		glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
+		glCheckError();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glCheckError();
 
 		renderSystem.run();
-		
-		renderTarget->Unbind();
-		
-		renderTarget->Render();
+
+		m_RenderTarget->Unbind();
+
+		m_RenderTarget->Render();
 
 		glfwSwapBuffers(m_Window);
 		glfwPollEvents();
@@ -239,7 +286,7 @@ void Engine::ScrollCallback(GLFWwindow* window, double xOffset, double yOffset)
 
 void Engine::HandleFramebuffer(int width, int height)
 {
-	renderTarget->WindowResize(width, height);
+	m_RenderTarget->WindowResize(width, height);
 }
 
 void Engine::HandleMouse(GLFWwindow* window, double xPosIn, double yPosIn)
@@ -261,7 +308,7 @@ void Engine::HandleMouse(GLFWwindow* window, double xPosIn, double yPosIn)
 
 		lastX = xPos;
 		lastY = yPos;
-		
+
 		//camera.ProcessMouseMovement(window, xOffset, yOffset);
 	}
 	else if (mouseDown)

@@ -40,7 +40,7 @@ public:
 	double lastFrameTime = 0.0;
 	double fps = 0.0;
 
-	Engine(GLFWwindow* aWindow, RenderTarget* aRenderTarget);
+	Engine(GLFWwindow* window, RenderTarget* renderTarget);
 	~Engine();
 
 	bool Init();
@@ -50,13 +50,15 @@ public:
 private:
 	flecs::world world;
 
+	flecs::system logTextureSystem;
+
 	flecs::system renderSystem;
 
 	flecs::system renderShutdownSystem;
-	
+
 	GLFWwindow* m_Window;
 
-	RenderTarget* renderTarget;
+	RenderTarget* m_RenderTarget;
 
 	unsigned int framebuffer = 0;
 
