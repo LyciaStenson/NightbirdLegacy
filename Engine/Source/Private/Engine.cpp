@@ -59,9 +59,15 @@ bool Engine::Init()
 	glCheckError();
 
 	flecs::entity stevieNicksCube = world.entity("StevieNicksCube");
-
 	stevieNicksCube.add<TransformComponent>();
 	stevieNicksCube.add<MeshComponent>();
+
+	flecs::entity stevieNicksCube2 = world.entity("StevieNicksCube2");
+	stevieNicksCube2.add<TransformComponent>();
+	stevieNicksCube2.add<MeshComponent>();
+
+	stevieNicksCube.set<TransformComponent>( { glm::vec3(-1.0f, 0.0f, 0.0f), glm::quat(), glm::vec3(1.0f) });
+	stevieNicksCube2.set<TransformComponent>({ glm::vec3(1.0f, 0.0f, 0.0f), glm::quat(), glm::vec3(1.0f) });
 
 	//flecs::entity camera = world.entity("MainCamera");
 
@@ -166,7 +172,7 @@ bool Engine::Init()
 				meshComponent.shader.SetMat4("projection", projection);
 
 				//glm::mat4 view = camera.GetViewMatrix();
-				meshComponent.shader.SetMat4("view", glm::lookAt(glm::vec3(0.0f, 0.0f, -10.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
+				meshComponent.shader.SetMat4("view", glm::lookAt(glm::vec3(0.0f, 0.0f, -3.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
 
 				glBindVertexArray(meshComponent.VAO);
 				glCheckError();
