@@ -38,8 +38,6 @@ bool Engine::Init()
 {
 	std::filesystem::current_path("Assets");
 
-	//const GLFWwindow* window = world.get<GLFWwindow*>();
-
 	glfwSetWindowUserPointer(m_Window, this);
 
 	glfwSetFramebufferSizeCallback(m_Window, FramebufferSizeCallback);
