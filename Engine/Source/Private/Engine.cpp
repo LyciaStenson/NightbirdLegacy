@@ -69,8 +69,8 @@ bool Engine::Init()
 	stevieNicksCube.set<TransformComponent>( { glm::vec3(-1.0f, 0.0f, 0.0f), glm::quat(), glm::vec3(1.0f) });
 	stevieNicksCube2.set<TransformComponent>({ glm::vec3(1.0f, 0.0f, 0.0f), glm::quat(), glm::vec3(1.0f) });
 
-	//flecs::entity camera = world.entity("MainCamera");
-
+	flecs::entity camera = world.entity("MainCamera");
+	
 	flecs::system renderInitSystem = world.system<MeshComponent>()
 		.each([](MeshComponent& meshComponent)
 			{
