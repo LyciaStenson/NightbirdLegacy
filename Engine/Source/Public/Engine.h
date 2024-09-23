@@ -21,6 +21,7 @@
 #include <TransformComponent.h>
 #include <MeshComponent.h>
 #include <CameraComponent.h>
+#include <SpinComponent.h>
 
 #include <RenderTarget.h>
 
@@ -53,6 +54,8 @@ private:
 	flecs::system renderSystem;
 
 	flecs::system renderShutdownSystem;
+
+	flecs::system spinSystem;
 
 	GLFWwindow* m_Window;
 

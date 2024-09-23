@@ -61,17 +61,20 @@ bool Engine::Init()
 	flecs::entity stevieNicksCube = world.entity("StevieNicksCube");
 	stevieNicksCube.add<TransformComponent>();
 	stevieNicksCube.add<MeshComponent>();
+	stevieNicksCube.add<SpinComponent>();
 
 	flecs::entity stevieNicksCube2 = world.entity("StevieNicksCube2");
 	stevieNicksCube2.add<TransformComponent>();
 	stevieNicksCube2.add<MeshComponent>();
+	stevieNicksCube2.add<SpinComponent>();
 
 	stevieNicksCube.set<TransformComponent>( { glm::vec3(-1.0f, 0.0f, 0.0f), glm::quat(), glm::vec3(1.0f) });
 	stevieNicksCube2.set<TransformComponent>({ glm::vec3(1.0f, 0.0f, 0.0f), glm::quat(), glm::vec3(1.0f) });
 
 	flecs::entity camera = world.entity("MainCamera");
 	
-	flecs::system renderInitSystem = world.system<MeshComponent>()
+	flecs::system renderInitSystem = world.system<MeshComponent>("RenderInitSystem")
+		.kind(flecs::OnSet)
 		.each([](MeshComponent& meshComponent)
 			{
 				meshComponent.shader = Shader("CubeShader.vert", "CubeShader.frag");
@@ -143,7 +146,8 @@ bool Engine::Init()
 
 	m_RenderTarget->Init();
 
-	renderSystem = world.system<TransformComponent, MeshComponent>()
+	renderSystem = world.system<TransformComponent, MeshComponent>("RenderSystem")
+		.kind(flecs::OnUpdate)
 		.each([](TransformComponent& transformComponent, MeshComponent& meshComponent)
 			{
 				glActiveTexture(GL_TEXTURE0);
@@ -190,13 +194,23 @@ bool Engine::Init()
 			}
 		);
 
-	renderShutdownSystem = world.system<MeshComponent>()
+	renderShutdownSystem = world.system<MeshComponent>("RenderShutdownSystem")
+		.kind(flecs::OnSet)
 		.each([](MeshComponent& meshComponent)
 			{
 				glDeleteVertexArrays(1, &meshComponent.VAO);
 				glCheckError();
 				glDeleteBuffers(1, &meshComponent.VBO);
 				glCheckError();
+				std::cout << "Render Shutdown System" << std::endl;
+			}
+		);
+
+	spinSystem = world.system<SpinComponent, TransformComponent>("SpinSystem")
+		.kind(flecs::OnUpdate)
+		.each([](flecs::iter& it, size_t, SpinComponent& spinComponent, TransformComponent& transformComponent)
+			{
+				transformComponent.Rotation *= glm::angleAxis(glm::degrees(0.03f * it.delta_time()), glm::vec3(0.0f, 0.0f, 1.0f));
 			}
 		);
 
@@ -205,7 +219,7 @@ bool Engine::Init()
 
 void Engine::Terminate()
 {
-	renderShutdownSystem.run();
+	//renderShutdownSystem.run();
 
 	glfwTerminate();
 }
@@ -223,6 +237,8 @@ void Engine::MainLoop()
 
 		//std::cout << "fps > " << fps << std::endl;
 
+		//spinSystem.run();
+
 		ProcessInput(m_Window);
 
 		m_RenderTarget->Bind();
@@ -232,7 +248,9 @@ void Engine::MainLoop()
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glCheckError();
 
-		renderSystem.run();
+		//renderSystem.run();
+
+		world.progress();
 
 		m_RenderTarget->Unbind();
 
