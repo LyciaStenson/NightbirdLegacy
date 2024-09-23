@@ -10,6 +10,8 @@ class GameRenderTarget : public RenderTarget
 {
 public:
 	GameRenderTarget(int aWidth, int aHeight);
+	~GameRenderTarget();
+
 	void Init() override;
 	void Bind() override;
 	void Unbind() override;
@@ -18,8 +20,8 @@ public:
 	void WindowResize(int aWidth, int aHeight) override;
 
 private:
-	unsigned int framebuffer;
-	unsigned int framebufferTexture;
-	unsigned int screenVAO;
+	unsigned int framebuffer = 0;
+	unsigned int framebufferTexture = 0;
+	unsigned int screenVAO = 0;
 	Shader screenShader;
 };

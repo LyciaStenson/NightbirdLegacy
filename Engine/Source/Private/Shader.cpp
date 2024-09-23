@@ -4,10 +4,15 @@
 
 Shader::Shader()
 {
-	
+	ID = -1;
 }
 
 Shader::Shader(const char* vertexPath, const char* fragmentPath)
+{
+	Load(vertexPath, fragmentPath);
+}
+
+void Shader::Load(const char* vertexPath, const char* fragmentPath)
 {
 	std::string vertexCode;
 	std::string fragmentCode;
@@ -32,7 +37,7 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath)
 		vertexCode = vShaderStream.str();
 		fragmentCode = fShaderStream.str();
 	}
-	catch(std::ifstream::failure& e)
+	catch (std::ifstream::failure& e)
 	{
 		std::cerr << "ERROR::SHADER::FILE_NOT_SUCCESSFULLY_READ " << "vertexPath: " << vertexPath << ", fragmentPath: " << fragmentPath << "\n" << e.what() << std::endl;
 	}
@@ -62,7 +67,12 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath)
 	glDeleteShader(fragment);
 }
 
-void Shader::Use()
+Shader::~Shader()
+{
+
+}
+
+void Shader::Use() const
 {
 	glUseProgram(ID);
 }

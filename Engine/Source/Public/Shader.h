@@ -15,8 +15,11 @@ public:
 
 	Shader();
 	Shader(const char* vertexPath, const char* fragmentPath);
+	~Shader();
 
-	void Use();
+	void Load(const char* vertexPath, const char* fragmentPath);
+
+	void Use() const;
 
 	void SetBool(const std::string &name, bool value) const;
 	void SetInt(const std::string &name, int value) const;

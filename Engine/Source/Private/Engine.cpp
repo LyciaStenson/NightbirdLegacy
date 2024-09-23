@@ -68,11 +68,13 @@ bool Engine::Init()
 	stevieNicksCube2.add<MeshComponent>();
 	stevieNicksCube2.add<SpinComponent>();
 
-	stevieNicksCube.set<TransformComponent>( { glm::vec3(-1.0f, 0.0f, 0.0f), glm::quat(), glm::vec3(1.0f) });
+	stevieNicksCube.set<TransformComponent>({ glm::vec3(-1.0f, 0.0f, 0.0f), glm::quat(), glm::vec3(1.0f) });
 	stevieNicksCube2.set<TransformComponent>({ glm::vec3(1.0f, 0.0f, 0.0f), glm::quat(), glm::vec3(1.0f) });
 
-	flecs::entity camera = world.entity("MainCamera");
-	
+	flecs::entity camera = world.entity("Camera");
+	camera.add<TransformComponent>();
+	camera.add<CameraComponent>();
+
 	flecs::system renderInitSystem = world.system<MeshComponent>("RenderInitSystem")
 		.kind(flecs::OnSet)
 		.each([](MeshComponent& meshComponent)
@@ -185,8 +187,6 @@ bool Engine::Init()
 				model = glm::translate(model, transformComponent.Position);
 				model *= glm::toMat4(transformComponent.Rotation);
 				model = glm::scale(model, transformComponent.Scale);
-				//float angle = 20.0f * (i + 1);
-				//model = glm::rotate(model, (float)glfwGetTime() * 0.005f * (i + 10) * glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
 				meshComponent.shader.SetMat4("model", model);
 
 				glDrawArrays(GL_TRIANGLES, 0, 36);
@@ -202,7 +202,6 @@ bool Engine::Init()
 				glCheckError();
 				glDeleteBuffers(1, &meshComponent.VBO);
 				glCheckError();
-				std::cout << "Render Shutdown System" << std::endl;
 			}
 		);
 
@@ -219,7 +218,7 @@ bool Engine::Init()
 
 void Engine::Terminate()
 {
-	//renderShutdownSystem.run();
+	renderShutdownSystem.run();
 
 	glfwTerminate();
 }
@@ -235,10 +234,6 @@ void Engine::MainLoop()
 
 		fps = 1.0f / deltaTime;
 
-		//std::cout << "fps > " << fps << std::endl;
-
-		//spinSystem.run();
-
 		ProcessInput(m_Window);
 
 		m_RenderTarget->Bind();
@@ -247,8 +242,6 @@ void Engine::MainLoop()
 		glCheckError();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glCheckError();
-
-		//renderSystem.run();
 
 		world.progress();
 

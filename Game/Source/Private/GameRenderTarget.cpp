@@ -6,6 +6,11 @@ GameRenderTarget::GameRenderTarget(int aWidth, int aHeight)
 	height = aHeight;
 }
 
+GameRenderTarget::~GameRenderTarget()
+{
+
+}
+
 void GameRenderTarget::Init()
 {
 	float screenVertices[] =
@@ -27,11 +32,11 @@ void GameRenderTarget::Init()
 	glBindBuffer(GL_ARRAY_BUFFER, screenVBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(screenVertices), &screenVertices, GL_STATIC_DRAW);
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void *)0);
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void *)(2 * sizeof(float)));
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
 
-	screenShader = Shader("ScreenShader.vert", "ScreenShader.frag");
+	screenShader.Load("ScreenShader.vert", "ScreenShader.frag");
 
 	screenShader.Use();
 	screenShader.SetInt("screenTexture", 0);
