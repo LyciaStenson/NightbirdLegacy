@@ -218,6 +218,16 @@ void EditorRenderTarget::Render()
 	if (showEntitiesWindow)
 	{
 		ImGui::Begin("Entities", &showEntitiesWindow);
+
+		//flecs::query<TransformComponent> query = world->query<TransformComponent>();
+
+		//query.each([](flecs::entity& entity, TransformComponent& transformComponent)
+		//	{
+		//		std::cout << "Entity >> " << entity.name() << std::endl;
+		//		ImGui::Selectable(entity.name());
+		//	}
+		//);
+		
 		ImGui::End();
 	}
 

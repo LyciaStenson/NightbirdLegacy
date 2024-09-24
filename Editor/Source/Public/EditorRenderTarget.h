@@ -12,6 +12,8 @@
 #include <string>
 #include <vector>
 
+#include <flecs/flecs.h>
+
 class EditorRenderTarget : public RenderTarget
 {
 public:
@@ -25,6 +27,8 @@ public:
 	void WindowResize(int aWidth, int aHeight) override;
 
 	void SceneWindowResize(int aWidth, int aHeight);
+
+	flecs::world* world;
 
 private:
 	Engine* engine;
@@ -40,9 +44,9 @@ private:
 
 	GLFWwindow* window;
 
-	unsigned int framebuffer;
-	unsigned int framebufferTexture;
-	unsigned int rbo;
+	unsigned int framebuffer = 0;
+	unsigned int framebufferTexture = 0;
+	unsigned int rbo = 0;
 
 	void Log(const std::string& text);
 };

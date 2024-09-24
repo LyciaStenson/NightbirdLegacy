@@ -31,7 +31,7 @@
 class Engine
 {
 public:
-	//Camera camera;
+	flecs::world world;
 
 	float lastX = 0.0f;
 	float lastY = 0.0f;
@@ -49,8 +49,6 @@ public:
 	void MainLoop();
 
 private:
-	flecs::world world;
-	
 	flecs::system renderSystem;
 
 	flecs::system renderShutdownSystem;

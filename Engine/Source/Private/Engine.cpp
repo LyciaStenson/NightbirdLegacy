@@ -58,17 +58,27 @@ bool Engine::Init()
 	glEnable(GL_DEPTH_TEST);
 	glCheckError();
 
-	flecs::entity stevieNicksCube = world.entity("StevieNicksCube");
+	flecs::entity parentTest = world.entity("ParentTest");
+	parentTest.add<TransformComponent>();
+	parentTest.add<MeshComponent>();
+	parentTest.add<SpinComponent>();
+
+	parentTest.set<TransformComponent>({ glm::vec3(), glm::quat(), glm::vec3(1.0f) });
+
+	flecs::entity stevieNicksCube = world.entity("StevieNicksCube")
+		.child_of(parentTest);
 	stevieNicksCube.add<TransformComponent>();
 	stevieNicksCube.add<MeshComponent>();
 	stevieNicksCube.add<SpinComponent>();
 
-	flecs::entity stevieNicksCube2 = world.entity("StevieNicksCube2");
+	stevieNicksCube.set<TransformComponent>({ glm::vec3(-1.0f, 0.0f, 0.0f), glm::quat(), glm::vec3(1.0f) });
+
+	flecs::entity stevieNicksCube2 = world.entity("StevieNicksCube2")
+		.child_of(parentTest);
 	stevieNicksCube2.add<TransformComponent>();
 	stevieNicksCube2.add<MeshComponent>();
 	stevieNicksCube2.add<SpinComponent>();
 
-	stevieNicksCube.set<TransformComponent>({ glm::vec3(-1.0f, 0.0f, 0.0f), glm::quat(), glm::vec3(1.0f) });
 	stevieNicksCube2.set<TransformComponent>({ glm::vec3(1.0f, 0.0f, 0.0f), glm::quat(), glm::vec3(1.0f) });
 
 	flecs::entity camera = world.entity("Camera");
