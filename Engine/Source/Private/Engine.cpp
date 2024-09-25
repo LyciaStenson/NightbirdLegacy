@@ -60,7 +60,6 @@ bool Engine::Init()
 
 	flecs::entity parentTest = world.entity("ParentTest");
 	parentTest.add<TransformComponent>();
-	parentTest.add<MeshComponent>();
 	parentTest.add<SpinComponent>();
 
 	parentTest.set<TransformComponent>({ glm::vec3(), glm::quat(), glm::vec3(1.0f) });
@@ -69,7 +68,7 @@ bool Engine::Init()
 		.child_of(parentTest);
 	stevieNicksCube.add<TransformComponent>();
 	stevieNicksCube.add<MeshComponent>();
-	stevieNicksCube.add<SpinComponent>();
+	//stevieNicksCube.add<SpinComponent>();
 
 	stevieNicksCube.set<TransformComponent>({ glm::vec3(-1.0f, 0.0f, 0.0f), glm::quat(), glm::vec3(1.0f) });
 
@@ -77,7 +76,7 @@ bool Engine::Init()
 		.child_of(parentTest);
 	stevieNicksCube2.add<TransformComponent>();
 	stevieNicksCube2.add<MeshComponent>();
-	stevieNicksCube2.add<SpinComponent>();
+	//stevieNicksCube2.add<SpinComponent>();
 
 	stevieNicksCube2.set<TransformComponent>({ glm::vec3(1.0f, 0.0f, 0.0f), glm::quat(), glm::vec3(1.0f) });
 
@@ -160,7 +159,7 @@ bool Engine::Init()
 
 	renderSystem = world.system<TransformComponent, MeshComponent>("RenderSystem")
 		.kind(flecs::OnUpdate)
-		.each([](TransformComponent& transformComponent, MeshComponent& meshComponent)
+		.each([](flecs::entity& entity, TransformComponent& transformComponent, MeshComponent& meshComponent)
 			{
 				glActiveTexture(GL_TEXTURE0);
 				glCheckError();
@@ -193,10 +192,25 @@ bool Engine::Init()
 				glBindVertexArray(meshComponent.VAO);
 				glCheckError();
 
+				TransformComponent globalTransform = transformComponent;
+
+				flecs::entity current = entity;
+				while (flecs::entity parent = current.parent())
+				{
+					const TransformComponent* parentTransform = parent.get<TransformComponent>();
+					if (parentTransform)
+					{
+						globalTransform.Scale *= parentTransform->Scale;
+						globalTransform.Rotation *= parentTransform->Rotation;
+						globalTransform.Position = parentTransform->Position + (parentTransform->Rotation * (parentTransform->Scale * globalTransform.Position));
+					}
+					current = parent;
+				}
+
 				glm::mat4 model = glm::mat4(1.0f);
-				model = glm::translate(model, transformComponent.Position);
-				model *= glm::toMat4(transformComponent.Rotation);
-				model = glm::scale(model, transformComponent.Scale);
+				model = glm::translate(model, globalTransform.Position);
+				model *= glm::toMat4(globalTransform.Rotation);
+				model = glm::scale(model, globalTransform.Scale);
 				meshComponent.shader.SetMat4("model", model);
 
 				glDrawArrays(GL_TRIANGLES, 0, 36);
