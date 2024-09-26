@@ -26,6 +26,7 @@ Game::Game()
 	engine->Init();
 	engine->MainLoop();
 	engine->Terminate();
+	delete renderTarget;
 }
 
 Game::~Game()
