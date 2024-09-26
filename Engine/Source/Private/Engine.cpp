@@ -1,7 +1,13 @@
 #include <Engine.h>
 
-struct Window {
+struct Window
+{
 	GLFWwindow* window;
+};
+
+struct RenderTargetStruct
+{
+	RenderTarget* renderTarget;
 };
 
 GLenum glCheckError_(const char* file, int line)
@@ -44,16 +50,18 @@ bool Engine::Init()
 
 	glfwSetWindowUserPointer(m_Window, this);
 
-	Window window({ m_Window });
-
 	glfwSetFramebufferSizeCallback(m_Window, FramebufferSizeCallback);
 	glfwSetCursorEnterCallback(m_Window, CursorEnterCallback);
 	glfwSetCursorPosCallback(m_Window, MouseCallback);
 
 	glfwSetWindowSizeLimits(m_Window, 304, 190, GLFW_DONT_CARE, GLFW_DONT_CARE);
 
+	Window window({ m_Window });
+
+	RenderTargetStruct renderTarget({ m_RenderTarget });
+
 	m_World.set<Window>(window);
-	//m_World.set<RenderTarget>(*m_RenderTarget);
+	m_World.set<RenderTargetStruct>(renderTarget);
 
 	int version = gladLoadGL(glfwGetProcAddress);
 	if (version == 0)
@@ -194,9 +202,11 @@ bool Engine::Init()
 						flecs::world world = iter.world();
 						const Window* window = world.get<Window>();
 
+						const RenderTargetStruct* renderTarget = world.get<RenderTargetStruct>();
+
 						int width;
 						int height;
-						glfwGetWindowSize(window->window, &width, &height);
+						renderTarget->renderTarget->GetWindowSize(width, height);
 
 						glm::mat4 projection = glm::perspective(glm::radians(70.0f), (float)width / (float)height, 0.1f, 1000.0f);
 						meshComponent[i].shader.SetMat4("projection", projection);

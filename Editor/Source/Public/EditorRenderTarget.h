@@ -24,15 +24,16 @@ public:
 	void Unbind() override;
 	void Render() override;
 
-	void GetWindowSize(int aWidth, int aHeight) override;
+	void GetWindowSize(int& aWidth, int& aHeight) override;
 
 	void WindowResize(int aWidth, int aHeight) override;
-
-	void SceneWindowResize(int aWidth, int aHeight);
 
 	flecs::world* world;
 
 private:
+	int sceneWidth = 1280;
+	int sceneHeight = 720;
+
 	Engine* engine;
 
 	std::vector<std::string> consoleText;
@@ -45,10 +46,6 @@ private:
 	bool showSceneWindow = true;
 
 	GLFWwindow* window;
-
-	unsigned int framebuffer = 0;
-	unsigned int framebufferTexture = 0;
-	unsigned int rbo = 0;
 
 	void Log(const std::string& text);
 };

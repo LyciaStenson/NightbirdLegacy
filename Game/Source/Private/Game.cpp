@@ -12,7 +12,7 @@ Game::Game()
 	int WIDTH = 1280;
 	int HEIGHT = 720;
 
-	GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "Nightbird", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "Game", NULL, NULL);
 
 	if (window == NULL)
 	{
