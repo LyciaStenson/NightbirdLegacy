@@ -1,5 +1,9 @@
 #include <Engine.h>
 
+struct Window {
+	GLFWwindow* window;
+};
+
 GLenum glCheckError_(const char* file, int line)
 {
 	GLenum errorCode;
@@ -40,11 +44,15 @@ bool Engine::Init()
 
 	glfwSetWindowUserPointer(m_Window, this);
 
+	Window window({ m_Window });
+
 	glfwSetFramebufferSizeCallback(m_Window, FramebufferSizeCallback);
 	glfwSetCursorEnterCallback(m_Window, CursorEnterCallback);
 	glfwSetCursorPosCallback(m_Window, MouseCallback);
 
 	glfwSetWindowSizeLimits(m_Window, 304, 190, GLFW_DONT_CARE, GLFW_DONT_CARE);
+
+	world.set<Window>(window);
 
 	int version = gladLoadGL(glfwGetProcAddress);
 	if (version == 0)
@@ -159,7 +167,7 @@ bool Engine::Init()
 
 	renderSystem = world.system<TransformComponent, MeshComponent>("RenderSystem")
 		.kind(flecs::OnUpdate)
-		.each([](flecs::entity& entity, TransformComponent& transformComponent, MeshComponent& meshComponent)
+		.run([](flecs::entity& entity, TransformComponent& transformComponent, MeshComponent& meshComponent)
 			{
 				glActiveTexture(GL_TEXTURE0);
 				glCheckError();
@@ -233,7 +241,7 @@ bool Engine::Init()
 		.kind(flecs::OnUpdate)
 		.each([](flecs::iter& it, size_t, SpinComponent& spinComponent, TransformComponent& transformComponent)
 			{
-				transformComponent.Rotation *= glm::angleAxis(glm::degrees(0.03f * it.delta_time()), glm::vec3(0.0f, 0.0f, 1.0f));
+				transformComponent.Rotation *= glm::angleAxis(glm::degrees(0.015f * it.delta_time()), glm::vec3(0.0f, 0.0f, 1.0f));
 			}
 		);
 
