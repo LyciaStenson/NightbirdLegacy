@@ -262,6 +262,11 @@ void EditorRenderTarget::Render()
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
+void EditorRenderTarget::GetWindowSize(int aWidth, int aHeight)
+{
+
+}
+
 void EditorRenderTarget::WindowResize(int aWidth, int aHeight)
 {
 

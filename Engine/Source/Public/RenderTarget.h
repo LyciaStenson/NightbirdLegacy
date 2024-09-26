@@ -12,11 +12,11 @@ public:
 	virtual void Unbind() = 0;
 	virtual void Render() = 0;
 
+	virtual void GetWindowSize(int aWidth, int aHeight) = 0;
+
 	virtual void WindowResize(int aWidth, int aHeight) = 0;
 
-	//virtual void SetWindowSize(int aWidth, int aHeight);
-
 protected:
-	int width;
-	int height;
+	int width = 0;
+	int height = 0;
 };

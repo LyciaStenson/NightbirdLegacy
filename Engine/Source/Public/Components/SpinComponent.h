@@ -4,7 +4,7 @@
 
 struct SpinComponent
 {
-	float spinSpeed;
+	float spinSpeed = 0.0f;
 
-	glm::quat rotation;
+	glm::quat rotation = glm::quat();
 };

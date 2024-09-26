@@ -50,7 +50,9 @@ struct MeshComponent
 		-0.5f,  0.5f, -0.5f,	 0.0f,  1.0f,  0.0f,		0.0f, 1.0f
 	};
 
-	unsigned int texture, VBO, VAO;
+	unsigned int texture = 0;
+	unsigned int VBO = 0;
+	unsigned int VAO = 0;
 
 	Shader shader;
 

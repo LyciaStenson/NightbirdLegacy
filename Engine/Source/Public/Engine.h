@@ -31,7 +31,7 @@
 class Engine
 {
 public:
-	flecs::world world;
+	flecs::world m_World;
 
 	float lastX = 0.0f;
 	float lastY = 0.0f;
@@ -49,11 +49,11 @@ public:
 	void MainLoop();
 
 private:
-	flecs::system renderSystem;
+	flecs::system m_RenderSystem;
 
-	flecs::system renderShutdownSystem;
+	flecs::system m_RenderShutdownSystem;
 
-	flecs::system spinSystem;
+	flecs::system m_SpinSystem;
 
 	GLFWwindow* m_Window;
 

@@ -52,7 +52,8 @@ bool Engine::Init()
 
 	glfwSetWindowSizeLimits(m_Window, 304, 190, GLFW_DONT_CARE, GLFW_DONT_CARE);
 
-	world.set<Window>(window);
+	m_World.set<Window>(window);
+	//m_World.set<RenderTarget>(*m_RenderTarget);
 
 	int version = gladLoadGL(glfwGetProcAddress);
 	if (version == 0)
@@ -66,33 +67,33 @@ bool Engine::Init()
 	glEnable(GL_DEPTH_TEST);
 	glCheckError();
 
-	flecs::entity parentTest = world.entity("ParentTest");
+	flecs::entity parentTest = m_World.entity("ParentTest");
 	parentTest.add<TransformComponent>();
 	parentTest.add<SpinComponent>();
 
 	parentTest.set<TransformComponent>({ glm::vec3(), glm::quat(), glm::vec3(1.0f) });
 
-	flecs::entity stevieNicksCube = world.entity("StevieNicksCube")
+	flecs::entity stevieNicksCube = m_World.entity("StevieNicksCube")
 		.child_of(parentTest);
 	stevieNicksCube.add<TransformComponent>();
 	stevieNicksCube.add<MeshComponent>();
-	//stevieNicksCube.add<SpinComponent>();
+	stevieNicksCube.add<SpinComponent>();
 
 	stevieNicksCube.set<TransformComponent>({ glm::vec3(-1.0f, 0.0f, 0.0f), glm::quat(), glm::vec3(1.0f) });
 
-	flecs::entity stevieNicksCube2 = world.entity("StevieNicksCube2")
+	flecs::entity stevieNicksCube2 = m_World.entity("StevieNicksCube2")
 		.child_of(parentTest);
 	stevieNicksCube2.add<TransformComponent>();
 	stevieNicksCube2.add<MeshComponent>();
-	//stevieNicksCube2.add<SpinComponent>();
+	stevieNicksCube2.add<SpinComponent>();
 
 	stevieNicksCube2.set<TransformComponent>({ glm::vec3(1.0f, 0.0f, 0.0f), glm::quat(), glm::vec3(1.0f) });
 
-	flecs::entity camera = world.entity("Camera");
+	flecs::entity camera = m_World.entity("Camera");
 	camera.add<TransformComponent>();
 	camera.add<CameraComponent>();
 
-	flecs::system renderInitSystem = world.system<MeshComponent>("RenderInitSystem")
+	flecs::system renderInitSystem = m_World.system<MeshComponent>("RenderInitSystem")
 		.kind(flecs::OnSet)
 		.each([](MeshComponent& meshComponent)
 			{
@@ -165,68 +166,76 @@ bool Engine::Init()
 
 	m_RenderTarget->Init();
 
-	renderSystem = world.system<TransformComponent, MeshComponent>("RenderSystem")
+	m_RenderSystem = m_World.system<TransformComponent, MeshComponent>("RenderSystem")
 		.kind(flecs::OnUpdate)
-		.run([](flecs::entity& entity, TransformComponent& transformComponent, MeshComponent& meshComponent)
+		.run([](flecs::iter& iter)
 			{
-				glActiveTexture(GL_TEXTURE0);
-				glCheckError();
-				glBindTexture(GL_TEXTURE_2D, meshComponent.texture);
-				glBindTexture(GL_TEXTURE_2D, 1);
-				glCheckError();
-
-				meshComponent.shader.Use();
-
-				meshComponent.shader.SetVec3("objectColor", glm::vec3(1.0f, 1.0f, 1.0f));
-				meshComponent.shader.SetVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
-				meshComponent.shader.SetVec3("lightPos", glm::vec3(3.0f, 10.0f, -10.0f));
-
-				meshComponent.shader.SetVec3("viewPos", glm::vec3(0.0f, 0.0f, -10.0f));
-
-				//const float radius = 10.0f;
-				//float camX = sin(glfwGetTime()) * radius;
-				//float camZ = cos(glfwGetTime()) * radius;
-
-				int width = 1280;
-				int height = 720;
-				//glfwGetWindowSize(m_Window, &width, &height);
-
-				glm::mat4 projection = glm::perspective(glm::radians(70.0f), (float)width / (float)height, 0.1f, 1000.0f);
-				meshComponent.shader.SetMat4("projection", projection);
-
-				//glm::mat4 view = camera.GetViewMatrix();
-				meshComponent.shader.SetMat4("view", glm::lookAt(glm::vec3(0.0f, 0.0f, -3.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
-
-				glBindVertexArray(meshComponent.VAO);
-				glCheckError();
-
-				TransformComponent globalTransform = transformComponent;
-
-				flecs::entity current = entity;
-				while (flecs::entity parent = current.parent())
+				while (iter.next())
 				{
-					const TransformComponent* parentTransform = parent.get<TransformComponent>();
-					if (parentTransform)
+					flecs::field<TransformComponent> transformComponent = iter.field<TransformComponent>(0);
+					flecs::field<MeshComponent> meshComponent = iter.field<MeshComponent>(1);
+
+					for (auto i : iter)
 					{
-						globalTransform.Scale *= parentTransform->Scale;
-						globalTransform.Rotation *= parentTransform->Rotation;
-						globalTransform.Position = parentTransform->Position + (parentTransform->Rotation * (parentTransform->Scale * globalTransform.Position));
+						glActiveTexture(GL_TEXTURE0);
+						glCheckError();
+						glBindTexture(GL_TEXTURE_2D, meshComponent[i].texture);
+						glBindTexture(GL_TEXTURE_2D, 1);
+						glCheckError();
+
+						meshComponent[i].shader.Use();
+
+						meshComponent[i].shader.SetVec3("objectColor", glm::vec3(1.0f, 1.0f, 1.0f));
+						meshComponent[i].shader.SetVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
+						meshComponent[i].shader.SetVec3("lightPos", glm::vec3(3.0f, 10.0f, -10.0f));
+
+						meshComponent[i].shader.SetVec3("viewPos", glm::vec3(0.0f, 0.0f, -10.0f));
+
+						flecs::world world = iter.world();
+						const Window* window = world.get<Window>();
+
+						int width;
+						int height;
+						glfwGetWindowSize(window->window, &width, &height);
+
+						glm::mat4 projection = glm::perspective(glm::radians(70.0f), (float)width / (float)height, 0.1f, 1000.0f);
+						meshComponent[i].shader.SetMat4("projection", projection);
+
+						//glm::mat4 view = camera.GetViewMatrix();
+						meshComponent[i].shader.SetMat4("view", glm::lookAt(glm::vec3(0.0f, 0.0f, -3.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
+
+						glBindVertexArray(meshComponent[i].VAO);
+						glCheckError();
+
+						TransformComponent globalTransform = transformComponent[i];
+
+						flecs::entity current = iter.entity(i);
+						while (flecs::entity parent = current.parent())
+						{
+							const TransformComponent* parentTransform = parent.get<TransformComponent>();
+							if (parentTransform)
+							{
+								globalTransform.Scale *= parentTransform->Scale;
+								globalTransform.Rotation *= parentTransform->Rotation;
+								globalTransform.Position = parentTransform->Position + (parentTransform->Rotation * (parentTransform->Scale * globalTransform.Position));
+							}
+							current = parent;
+						}
+
+						glm::mat4 model = glm::mat4(1.0f);
+						model = glm::translate(model, globalTransform.Position);
+						model *= glm::toMat4(globalTransform.Rotation);
+						model = glm::scale(model, globalTransform.Scale);
+						meshComponent[i].shader.SetMat4("model", model);
+
+						glDrawArrays(GL_TRIANGLES, 0, 36);
+						glCheckError();
 					}
-					current = parent;
 				}
-
-				glm::mat4 model = glm::mat4(1.0f);
-				model = glm::translate(model, globalTransform.Position);
-				model *= glm::toMat4(globalTransform.Rotation);
-				model = glm::scale(model, globalTransform.Scale);
-				meshComponent.shader.SetMat4("model", model);
-
-				glDrawArrays(GL_TRIANGLES, 0, 36);
-				glCheckError();
 			}
 		);
 
-	renderShutdownSystem = world.system<MeshComponent>("RenderShutdownSystem")
+	m_RenderShutdownSystem = m_World.system<MeshComponent>("RenderShutdownSystem")
 		.kind(flecs::OnSet)
 		.each([](MeshComponent& meshComponent)
 			{
@@ -237,7 +246,7 @@ bool Engine::Init()
 			}
 		);
 
-	spinSystem = world.system<SpinComponent, TransformComponent>("SpinSystem")
+	m_SpinSystem = m_World.system<SpinComponent, TransformComponent>("SpinSystem")
 		.kind(flecs::OnUpdate)
 		.each([](flecs::iter& it, size_t, SpinComponent& spinComponent, TransformComponent& transformComponent)
 			{
@@ -250,7 +259,7 @@ bool Engine::Init()
 
 void Engine::Terminate()
 {
-	renderShutdownSystem.run();
+	m_RenderShutdownSystem.run();
 
 	glfwTerminate();
 }
@@ -275,7 +284,7 @@ void Engine::MainLoop()
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glCheckError();
 
-		world.progress();
+		m_World.progress();
 
 		m_RenderTarget->Unbind();
 

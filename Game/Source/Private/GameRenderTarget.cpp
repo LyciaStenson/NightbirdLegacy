@@ -21,7 +21,7 @@ void GameRenderTarget::Init()
 		 1.0f, -1.0f,	1.0f, 1.0f, // Bottom right
 		-1.0f,  1.0f,	0.0f, 0.0f, // Top left
 		 1.0f, -1.0f,	1.0f, 1.0f, // Bottom right
-		 1.0f,  1.0f,	1.0f, 0.0f // Top right
+		 1.0f,  1.0f,	1.0f, 0.0f	// Top right
 	};
 
 	unsigned int screenVBO;
@@ -81,6 +81,11 @@ void GameRenderTarget::Render()
 	glBindVertexArray(screenVAO);
 	glBindTexture(GL_TEXTURE_2D, framebufferTexture);
 	glDrawArrays(GL_TRIANGLES, 0, 6);
+}
+
+void GameRenderTarget::GetWindowSize(int aWidth, int aHeight)
+{
+
 }
 
 void GameRenderTarget::WindowResize(int aWidth, int aHeight)

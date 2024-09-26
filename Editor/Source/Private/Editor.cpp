@@ -23,7 +23,7 @@ Editor::Editor()
 	
 	EditorRenderTarget* renderTarget = new EditorRenderTarget(window);
 	engine = new Engine(window, renderTarget);
-	renderTarget->world = &engine->world;
+	renderTarget->world = &engine->m_World;
 	engine->Init();
 	engine->MainLoop();
 	engine->Terminate();
