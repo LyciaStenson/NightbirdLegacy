@@ -14,10 +14,6 @@
 
 #include <Shader.h>
 
-//#include <Camera.h>
-
-//#include <Scene.h>
-
 #include <TransformComponent.h>
 #include <MeshComponent.h>
 #include <CameraComponent.h>
