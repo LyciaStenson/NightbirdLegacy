@@ -28,7 +28,7 @@ public:
 
 	void WindowResize(int aWidth, int aHeight) override;
 
-	flecs::world* world;
+	flecs::world* world = nullptr;
 
 private:
 	int sceneWidth = 1280;

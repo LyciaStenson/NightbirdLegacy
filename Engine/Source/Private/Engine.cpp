@@ -10,6 +10,12 @@ struct RenderTargetStruct
 	RenderTarget* renderTarget;
 };
 
+struct Camera
+{
+	const TransformComponent* transformComponent;
+	const CameraComponent* cameraComponent;
+};
+
 GLenum glCheckError_(const char* file, int line)
 {
 	GLenum errorCode;
@@ -100,6 +106,9 @@ bool Engine::Init()
 	flecs::entity camera = m_World.entity("Camera");
 	camera.add<TransformComponent>();
 	camera.add<CameraComponent>();
+
+	Camera cameraStruct({ camera.get<TransformComponent>(), camera.get<CameraComponent>() });
+	m_World.set<Camera>(cameraStruct);
 
 	flecs::system renderInitSystem = m_World.system<MeshComponent>("RenderInitSystem")
 		.kind(flecs::OnSet)
@@ -211,7 +220,9 @@ bool Engine::Init()
 						glm::mat4 projection = glm::perspective(glm::radians(70.0f), (float)width / (float)height, 0.1f, 1000.0f);
 						meshComponent[i].shader.SetMat4("projection", projection);
 
-						//glm::mat4 view = camera.GetViewMatrix();
+						const Camera* camera = world.get<Camera>();
+
+						glm::mat4 view = glm::lookAt(camera->transformComponent->Position, camera->transformComponent->Position + glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f));;
 						meshComponent[i].shader.SetMat4("view", glm::lookAt(glm::vec3(0.0f, 0.0f, -3.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
 
 						glBindVertexArray(meshComponent[i].VAO);
@@ -289,7 +300,7 @@ void Engine::MainLoop()
 
 		m_RenderTarget->Bind();
 
-		glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
+		glClearColor(0.45f, 0.45f, 0.45f, 1.0f);
 		glCheckError();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glCheckError();

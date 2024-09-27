@@ -70,8 +70,8 @@ void EditorRenderTarget::Unbind()
 void EditorRenderTarget::Render()
 {
 	//Log("FPS > ");// + std::to_string(engine->fps));
-
-	//glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	ImGui_ImplOpenGL3_NewFrame();
@@ -103,10 +103,11 @@ void EditorRenderTarget::Render()
 	//colors[ImGuiCol_ButtonActive] = ImVec4(0.1f, 0.1f, 0.5f, 1.0f);
 	colors[ImGuiCol_Header] = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
 	//colors[ImGuiCol_HeaderHovered] = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
-	//colors[ImGuiCol_HeaderActive] = ImVec4(0.0f, 0.0f, 0.0f, 1.0f);
+	colors[ImGuiCol_HeaderActive] = ImVec4(0.0f, 0.0f, 0.0f, 1.0f);
 	colors[ImGuiCol_TitleBg] = ImVec4(0.05f, 0.05f, 0.05f, 1.0f);
 	colors[ImGuiCol_TitleBgActive] = ImVec4(0.05f, 0.05f, 0.05f, 1.0f);
 	colors[ImGuiCol_MenuBarBg] = ImVec4(0.1f, 0.1f, 0.1f, 1.0f);
+	colors[ImGuiCol_DockingEmptyBg] = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
 
 	ImGui::DockSpaceOverViewport(ImGui::GetID("Dockspace"));
 
@@ -193,10 +194,12 @@ void EditorRenderTarget::Render()
 	{
 		ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoResize;
 		ImGui::SetNextWindowSize(ImVec2(0.0f, 0.0f), ImGuiCond_Always);
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(15.0f, 10.0f));
 		ImGui::Begin("About Nightbird", &showAboutWindow, windowFlags);
-		ImGui::Text("Nightbird Dev 0.0.1");
+		ImGui::Text("Nightbird Dev 0.1.0");
 		ImGui::Text("MIT License");
 		ImGui::End();
+		ImGui::PopStyleVar();
 	}
 
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
@@ -250,11 +253,12 @@ void EditorRenderTarget::Render()
 	if (showConsoleWindow)
 	{
 		ImGui::Begin("Console", &showConsoleWindow);
+		ImGui::BeginGroup();
 		for (std::string text : consoleText)
 		{
 			ImGui::Text(text.c_str());
 		}
-		//ImGui::SetScrollHereY(0.0f);
+		ImGui::EndGroup();
 		ImGui::End();
 	}
 
