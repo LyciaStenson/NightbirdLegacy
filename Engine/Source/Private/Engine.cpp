@@ -1,21 +1,5 @@
 #include <Engine.h>
 
-struct Window
-{
-	GLFWwindow* window;
-};
-
-struct RenderTargetStruct
-{
-	RenderTarget* renderTarget;
-};
-
-struct Camera
-{
-	const TransformComponent* transformComponent;
-	const CameraComponent* cameraComponent;
-};
-
 GLenum glCheckError_(const char* file, int line)
 {
 	GLenum errorCode;
@@ -62,13 +46,6 @@ bool Engine::Init()
 
 	glfwSetWindowSizeLimits(m_Window, 304, 190, GLFW_DONT_CARE, GLFW_DONT_CARE);
 
-	Window window({ m_Window });
-
-	RenderTargetStruct renderTarget({ m_RenderTarget });
-
-	m_World.set<Window>(window);
-	m_World.set<RenderTargetStruct>(renderTarget);
-
 	int version = gladLoadGL(glfwGetProcAddress);
 	if (version == 0)
 	{
@@ -108,10 +85,7 @@ bool Engine::Init()
 	camera.add<CameraComponent>();
 	camera.add<PlayerInputComponent>();
 
-	//camera.set<TransformComponent>({ glm::vec3(0.0f, 0.0f, -10.0f) });
-
-	Camera cameraStruct({ camera.get<TransformComponent>(), camera.get<CameraComponent>() });
-	m_World.set<Camera>(cameraStruct);
+	camera.set<TransformComponent>({ glm::vec3(0.0f, 0.0f, -10.0f) });
 
 	flecs::system renderInitSystem = m_World.system<MeshComponent>("RenderInitSystem")
 		.kind(flecs::OnSet)
@@ -188,12 +162,14 @@ bool Engine::Init()
 
 	m_RenderSystem = m_World.system<TransformComponent, MeshComponent>("RenderSystem")
 		.kind(flecs::OnUpdate)
-		.run([](flecs::iter& iter)
+		.run([&](flecs::iter& iter)
 			{
 				while (iter.next())
 				{
 					flecs::field<TransformComponent> transformComponent = iter.field<TransformComponent>(0);
 					flecs::field<MeshComponent> meshComponent = iter.field<MeshComponent>(1);
+
+					flecs::entity camera = m_World.lookup("Camera");
 
 					for (auto i : iter)
 					{
@@ -211,24 +187,17 @@ bool Engine::Init()
 
 						meshComponent[i].shader.SetVec3("viewPos", glm::vec3(0.0f, 0.0f, -10.0f));
 
-						flecs::world world = iter.world();
-						const Window* window = world.get<Window>();
-
-						const RenderTargetStruct* renderTarget = world.get<RenderTargetStruct>();
-
 						int width;
 						int height;
-						renderTarget->renderTarget->GetWindowSize(width, height);
+						m_RenderTarget->GetWindowSize(width, height);
 
 						glm::mat4 projection = glm::perspective(glm::radians(70.0f), (float)width / (float)height, 0.1f, 1000.0f);
 						meshComponent[i].shader.SetMat4("projection", projection);
 
-						const Camera* camera = world.get<Camera>();
-
-						glm::mat4 view = glm::lookAt(camera->transformComponent->Position, camera->transformComponent->Position + glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f));;
+						glm::mat4 view = glm::lookAt(camera.get<TransformComponent>()->Position, camera.get<TransformComponent>()->Position + glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f));;
 						meshComponent[i].shader.SetMat4("view", view);
 
-						std::cout << "RenderSystem camera position z > " << camera->transformComponent->Position.z << std::endl;
+						//std::cout << "RenderSystem camera position z > " << camera->transformComponent->Position.z << std::endl;
 
 						glBindVertexArray(meshComponent[i].VAO);
 						glCheckError();
@@ -277,7 +246,7 @@ bool Engine::Init()
 		.each([](PlayerInputComponent& playerInputComponent, TransformComponent& transformComponent)
 			{
 				std::cout << "PlayerInputSystem camera position z > " << transformComponent.Position.z << std::endl;
-				transformComponent.Position.z += 10.0f;
+				transformComponent.Position.z += 0.01f;
 			}
 		);
 
