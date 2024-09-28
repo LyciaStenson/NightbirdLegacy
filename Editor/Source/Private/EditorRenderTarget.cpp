@@ -1,12 +1,12 @@
 #include <EditorRenderTarget.h>
 
-EditorRenderTarget::EditorRenderTarget(GLFWwindow* aWindow)
+EditorRenderTarget::EditorRenderTarget(GLFWwindow* window)
 {
-	window = aWindow;
+	m_Window = window;
 
-	engine = (Engine*)glfwGetWindowUserPointer(aWindow);
+	m_Engine = (Engine*)glfwGetWindowUserPointer(window);
 
-	glfwGetWindowSize(window, &width, &height);
+	glfwGetWindowSize(window, &m_Width, &m_Height);
 	
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
@@ -29,25 +29,25 @@ EditorRenderTarget::~EditorRenderTarget()
 
 void EditorRenderTarget::Init()
 {
-	glDeleteFramebuffers(1, &framebuffer);
-	glDeleteTextures(1, &framebufferTexture);
-	glDeleteRenderbuffers(1, &rbo);
+	glDeleteFramebuffers(1, &m_Framebuffer);
+	glDeleteTextures(1, &m_FramebufferTexture);
+	glDeleteRenderbuffers(1, &m_Rbo);
 
-	glGenFramebuffers(1, &framebuffer);
-	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+	glGenFramebuffers(1, &m_Framebuffer);
+	glBindFramebuffer(GL_FRAMEBUFFER, m_Framebuffer);
 
-	glGenTextures(1, &framebufferTexture);
-	glBindTexture(GL_TEXTURE_2D, framebufferTexture);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+	glGenTextures(1, &m_FramebufferTexture);
+	glBindTexture(GL_TEXTURE_2D, m_FramebufferTexture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_Width, m_Height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, framebufferTexture, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_FramebufferTexture, 0);
 
-	glGenRenderbuffers(1, &rbo);
-	glBindRenderbuffer(GL_RENDERBUFFER, rbo);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
+	glGenRenderbuffers(1, &m_Rbo);
+	glBindRenderbuffer(GL_RENDERBUFFER, m_Rbo);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, m_Width, m_Height);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, m_Rbo);
 
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 		std::cerr << "Framebuffer is not complete" << std::endl;
@@ -57,7 +57,7 @@ void EditorRenderTarget::Init()
 
 void EditorRenderTarget::Bind()
 {
-	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+	glBindFramebuffer(GL_FRAMEBUFFER, m_Framebuffer);
 	glEnable(GL_DEPTH_TEST);
 }
 
@@ -131,7 +131,7 @@ void EditorRenderTarget::Render()
 		}
 		if (ImGui::MenuItem("Exit", "Ctrl+Q"))
 		{
-			glfwSetWindowShouldClose(window, true);
+			glfwSetWindowShouldClose(m_Window, true);
 		}
 		ImGui::EndMenu();
 	}
@@ -163,23 +163,23 @@ void EditorRenderTarget::Render()
 	{
 		if (ImGui::MenuItem("Entities"))
 		{
-			showEntitiesWindow = true;
+			m_ShowEntitiesWindow = true;
 		}
 		if (ImGui::MenuItem("Components"))
 		{
-			showComponentsWindow = true;
+			m_ShowComponentsWindow = true;
 		}
 		if (ImGui::MenuItem("Asset Browser"))
 		{
-			showAssetBrowserWindow = true;
+			m_ShowAssetBrowserWindow = true;
 		}
 		if (ImGui::MenuItem("Console"))
 		{
-			showConsoleWindow = true;
+			m_ShowConsoleWindow = true;
 		}
 		if (ImGui::MenuItem("Scene"))
 		{
-			showSceneWindow = true;
+			m_ShowSceneWindow = true;
 		}
 		ImGui::EndMenu();
 	}
@@ -187,7 +187,7 @@ void EditorRenderTarget::Render()
 	{
 		if (ImGui::MenuItem("About"))
 		{
-			showAboutWindow = true;
+			m_ShowAboutWindow = true;
 		}
 		ImGui::EndMenu();
 	}
@@ -198,23 +198,26 @@ void EditorRenderTarget::Render()
 	if (ImGui::Button("Play"))
 	{
 		Log("Play");
+		m_shouldRun = true;
 	}
 	if (ImGui::Button("Pause"))
 	{
 		Log("Pause");
+		m_shouldRun = false;
 	}
 	if (ImGui::Button("Stop"))
 	{
 		Log("Stop");
+		m_shouldRun = false;
 	}
 	ImGui::EndMainMenuBar();
 
-	if (showAboutWindow)
+	if (m_ShowAboutWindow)
 	{
 		ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse;
 		ImGui::SetNextWindowSize(ImVec2(0.0f, 0.0f), ImGuiCond_Always);
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(15.0f, 10.0f));
-		ImGui::Begin("About Nightbird", &showAboutWindow, windowFlags);
+		ImGui::Begin("About Nightbird", &m_ShowAboutWindow, windowFlags);
 		ImGui::Text("Nightbird Dev 0.1.0");
 		ImGui::Text("MIT License");
 		ImGui::End();
@@ -222,24 +225,24 @@ void EditorRenderTarget::Render()
 	}
 
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-	if (showSceneWindow)
+	if (m_ShowSceneWindow)
 	{
-		ImGui::Begin("Scene", &showSceneWindow);
+		ImGui::Begin("Scene", &m_ShowSceneWindow);
 
 		ImVec2 newSize = ImGui::GetContentRegionAvail();
-		if ((int)newSize.x != sceneWidth || (int)newSize.y != sceneHeight)
+		if ((int)newSize.x != m_SceneWidth || (int)newSize.y != m_SceneHeight)
 		{
-			sceneWidth = newSize.x;
-			sceneHeight = newSize.y;
+			m_SceneWidth = newSize.x;
+			m_SceneHeight = newSize.y;
 		}
-		ImGui::Image((void*)(intptr_t)framebufferTexture, newSize);
+		ImGui::Image((void*)(intptr_t)m_FramebufferTexture, newSize);
 		ImGui::End();
 	}
 	ImGui::PopStyleVar();
 
-	if (showEntitiesWindow)
+	if (m_ShowEntitiesWindow)
 	{
-		ImGui::Begin("Entities", &showEntitiesWindow);
+		ImGui::Begin("Entities", &m_ShowEntitiesWindow);
 
 		//flecs::query<TransformComponent> query = world->query<TransformComponent>();
 
@@ -253,9 +256,9 @@ void EditorRenderTarget::Render()
 		ImGui::End();
 	}
 
-	if (showComponentsWindow)
+	if (m_ShowComponentsWindow)
 	{
-		ImGui::Begin("Components", &showComponentsWindow);
+		ImGui::Begin("Components", &m_ShowComponentsWindow);
 		if (ImGui::Button("Test"))
 		{
 			Log("Test");
@@ -263,17 +266,17 @@ void EditorRenderTarget::Render()
 		ImGui::End();
 	}
 
-	if (showAssetBrowserWindow)
+	if (m_ShowAssetBrowserWindow)
 	{
-		ImGui::Begin("Asset Browser", &showAssetBrowserWindow);
+		ImGui::Begin("Asset Browser", &m_ShowAssetBrowserWindow);
 		ImGui::End();
 	}
 
-	if (showConsoleWindow)
+	if (m_ShowConsoleWindow)
 	{
-		ImGui::Begin("Console", &showConsoleWindow);
+		ImGui::Begin("Console", &m_ShowConsoleWindow);
 		ImGui::BeginGroup();
-		for (std::string text : consoleText)
+		for (std::string text : m_ConsoleText)
 		{
 			ImGui::Text(text.c_str());
 		}
@@ -285,20 +288,25 @@ void EditorRenderTarget::Render()
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
-void EditorRenderTarget::GetWindowSize(int& aWidth, int& aHeight)
+void EditorRenderTarget::GetWindowSize(int& width, int& height)
 {
-	aWidth = sceneWidth;
-	aHeight = sceneHeight;
+	width = m_SceneWidth;
+	height = m_SceneHeight;
 }
 
-void EditorRenderTarget::WindowResize(int aWidth, int aHeight)
+void EditorRenderTarget::WindowResize(int width, int height)
 {
-	width = aWidth;
-	height = aHeight;
+	m_Width = width;
+	m_Height = height;
+}
+
+bool EditorRenderTarget::ShouldRun()
+{
+	return m_shouldRun;
 }
 
 void EditorRenderTarget::Log(const std::string& text)
 {
-	consoleText.push_back(text);
+	m_ConsoleText.push_back(text);
 	std::cout << text << std::endl;
 }

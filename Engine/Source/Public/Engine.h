@@ -36,7 +36,7 @@ public:
 
 	double deltaTime = 0.0;
 	double lastFrameTime = 0.0;
-	double fps = 0.0;
+	unsigned int fps = 0;
 
 	Engine(GLFWwindow* window, RenderTarget* renderTarget);
 	~Engine();

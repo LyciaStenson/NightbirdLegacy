@@ -277,7 +277,7 @@ void Engine::MainLoop()
 		deltaTime = currentFrameTime - lastFrameTime;
 		lastFrameTime = currentFrameTime;
 
-		fps = 1.0f / deltaTime;
+		fps = (int)(1.0f / deltaTime);
 
 		ProcessInput(m_Window);
 
@@ -288,7 +288,10 @@ void Engine::MainLoop()
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glCheckError();
 
-		m_World.progress();
+		if (m_RenderTarget->ShouldRun())
+		{
+			m_World.progress();
+		}
 
 		m_RenderTarget->Unbind();
 

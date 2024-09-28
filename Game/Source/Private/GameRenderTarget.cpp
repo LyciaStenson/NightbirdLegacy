@@ -2,8 +2,8 @@
 
 GameRenderTarget::GameRenderTarget(int aWidth, int aHeight)
 {
-	width = aWidth;
-	height = aHeight;
+	m_Width = aWidth;
+	m_Height = aHeight;
 }
 
 GameRenderTarget::~GameRenderTarget()
@@ -46,16 +46,16 @@ void GameRenderTarget::Init()
 
 	glGenTextures(1, &framebufferTexture);
 	glBindTexture(GL_TEXTURE_2D, framebufferTexture);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_Width, m_Height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, framebufferTexture, 0);
 
-	glGenRenderbuffers(1, &rbo);
-	glBindRenderbuffer(GL_RENDERBUFFER, rbo);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
+	glGenRenderbuffers(1, &m_Rbo);
+	glBindRenderbuffer(GL_RENDERBUFFER, m_Rbo);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, m_Width, m_Height);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, m_Rbo);
 
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 		std::cerr << "Framebuffer is not complete" << std::endl;
@@ -82,32 +82,37 @@ void GameRenderTarget::Render()
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
-void GameRenderTarget::GetWindowSize(int& aWidth, int& aHeight)
+void GameRenderTarget::GetWindowSize(int& width, int& height)
 {
-	aWidth = width;
-	aHeight = height;
+	width = m_Width;
+	height = m_Height;
 }
 
-void GameRenderTarget::WindowResize(int aWidth, int aHeight)
+void GameRenderTarget::WindowResize(int width, int height)
 {
-	width = aWidth;
-	height = aHeight;
+	m_Width = width;
+	m_Height = height;
 
 	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
 
 	glBindTexture(GL_TEXTURE_2D, framebufferTexture);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_Width, m_Height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
 
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, framebufferTexture, 0);
 
-	glBindRenderbuffer(GL_RENDERBUFFER, rbo);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
+	glBindRenderbuffer(GL_RENDERBUFFER, m_Rbo);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, m_Width, m_Height);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, m_Rbo);
 
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 		std::cerr << "Framebuffer is not complete" << std::endl;
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-	glViewport(0, 0, width, height);
+	glViewport(0, 0, m_Width, m_Height);
+}
+
+bool GameRenderTarget::ShouldRun()
+{
+	return true;
 }

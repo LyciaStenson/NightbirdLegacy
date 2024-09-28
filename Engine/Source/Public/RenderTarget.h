@@ -12,15 +12,17 @@ public:
 	virtual void Unbind() = 0;
 	virtual void Render() = 0;
 
-	virtual void GetWindowSize(int& aWidth, int& aHeight) = 0;
+	virtual void GetWindowSize(int& width, int& height) = 0;
 
-	virtual void WindowResize(int aWidth, int aHeight) = 0;
+	virtual void WindowResize(int width, int height) = 0;
+
+	virtual bool ShouldRun() = 0;
 
 protected:
-	int width = 0;
-	int height = 0;
+	int m_Width = 0;
+	int m_Height = 0;
 
-	unsigned int framebuffer = 0;
-	unsigned int framebufferTexture = 0;
-	unsigned int rbo = 0;
+	unsigned int m_Framebuffer = 0;
+	unsigned int m_FramebufferTexture = 0;
+	unsigned int m_Rbo = 0;
 };

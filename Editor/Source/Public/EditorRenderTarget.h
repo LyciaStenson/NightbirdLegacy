@@ -17,35 +17,39 @@
 class EditorRenderTarget : public RenderTarget
 {
 public:
-	EditorRenderTarget(GLFWwindow* aWindow);
+	EditorRenderTarget(GLFWwindow* window);
 	~EditorRenderTarget();
 	void Init() override;
 	void Bind() override;
 	void Unbind() override;
 	void Render() override;
 
-	void GetWindowSize(int& aWidth, int& aHeight) override;
+	void GetWindowSize(int& width, int& height) override;
 
-	void WindowResize(int aWidth, int aHeight) override;
+	void WindowResize(int width, int height) override;
+
+	bool ShouldRun() override;
 
 	flecs::world* world = nullptr;
 
 private:
-	int sceneWidth = 1280;
-	int sceneHeight = 720;
+	bool m_shouldRun = false;
 
-	Engine* engine;
+	int m_SceneWidth = 1280;
+	int m_SceneHeight = 720;
 
-	std::vector<std::string> consoleText;
+	Engine* m_Engine;
 
-	bool showAboutWindow = false;
-	bool showEntitiesWindow = true;
-	bool showComponentsWindow = true;
-	bool showAssetBrowserWindow = true;
-	bool showConsoleWindow = true;
-	bool showSceneWindow = true;
+	std::vector<std::string> m_ConsoleText;
 
-	GLFWwindow* window;
+	bool m_ShowAboutWindow = false;
+	bool m_ShowEntitiesWindow = true;
+	bool m_ShowComponentsWindow = true;
+	bool m_ShowAssetBrowserWindow = true;
+	bool m_ShowConsoleWindow = true;
+	bool m_ShowSceneWindow = true;
+
+	GLFWwindow* m_Window;
 
 	void Log(const std::string& text);
 };
