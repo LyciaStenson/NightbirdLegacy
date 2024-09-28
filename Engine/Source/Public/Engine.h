@@ -17,6 +17,7 @@
 #include <TransformComponent.h>
 #include <MeshComponent.h>
 #include <CameraComponent.h>
+#include <PlayerInputComponent.h>
 #include <SpinComponent.h>
 
 #include <RenderTarget.h>
@@ -48,6 +49,8 @@ private:
 	flecs::system m_RenderSystem;
 
 	flecs::system m_RenderShutdownSystem;
+
+	flecs::system m_PlayerInputSystem;
 
 	flecs::system m_SpinSystem;
 

@@ -106,6 +106,9 @@ bool Engine::Init()
 	flecs::entity camera = m_World.entity("Camera");
 	camera.add<TransformComponent>();
 	camera.add<CameraComponent>();
+	camera.add<PlayerInputComponent>();
+
+	//camera.set<TransformComponent>({ glm::vec3(0.0f, 0.0f, -10.0f) });
 
 	Camera cameraStruct({ camera.get<TransformComponent>(), camera.get<CameraComponent>() });
 	m_World.set<Camera>(cameraStruct);
@@ -223,7 +226,9 @@ bool Engine::Init()
 						const Camera* camera = world.get<Camera>();
 
 						glm::mat4 view = glm::lookAt(camera->transformComponent->Position, camera->transformComponent->Position + glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f));;
-						meshComponent[i].shader.SetMat4("view", glm::lookAt(glm::vec3(0.0f, 0.0f, -3.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
+						meshComponent[i].shader.SetMat4("view", view);
+
+						std::cout << "RenderSystem camera position z > " << camera->transformComponent->Position.z << std::endl;
 
 						glBindVertexArray(meshComponent[i].VAO);
 						glCheckError();
@@ -264,6 +269,15 @@ bool Engine::Init()
 				glCheckError();
 				glDeleteBuffers(1, &meshComponent.VBO);
 				glCheckError();
+			}
+		);
+
+	m_PlayerInputSystem = m_World.system<PlayerInputComponent, TransformComponent>("PlayerInputSystem")
+		.kind(flecs::OnSet)
+		.each([](PlayerInputComponent& playerInputComponent, TransformComponent& transformComponent)
+			{
+				std::cout << "PlayerInputSystem camera position z > " << transformComponent.Position.z << std::endl;
+				transformComponent.Position.z += 10.0f;
 			}
 		);
 
@@ -398,6 +412,7 @@ void Engine::ProcessInput(GLFWwindow* window)
 {
 	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_2) == GLFW_PRESS)
 	{
+		m_PlayerInputSystem.run();
 		//camera.ProcessInput(window, deltaTime);
 	}
 }
