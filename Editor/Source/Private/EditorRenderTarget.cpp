@@ -91,7 +91,7 @@ void EditorRenderTarget::Render()
 
 	ImVec4* colors = style.Colors;
 	
-	colors[ImGuiCol_WindowBg] = ImVec4(0.12f, 0.12f, 0.12f, 1.0f);
+	colors[ImGuiCol_WindowBg] = ImVec4(0.15f, 0.15f, 0.15f, 1.0f);
 	colors[ImGuiCol_Text] = ImVec4(0.8f, 0.8f, 0.8f, 1.0f);
 	colors[ImGuiCol_Button] = ImVec4(0.35f, 0.35f, 0.35f, 1.0f);
 	colors[ImGuiCol_ButtonHovered] = ImVec4(0.3f, 0.3f, 0.3f, 1.0f);
@@ -99,7 +99,7 @@ void EditorRenderTarget::Render()
 	////colors[ImGuiCol_Header] = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
 	////colors[ImGuiCol_HeaderHovered] = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
 	////colors[ImGuiCol_HeaderActive] = ImVec4(1.0f, 0.0f, 0.0f, 1.0f);
-	colors[ImGuiCol_TitleBg] = ImVec4(0.05f, 0.05f, 0.05f, 1.0f);
+	colors[ImGuiCol_TitleBg] = ImVec4(0.1f, 0.1f, 0.1f, 1.0f);
 	colors[ImGuiCol_TitleBgActive] = colors[ImGuiCol_TitleBg];
 	//colors[ImGuiCol_MenuBarBg] = ImVec4(0.1f, 0.1f, 0.1f, 1.0f);
 	colors[ImGuiCol_DockingEmptyBg] = ImVec4(0.1f, 0.1f, 0.1f, 1.0f);
@@ -190,6 +190,22 @@ void EditorRenderTarget::Render()
 			showAboutWindow = true;
 		}
 		ImGui::EndMenu();
+	}
+
+	int availableWidth = ImGui::GetContentRegionAvail().x;
+	ImGui::SetCursorPosX(availableWidth / 2.0f);
+
+	if (ImGui::Button("Play"))
+	{
+		Log("Play");
+	}
+	if (ImGui::Button("Pause"))
+	{
+		Log("Pause");
+	}
+	if (ImGui::Button("Stop"))
+	{
+		Log("Stop");
 	}
 	ImGui::EndMainMenuBar();
 
