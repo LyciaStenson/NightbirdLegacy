@@ -30,7 +30,7 @@ public:
 
 	bool ShouldRun() override;
 
-	flecs::world* world = nullptr;
+	flecs::world m_EditorWorld;
 
 private:
 	bool m_shouldRun = false;

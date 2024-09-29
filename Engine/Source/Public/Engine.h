@@ -20,6 +20,8 @@
 #include <PlayerInputComponent.h>
 #include <SpinComponent.h>
 
+#include <RenderSystem.h>
+
 #include <RenderTarget.h>
 
 #include <vector>
