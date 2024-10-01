@@ -196,9 +196,7 @@ bool Engine::Init()
 
 						glm::mat4 view = glm::lookAt(camera.get<TransformComponent>()->Position, camera.get<TransformComponent>()->Position + glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f));;
 						meshComponent[i].shader.SetMat4("view", view);
-
-						//std::cout << "RenderSystem camera position z > " << camera->transformComponent->Position.z << std::endl;
-
+						
 						glBindVertexArray(meshComponent[i].VAO);
 						glCheckError();
 

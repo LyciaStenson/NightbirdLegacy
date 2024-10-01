@@ -96,9 +96,9 @@ void EditorRenderTarget::Render()
 	colors[ImGuiCol_Button] = ImVec4(0.35f, 0.35f, 0.35f, 1.0f);
 	colors[ImGuiCol_ButtonHovered] = ImVec4(0.3f, 0.3f, 0.3f, 1.0f);
 	colors[ImGuiCol_ButtonActive] = ImVec4(0.1f, 0.1f, 0.1f, 1.0f);
-	////colors[ImGuiCol_Header] = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
-	////colors[ImGuiCol_HeaderHovered] = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
-	////colors[ImGuiCol_HeaderActive] = ImVec4(1.0f, 0.0f, 0.0f, 1.0f);
+	colors[ImGuiCol_Header] = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
+	colors[ImGuiCol_HeaderHovered] = ImVec4(0.5f, 0.5f, 0.5f, 1.0f);
+	colors[ImGuiCol_HeaderActive] = ImVec4(0.5f, 0.5f, 0.5f, 1.0f);
 	colors[ImGuiCol_TitleBg] = ImVec4(0.1f, 0.1f, 0.1f, 1.0f);
 	colors[ImGuiCol_TitleBgActive] = colors[ImGuiCol_TitleBg];
 	//colors[ImGuiCol_MenuBarBg] = ImVec4(0.1f, 0.1f, 0.1f, 1.0f);
@@ -194,22 +194,24 @@ void EditorRenderTarget::Render()
 
 	int availableWidth = ImGui::GetContentRegionAvail().x;
 	ImGui::SetCursorPosX(availableWidth / 2.0f);
-
+	
+	ImGui::BeginDisabled(m_shouldRun);
 	if (ImGui::Button("Play"))
 	{
 		Log("Play");
 		m_shouldRun = true;
 	}
-	if (ImGui::Button("Pause"))
-	{
-		Log("Pause");
-		m_shouldRun = false;
-	}
+	ImGui::EndDisabled();
+
+	ImGui::BeginDisabled(!m_shouldRun);
+
 	if (ImGui::Button("Stop"))
 	{
 		Log("Stop");
 		m_shouldRun = false;
 	}
+	ImGui::EndDisabled();
+
 	ImGui::EndMainMenuBar();
 
 	if (m_ShowAboutWindow)

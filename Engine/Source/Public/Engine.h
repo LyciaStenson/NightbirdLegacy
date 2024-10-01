@@ -58,6 +58,8 @@ private:
 
 	GLFWwindow* m_Window;
 
+	GLFWwindow* m_Window2;
+
 	RenderTarget* m_RenderTarget;
 
 	unsigned int framebuffer = 0;

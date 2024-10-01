@@ -54,6 +54,10 @@ struct MeshComponent
 	unsigned int VBO = 0;
 	unsigned int VAO = 0;
 
+	const char* vertexPath;
+	const char* fragmentPath;
+	const char* texturePath;
+
 	Shader shader;
 
 };
