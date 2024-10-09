@@ -184,8 +184,8 @@ bool Engine::Init()
 						meshComponent[i].shader.SetVec3("objectColor", glm::vec3(1.0f, 1.0f, 1.0f));
 						meshComponent[i].shader.SetVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
 						meshComponent[i].shader.SetVec3("lightPos", glm::vec3(3.0f, 10.0f, -10.0f));
-
-						meshComponent[i].shader.SetVec3("viewPos", glm::vec3(0.0f, 0.0f, -10.0f));
+						
+						meshComponent[i].shader.SetVec3("viewPos", camera.get<TransformComponent>()->Position);
 
 						int width;
 						int height;
@@ -243,8 +243,8 @@ bool Engine::Init()
 		.kind(flecs::OnSet)
 		.each([](PlayerInputComponent& playerInputComponent, TransformComponent& transformComponent)
 			{
-				std::cout << "PlayerInputSystem camera position z > " << transformComponent.Position.z << std::endl;
-				transformComponent.Position.z += 0.01f;
+				std::cout << "PlayerInputSystem position z > " << transformComponent.Position.z << std::endl;
+				transformComponent.Position.z += 0.05f;
 			}
 		);
 
