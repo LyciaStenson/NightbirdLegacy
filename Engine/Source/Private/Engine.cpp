@@ -83,7 +83,7 @@ bool Engine::Init()
 	flecs::entity camera = m_World.entity("Camera");
 	camera.add<TransformComponent>();
 	camera.add<CameraComponent>();
-	camera.add<PlayerInputComponent>();
+	//camera.add<PlayerInputComponent>();
 
 	camera.set<TransformComponent>({ glm::vec3(0.0f, 0.0f, -10.0f) });
 
@@ -238,7 +238,7 @@ bool Engine::Init()
 				glCheckError();
 			}
 		);
-
+	
 	m_PlayerInputSystem = m_World.system<PlayerInputComponent, TransformComponent>("PlayerInputSystem")
 		.kind(flecs::OnSet)
 		.each([](PlayerInputComponent& playerInputComponent, TransformComponent& transformComponent)
@@ -247,7 +247,7 @@ bool Engine::Init()
 				transformComponent.Position.z += 0.05f;
 			}
 		);
-
+	
 	m_SpinSystem = m_World.system<SpinComponent, TransformComponent>("SpinSystem")
 		.kind(flecs::OnUpdate)
 		.each([](flecs::iter& it, size_t, SpinComponent& spinComponent, TransformComponent& transformComponent)

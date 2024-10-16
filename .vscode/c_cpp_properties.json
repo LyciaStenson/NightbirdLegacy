@@ -5,10 +5,12 @@
 			"includePath": [
 				"${workspaceFolder}/Engine/Source/Public",
 				"${workspaceFolder}/Engine/Source/Public/Components",
+				"${workspaceFolder}/Engine/Source/Public/Systems",
 				"${workspaceFolder}/Editor/Source/Public",
 				"${workspaceFolder}/Game/Source/Public",
 				"${workspaceFolder}/Engine/Vendor/glfw/include",
 				"${workspaceFolder}/Engine/Vendor/glad/include",
+				"${workspaceFolder}/Engine/Vendor/flecs/include",
 				"${workspaceFolder}/Engine/Vendor/glm",
 				"${workspaceFolder}/Engine/Vendor/stb",
 				"${workspaceFolder}/Editor/Vendor/imgui"
