@@ -5,11 +5,45 @@ project "Engine"
 
 	targetdir ("%{wks.location}/out/bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("%{wks.location}/out/obj/" .. outputdir .. "/%{prj.name}")
-
-	files { "**.h", "**.cpp" }
-
+	
 	defines { "GLFW_INCLUDE_NONE" }
 
-	includedirs { "Source/Public", "Source/Public/Components", "Source/Public/Systems", "Vendor/jolt", "Vendor/glm", "Vendor/stb", "Vendor/glfw/include", "Vendor/glad/include", "Vendor/flecs/include" }
+	files {
+		"Source/**.h",
+		"Source/**.cpp",
+		
+		"Vendor/jolt/**.h",
+		--"Vendor/jolt/**.cpp",
 
-	links { "glfw", "glad", "flecs" }
+		--"Vendor/glfw/**.h",
+		--"Vendor/glfw/**.c",
+		--"Vendor/glfw/**.cpp",
+
+		"Vendor/glad/**.h",
+		--"Vendor/glad/**.c",
+
+		"Vendor/glm/**.h",
+		"Vendor/glm/**.hpp",
+		--"Vendor/glm/**.cpp",
+		"Vendor/glm/**.inl",
+
+		"Vendor/stb/**.h",
+
+		"Vendor/flecs/**.h",
+		--"Vendor/flecs/**.c",
+	}
+
+	includedirs {
+		"Source/Public",
+		"Source/Public/Components",
+		"Source/Public/Systems",
+		"Vendor/jolt",
+		"Vendor/glm",
+		"Vendor/stb",
+		"Vendor/glfw/include",
+		"Vendor/glad/include",
+		"Vendor/flecs/include"
+		--"Vendor/assimp/include"
+	}
+
+	links { "glfw", "glad", "flecs", "jolt" }
