@@ -15,5 +15,5 @@ project "Editor"
 	links { "Engine", "glfw", "glad", "flecs", "ImGui" }
 
 	filter { "configurations:Debug" }
-		debugdir outputdir
+		debugdir (outputdir)
 	filter { }
