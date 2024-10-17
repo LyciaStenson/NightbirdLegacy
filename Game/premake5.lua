@@ -25,5 +25,5 @@ project "Game"
 	links { "Engine", "glfw", "glad", "flecs" }
 
 	filter { "configurations:Debug" }
-		debugdir (outputdir)
+		debugdir (targetdir)
 	filter { }
