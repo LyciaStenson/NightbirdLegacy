@@ -24,12 +24,12 @@
 --
 -- 3. Edit the "files { ... }" and "defines { ... }" depending on which importers/exporters you need. By default I enabled COLLADA, OBJ, FBX and ASSBIN (assimp binary, good for caching)
 
-project "*"
-	includedirs {
-		"_config_headers/",
-		"_config_headers/assimp/", -- Location of assimp"s config.h, for a template see include/assimp/config.h.in
-		"assimp/include/",
-	}
+--project "*"
+	--includedirs {
+		--"_config_headers/",
+		--"_config_headers/assimp/", -- Location of assimp"s config.h, for a template see include/assimp/config.h.in
+		--"assimp/include/",
+	--}
 project "assimp"
 	kind "SharedLib"
 	warnings "Off"
