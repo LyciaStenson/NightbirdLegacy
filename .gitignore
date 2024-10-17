@@ -6,6 +6,10 @@
 
 *.ini
 
+*.dll.recipe
+*.log
+*.lastbuildstate
+
 /out
 
 Makefile
