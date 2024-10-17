@@ -3,7 +3,9 @@ project "Game"
 	language "C++"
 	cppdialect "C++17"
 
-	targetdir ("%{wks.location}/out/bin/" .. outputdir .. "/%{prj.name}")
+	local outBinDir = "%{wks.location}/out/bin/" .. outputdir .. "/%{prj.name}"
+
+	targetdir (outBinDir)
 	objdir ("%{wks.location}/out/obj/" .. outputdir .. "/%{prj.name}")
 
 	files { "**.h", "**.cpp" }
@@ -25,5 +27,5 @@ project "Game"
 	links { "Engine", "glfw", "glad", "flecs" }
 
 	filter { "configurations:Debug" }
-		debugdir (targetdir)
+		debugdir (outBinDir)
 	filter { }
