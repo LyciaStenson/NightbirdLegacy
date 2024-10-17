@@ -85,7 +85,7 @@ bool Engine::Init()
 	camera.add<CameraComponent>();
 	camera.add<PlayerInputComponent>();
 
-	camera.set<TransformComponent>({ glm::vec3(0.0f, 0.0f, -10.0f) });
+	camera.set<TransformComponent>({ glm::vec3(0.0f, 0.0f, -3.0f) });
 
 	flecs::system renderInitSystem = m_World.system<MeshComponent>("RenderInitSystem")
 		.kind(flecs::OnSet)
