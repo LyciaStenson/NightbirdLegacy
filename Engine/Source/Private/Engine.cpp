@@ -83,7 +83,7 @@ bool Engine::Init()
 	flecs::entity camera = m_World.entity("Camera");
 	camera.add<TransformComponent>();
 	camera.add<CameraComponent>();
-	//camera.add<PlayerInputComponent>();
+	camera.add<PlayerInputComponent>();
 
 	camera.set<TransformComponent>({ glm::vec3(0.0f, 0.0f, -10.0f) });
 
