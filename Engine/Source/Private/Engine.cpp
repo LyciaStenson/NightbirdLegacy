@@ -1,27 +1,5 @@
 #include <Engine.h>
 
-GLenum glCheckError_(const char* file, int line)
-{
-	GLenum errorCode;
-	while ((errorCode = glGetError()) != GL_NO_ERROR)
-	{
-		std::string error;
-		switch (errorCode)
-		{
-		case GL_INVALID_ENUM:                  error = "INVALID_ENUM"; break;
-		case GL_INVALID_VALUE:                 error = "INVALID_VALUE"; break;
-		case GL_INVALID_OPERATION:             error = "INVALID_OPERATION"; break;
-		case GL_STACK_OVERFLOW:                error = "STACK_OVERFLOW"; break;
-		case GL_STACK_UNDERFLOW:               error = "STACK_UNDERFLOW"; break;
-		case GL_OUT_OF_MEMORY:                 error = "OUT_OF_MEMORY"; break;
-		case GL_INVALID_FRAMEBUFFER_OPERATION: error = "INVALID_FRAMEBUFFER_OPERATION"; break;
-		}
-		std::cout << error << " | " << file << " (" << line << ")" << std::endl;
-	}
-	return errorCode;
-}
-#define glCheckError() glCheckError_(__FILE__, __LINE__)
-
 Engine::Engine(GLFWwindow* window, RenderTarget* renderTarget)
 {
 	m_Window = window;
@@ -55,8 +33,10 @@ bool Engine::Init()
 
 	std::cout << "Loaded OpenGL " << GLAD_VERSION_MAJOR(version) << "." << GLAD_VERSION_MINOR(version) << std::endl;
 
+	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+	glDebugMessageCallback(DebugCallback, 0);
+
 	glEnable(GL_DEPTH_TEST);
-	glCheckError();
 
 	flecs::entity parentTest = m_World.entity("ParentTest");
 	parentTest.add<TransformComponent>();
@@ -91,51 +71,34 @@ bool Engine::Init()
 		.kind(flecs::OnSet)
 		.each([](MeshComponent& meshComponent)
 			{
-				meshComponent.shader = Shader("CubeShader.vert", "CubeShader.frag");
+				meshComponent.shader = Shader("Cube.vert", "Cube.frag");
 
 				glGenVertexArrays(1, &meshComponent.VAO);
-				glCheckError();
 				glGenBuffers(1, &meshComponent.VBO);
-				glCheckError();
 				glBindVertexArray(meshComponent.VAO);
-				glCheckError();
 				glBindBuffer(GL_ARRAY_BUFFER, meshComponent.VBO);
-				glCheckError();
 				glBufferData(GL_ARRAY_BUFFER, sizeof(meshComponent.vertices), &meshComponent.vertices[0], GL_STATIC_DRAW);
-				glCheckError();
 
 				// Position Attribute
 				glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 8, (void*)0);
-				glCheckError();
 				glEnableVertexAttribArray(0);
-				glCheckError();
 
 				// Normals Attribute
 				glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 8, (void*)(3 * sizeof(float)));
-				glCheckError();
 				glEnableVertexAttribArray(1);
-				glCheckError();
 
 				// Texture Coord Attribute
 				glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 8, (void*)(6 * sizeof(float)));
-				glCheckError();
 				glEnableVertexAttribArray(2);
-				glCheckError();
 
 				// TEXTURE
 				glGenTextures(1, &meshComponent.texture);
-				glCheckError();
 				glBindTexture(GL_TEXTURE_2D, meshComponent.texture);
-				glCheckError();
 
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-				glCheckError();
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-				glCheckError();
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-				glCheckError();
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-				glCheckError();
 
 				int width, height, nrChannels;
 				stbi_set_flip_vertically_on_load(true);
@@ -144,9 +107,7 @@ bool Engine::Init()
 				if (data)
 				{
 					glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-					glCheckError();
 					glGenerateMipmap(GL_TEXTURE_2D);
-					glCheckError();
 				}
 				else
 				{
@@ -174,10 +135,8 @@ bool Engine::Init()
 					for (auto i : iter)
 					{
 						glActiveTexture(GL_TEXTURE0);
-						glCheckError();
 						glBindTexture(GL_TEXTURE_2D, meshComponent[i].texture);
 						glBindTexture(GL_TEXTURE_2D, 1);
-						glCheckError();
 
 						meshComponent[i].shader.Use();
 
@@ -198,7 +157,6 @@ bool Engine::Init()
 						meshComponent[i].shader.SetMat4("view", view);
 						
 						glBindVertexArray(meshComponent[i].VAO);
-						glCheckError();
 
 						TransformComponent globalTransform = transformComponent[i];
 
@@ -222,7 +180,6 @@ bool Engine::Init()
 						meshComponent[i].shader.SetMat4("model", model);
 
 						glDrawArrays(GL_TRIANGLES, 0, 36);
-						glCheckError();
 					}
 				}
 			}
@@ -233,9 +190,7 @@ bool Engine::Init()
 		.each([](MeshComponent& meshComponent)
 			{
 				glDeleteVertexArrays(1, &meshComponent.VAO);
-				glCheckError();
 				glDeleteBuffers(1, &meshComponent.VBO);
-				glCheckError();
 			}
 		);
 	
@@ -282,9 +237,7 @@ void Engine::MainLoop()
 		m_RenderTarget->Bind();
 
 		glClearColor(0.45f, 0.45f, 0.45f, 1.0f);
-		glCheckError();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		glCheckError();
 
 		if (m_RenderTarget->ShouldRun())
 		{
@@ -385,4 +338,9 @@ void Engine::ProcessInput(GLFWwindow* window)
 		m_PlayerInputSystem.run();
 		//camera.ProcessInput(window, deltaTime);
 	}
+}
+
+void DebugCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam)
+{
+	std::cout << message << std::endl;
 }
