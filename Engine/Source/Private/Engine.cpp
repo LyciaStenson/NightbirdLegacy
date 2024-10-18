@@ -38,37 +38,6 @@ bool Engine::Init()
 
 	glEnable(GL_DEPTH_TEST);
 
-	/*
-	flecs::entity parentTest = m_World.entity("ParentTest");
-	parentTest.add<TransformComponent>();
-	parentTest.add<SpinComponent>();
-
-	parentTest.set<TransformComponent>({ glm::vec3(), glm::quat(), glm::vec3(1.0f) });
-
-	flecs::entity stevieNicksCube = m_World.entity("StevieNicksCube")
-		.child_of(parentTest);
-	stevieNicksCube.add<TransformComponent>();
-	stevieNicksCube.add<MeshComponent>();
-	stevieNicksCube.add<SpinComponent>();
-
-	stevieNicksCube.set<TransformComponent>({ glm::vec3(-1.0f, 0.0f, 0.0f), glm::quat(), glm::vec3(1.0f) });
-
-	flecs::entity stevieNicksCube2 = m_World.entity("StevieNicksCube2")
-		.child_of(parentTest);
-	stevieNicksCube2.add<TransformComponent>();
-	stevieNicksCube2.add<MeshComponent>();
-	stevieNicksCube2.add<SpinComponent>();
-
-	stevieNicksCube2.set<TransformComponent>({ glm::vec3(1.0f, 0.0f, 0.0f), glm::quat(), glm::vec3(1.0f) });
-
-	flecs::entity camera = m_World.entity("Camera");
-	camera.add<TransformComponent>();
-	camera.add<CameraComponent>();
-	camera.add<PlayerInputComponent>();
-
-	camera.set<TransformComponent>({ glm::vec3(0.0f, 0.0f, -3.0f) });
-	*/
-
 	flecs::system renderInitSystem = m_World.system<MeshComponent>("RenderInitSystem")
 		.kind(flecs::OnSet)
 		.each([](MeshComponent& meshComponent)
@@ -123,7 +92,7 @@ bool Engine::Init()
 
 	m_RenderTarget->Init();
 
-	m_RenderSystem = m_World.system<TransformComponent, MeshComponent>("RenderSystem")
+	flecs::system m_RenderSystem = m_World.system<TransformComponent, MeshComponent>("RenderSystem")
 		.kind(flecs::OnUpdate)
 		.run([&](flecs::iter& iter)
 			{
@@ -155,7 +124,7 @@ bool Engine::Init()
 						glm::mat4 projection = glm::perspective(glm::radians(70.0f), (float)width / (float)height, 0.1f, 1000.0f);
 						meshComponent[i].shader.SetMat4("projection", projection);
 
-						glm::mat4 view = glm::lookAt(camera.get<TransformComponent>()->Position, camera.get<TransformComponent>()->Position + glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f));;
+						glm::mat4 view = glm::lookAt(camera.get<TransformComponent>()->Position, camera.get<TransformComponent>()->Position + glm::vec3(0.0f, 0.0f, 1.0f) * camera.get<TransformComponent>()->Rotation, glm::vec3(0.0f, 1.0f, 0.0f));;
 						meshComponent[i].shader.SetMat4("view", view);
 						
 						glBindVertexArray(meshComponent[i].VAO);
@@ -204,17 +173,6 @@ bool Engine::Init()
 				transformComponent.Position.z += 0.05f;
 			}
 		);
-	
-	/*
-	m_SpinSystem = m_World.system<SpinComponent, TransformComponent>("SpinSystem")
-		.kind(flecs::OnUpdate)
-		.each([](flecs::iter& it, size_t, SpinComponent& spinComponent, TransformComponent& transformComponent)
-			{
-				transformComponent.Rotation *= glm::angleAxis(glm::degrees(0.015f * it.delta_time()), glm::vec3(0.0f, 0.0f, 1.0f));
-			}
-		);
-	*/
-
 	return true;
 }
 

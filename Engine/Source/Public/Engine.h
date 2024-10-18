@@ -47,13 +47,9 @@ public:
 	void MainLoop();
 
 private:
-	flecs::system m_RenderSystem;
-
 	flecs::system m_RenderShutdownSystem;
 
 	flecs::system m_PlayerInputSystem;
-
-	flecs::system m_SpinSystem;
 
 	GLFWwindow* m_Window;
 
