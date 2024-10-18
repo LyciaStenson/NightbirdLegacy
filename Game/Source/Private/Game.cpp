@@ -23,14 +23,53 @@ Game::Game()
 	glfwMakeContextCurrent(window);
 
 	GameRenderTarget* renderTarget = new GameRenderTarget(WIDTH, HEIGHT);
-	engine = new Engine(window, renderTarget);
-	engine->Init();
-	engine->MainLoop();
-	engine->Terminate();
+	m_Engine = new Engine(window, renderTarget);
+
+	flecs::entity parentTest = m_Engine->m_World.entity("ParentTest");
+	parentTest.add<TransformComponent>();
+	parentTest.add<SpinComponent>();
+
+	parentTest.set<TransformComponent>({ glm::vec3(), glm::quat(), glm::vec3(1.0f) });
+
+	flecs::entity stevieNicksCube = m_Engine->m_World.entity("StevieNicksCube")
+		.child_of(parentTest);
+	stevieNicksCube.add<TransformComponent>();
+	stevieNicksCube.add<MeshComponent>();
+	stevieNicksCube.add<SpinComponent>();
+
+	stevieNicksCube.set<TransformComponent>({ glm::vec3(-1.0f, 0.0f, 0.0f), glm::quat(), glm::vec3(1.0f) });
+
+	flecs::entity stevieNicksCube2 = m_Engine->m_World.entity("StevieNicksCube2")
+		.child_of(parentTest);
+	stevieNicksCube2.add<TransformComponent>();
+	stevieNicksCube2.add<MeshComponent>();
+	stevieNicksCube2.add<SpinComponent>();
+
+	stevieNicksCube2.set<TransformComponent>({ glm::vec3(1.0f, 0.0f, 0.0f), glm::quat(), glm::vec3(1.0f) });
+
+	flecs::entity camera = m_Engine->m_World.entity("Camera");
+	camera.add<TransformComponent>();
+	camera.add<CameraComponent>();
+	camera.add<PlayerInputComponent>();
+
+	camera.set<TransformComponent>({ glm::vec3(0.0f, 0.0f, -3.0f) });
+
+	flecs::system m_SpinSystem = m_Engine->m_World.system<SpinComponent, TransformComponent>("SpinSystem")
+		.kind(flecs::OnUpdate)
+		.each([](flecs::iter& it, size_t, SpinComponent& spinComponent, TransformComponent& transformComponent)
+			{
+				transformComponent.Rotation *= glm::angleAxis(glm::degrees(0.015f * it.delta_time()), glm::vec3(0.0f, 0.0f, 1.0f));
+			}
+		);
+
+	m_Engine->Init();
+
+	m_Engine->MainLoop();
+	m_Engine->Terminate();
 	delete renderTarget;
 }
 
 Game::~Game()
 {
-	delete engine;
+	delete m_Engine;
 }

@@ -38,6 +38,7 @@ bool Engine::Init()
 
 	glEnable(GL_DEPTH_TEST);
 
+	/*
 	flecs::entity parentTest = m_World.entity("ParentTest");
 	parentTest.add<TransformComponent>();
 	parentTest.add<SpinComponent>();
@@ -66,6 +67,7 @@ bool Engine::Init()
 	camera.add<PlayerInputComponent>();
 
 	camera.set<TransformComponent>({ glm::vec3(0.0f, 0.0f, -3.0f) });
+	*/
 
 	flecs::system renderInitSystem = m_World.system<MeshComponent>("RenderInitSystem")
 		.kind(flecs::OnSet)
@@ -203,6 +205,7 @@ bool Engine::Init()
 			}
 		);
 	
+	/*
 	m_SpinSystem = m_World.system<SpinComponent, TransformComponent>("SpinSystem")
 		.kind(flecs::OnUpdate)
 		.each([](flecs::iter& it, size_t, SpinComponent& spinComponent, TransformComponent& transformComponent)
@@ -210,6 +213,7 @@ bool Engine::Init()
 				transformComponent.Rotation *= glm::angleAxis(glm::degrees(0.015f * it.delta_time()), glm::vec3(0.0f, 0.0f, 1.0f));
 			}
 		);
+	*/
 
 	return true;
 }
