@@ -39,4 +39,5 @@ group ""
 
 group "Projects"
 	include "Game"
+	include "SpinGame"
 group ""
