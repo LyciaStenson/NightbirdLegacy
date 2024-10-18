@@ -18,7 +18,6 @@
 #include <MeshComponent.h>
 #include <CameraComponent.h>
 #include <PlayerInputComponent.h>
-#include <SpinComponent.h>
 
 #include <RenderSystem.h>
 

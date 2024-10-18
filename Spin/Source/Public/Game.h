@@ -4,6 +4,8 @@
 
 #include <GameRenderTarget.h>
 
+#include <SpinComponent.h>
+
 #include <iostream>
 
 class Game
