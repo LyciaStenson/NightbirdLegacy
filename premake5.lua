@@ -39,6 +39,6 @@ group ""
 
 group "Projects"
 	include "Game"
-	include "SpinGame"
+	include "Spin"
 	include "Neurons"
 group ""

@@ -14,23 +14,23 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-cp -r Game/Assets out/bin/Debug-linux-x86_64/Game
+cp -r Spin/Assets out/bin/Debug-linux-x86_64/Spin
 
 if [ $? -ne 0 ]; then
-    echo "Failed to copy Assets directory to out/bin/Debug-linux-x86_64/Game"
+    echo "Failed to copy Assets directory to out/bin/Debug-linux-x86_64/Spin"
     exit 1
 fi
 
-cd out/bin/Debug-linux-x86_64/Game
+cd out/bin/Debug-linux-x86_64/Spin
 
 if [ $? -ne 0 ]; then
-    echo "Failed to navigate to out/bin/Debug-linux-x86_64/Game"
+    echo "Failed to navigate to out/bin/Debug-linux-x86_64/Spin"
     exit 1
 fi
 
-./Game
+./Spin
 
 if [ $? -ne 0 ]; then
-    echo "Failed to run Game"
+    echo "Failed to run Spin"
     exit 1
 fi

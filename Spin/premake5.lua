@@ -1,4 +1,4 @@
-project "SpinGame"
+project "Spin"
 	kind "ConsoleApp"
 	language "C++"
 	cppdialect "C++17"
