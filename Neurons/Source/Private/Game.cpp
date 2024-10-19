@@ -25,6 +25,10 @@ Game::Game()
 	GameRenderTarget* renderTarget = new GameRenderTarget(WIDTH, HEIGHT);
 	m_Engine = new Engine(window, renderTarget);
 
+	flecs::entity neuron = m_Engine->m_World.entity("Neuron");
+	neuron.add<TransformComponent>();
+	neuron.add<MeshComponent>();
+
 	flecs::entity camera = m_Engine->m_World.entity("Camera");
 	camera.add<TransformComponent>();
 	camera.add<CameraComponent>();

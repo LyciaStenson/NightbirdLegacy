@@ -4,7 +4,7 @@
 
 #include <GameRenderTarget.h>
 
-#include <SpinComponent.h>
+#include <Components/SpinComponent.h>
 
 #include <iostream>
 
