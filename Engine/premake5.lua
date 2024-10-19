@@ -42,8 +42,7 @@ project "Engine"
 		"Vendor/glfw/include",
 		"Vendor/glad/include",
 		"Vendor/flecs/include",
-		"Vendor/assimp/include",
 		"Vendor/jolt",
 	}
 
-	links { "glfw", "glad", "flecs", "assimp", "jolt" }
+	links { "glfw", "glad", "flecs", "jolt" }
