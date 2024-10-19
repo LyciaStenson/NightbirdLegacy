@@ -32,6 +32,8 @@
 	--}
 project "assimp"
 	kind "SharedLib"
+	language "C++"
+	cppdialect "C++17"
 	--warnings "Off"
 	optimize "Speed"
 
