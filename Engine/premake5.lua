@@ -29,8 +29,8 @@ project "Engine"
 
 		"Vendor/stb/stb_image.h",
 
-		"Vendor/cgltf/cgltf.h
-		"Vendor/cgltf/cgltf_write.h
+		"Vendor/cgltf/cgltf.h",
+		"Vendor/cgltf/cgltf_write.h",
 
 		"Vendor/flecs/**.h",
 		--"Vendor/flecs/**.c",
