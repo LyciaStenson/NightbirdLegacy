@@ -37,13 +37,13 @@ project "Engine"
 		"Source/Public",
 		"Source/Public/Components",
 		"Source/Public/Systems",
-		"Vendor/jolt",
 		"Vendor/glm",
 		"Vendor/stb",
 		"Vendor/glfw/include",
 		"Vendor/glad/include",
-		"Vendor/flecs/include"
-		--"Vendor/assimp/include"
+		"Vendor/flecs/include",
+		"Vendor/assimp/include",
+		"Vendor/jolt",
 	}
 
-	links { "glfw", "glad", "flecs", "jolt" }
+	links { "glfw", "glad", "flecs", "assimp", "jolt" }

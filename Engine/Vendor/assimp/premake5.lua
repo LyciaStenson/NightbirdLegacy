@@ -28,49 +28,48 @@
 	--includedirs {
 		--"_config_headers/",
 		--"_config_headers/assimp/", -- Location of assimp"s config.h, for a template see include/assimp/config.h.in
-		--"assimp/include/",
+		--"include/",
 	--}
 project "assimp"
 	kind "SharedLib"
-	warnings "Off"
+	--warnings "Off"
 	optimize "Speed"
 
 	includedirs {
-		"_config_headers/",
-		"_config_headers/assimp/",
-		"assimp/",
-		"assimp/contrib/",
-		"assimp/contrib/irrXML/",
-		"assimp/contrib/unzip/",
-		"assimp/contrib/rapidjson/include/",
-		"assimp/contrib/pugixml/src/",
-		"assimp/contrib/zlib/",
-		"assimp/contrib/utf8cpp/source",
-		"assimp/code",
-		"assimp/include",
+		--"_config_headers/",
+		--"_config_headers/assimp/",
+		"contrib/",
+		"contrib/irrXML/",
+		"contrib/unzip/",
+		"contrib/rapidjson/include/",
+		"contrib/pugixml/src/",
+		"contrib/zlib/",
+		"contrib/utf8cpp/source",
+		"code",
+		"include",
 	}
 	files {
 		-- Dependencies
-		"assimp/contrib/unzip/**",
-		"assimp/contrib/irrXML/**",
-		"assimp/contrib/zlib/*",
+		"contrib/unzip/**",
+		"contrib/irrXML/**",
+		"contrib/zlib/*",
 		-- Common
-		"assimp/code/Common/**",
-		"assimp/code/PostProcessing/**",
-		"assimp/code/Material/**",
-		"assimp/code/CApi/**",
-		"assimp/code/Geometry/**",
+		"code/Common/**",
+		"code/PostProcessing/**",
+		"code/Material/**",
+		"code/CApi/**",
+		"code/Geometry/**",
 		-- Importers
-		"assimp/code/AssetLib/IQM/**",
-		"assimp/code/AssetLib/Assbin/**",
+		"code/AssetLib/IQM/**",
+		"code/AssetLib/Assbin/**",
 
-		"assimp/code/AssetLib/Collada/**",
-		"assimp/code/AssetLib/Obj/**",
+		"code/AssetLib/Collada/**",
+		"code/AssetLib/Obj/**",
 		-- "assimp/code/AssetLib/Blender/**", "assimp/contrib/poly2tri/poly2tri/**",
-		"assimp/code/AssetLib/FBX/**",
-		-- "assimp/code/glTF2/**",
-		-- "assimp/code/glTF/**",
-		"assimp/code/Assbin/**" -- Very fast format to parse/write, useful for caching
+		"code/AssetLib/FBX/**",
+		-- "code/glTF2/**",
+		-- "code/glTF/**",
+		"code/Assbin/**" -- Very fast format to parse/write, useful for caching
 	}
 	-- Importers
 	defines {
