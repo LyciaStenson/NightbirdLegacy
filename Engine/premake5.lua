@@ -27,7 +27,10 @@ project "Engine"
 		--"Vendor/glm/**.cpp",
 		"Vendor/glm/**.inl",
 
-		"Vendor/stb/**.h",
+		"Vendor/stb/stb_image.h",
+
+		"Vendor/cgltf/cgltf.h
+		"Vendor/cgltf/cgltf_write.h
 
 		"Vendor/flecs/**.h",
 		--"Vendor/flecs/**.c",
@@ -39,6 +42,7 @@ project "Engine"
 		"Source/Public/Systems",
 		"Vendor/glm",
 		"Vendor/stb",
+		"Vendor/cgltf",
 		"Vendor/glfw/include",
 		"Vendor/glad/include",
 		"Vendor/flecs/include",
