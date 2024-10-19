@@ -42,7 +42,7 @@ bool Engine::Init()
 		.kind(flecs::OnSet)
 		.each([](MeshComponent& meshComponent)
 			{
-				meshComponent.shader = Shader("Cube.vert", "Cube.frag");
+				meshComponent.shader = Shader(meshComponent.vertexPath, meshComponent.fragmentPath);
 
 				glGenVertexArrays(1, &meshComponent.VAO);
 				glGenBuffers(1, &meshComponent.VBO);
@@ -73,7 +73,7 @@ bool Engine::Init()
 
 				int width, height, nrChannels;
 				stbi_set_flip_vertically_on_load(true);
-				unsigned char* data = stbi_load("stevie-nicks.jpg", &width, &height, &nrChannels, 0);
+				unsigned char* data = stbi_load(meshComponent.texturePath, &width, &height, &nrChannels, 0);
 
 				if (data)
 				{

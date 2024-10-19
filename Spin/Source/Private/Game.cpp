@@ -13,7 +13,7 @@ Game::Game()
 	int WIDTH = 1280;
 	int HEIGHT = 720;
 
-	GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "Spin Game", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "Spin", NULL, NULL);
 
 	if (window == NULL)
 	{
@@ -34,20 +34,21 @@ Game::Game()
 
 	flecs::entity stevieNicksCube = m_Engine->m_World.entity("StevieNicksCube")
 		.child_of(parent);
-	stevieNicksCube.add<TransformComponent>();
-	stevieNicksCube.add<MeshComponent>();
-	stevieNicksCube.add<SpinComponent>();
+
+	MeshComponent meshComponent;
+	meshComponent.vertexPath = "Cube.vert";
+	meshComponent.fragmentPath = "Cube.frag";
+	meshComponent.texturePath = "stevie-nicks.jpg";
 
 	stevieNicksCube.set<TransformComponent>({ glm::vec3(-1.0f, 0.0f, 0.0f), glm::quat(), glm::vec3(1.0f) });
+	stevieNicksCube.set<MeshComponent>(meshComponent);
 	stevieNicksCube.set<SpinComponent>({ -1.0f });
 
 	flecs::entity stevieNicksCube2 = m_Engine->m_World.entity("StevieNicksCube2")
 		.child_of(parent);
-	stevieNicksCube2.add<TransformComponent>();
-	stevieNicksCube2.add<MeshComponent>();
-	stevieNicksCube2.add<SpinComponent>();
 
 	stevieNicksCube2.set<TransformComponent>({ glm::vec3(1.0f, 0.0f, 0.0f), glm::quat(), glm::vec3(1.0f) });
+	stevieNicksCube2.set<MeshComponent>(meshComponent);
 	stevieNicksCube2.set<SpinComponent>({ 1.0f });
 
 	flecs::entity camera = m_Engine->m_World.entity("Camera");
