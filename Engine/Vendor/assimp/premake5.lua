@@ -37,6 +37,9 @@ project "assimp"
 	--warnings "Off"
 	optimize "Speed"
 
+	targetdir ("%{wks.location}/out/bin/" .. outputdir .. "/%{prj.name}")
+	objdir ("%{wks.location}/out/obj/" .. outputdir .. "/%{prj.name}")
+
 	includedirs {
 		--"_config_headers/",
 		--"_config_headers/assimp/",
