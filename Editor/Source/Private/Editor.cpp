@@ -23,13 +23,14 @@ Editor::Editor()
 	glfwMakeContextCurrent(window);
 	
 	EditorRenderTarget* renderTarget = new EditorRenderTarget(window);
-	engine = new Engine(window, renderTarget);
-	engine->Init();
-	engine->MainLoop();
-	engine->Terminate();
+	m_Engine = new Engine(window, renderTarget);
+
+	m_Engine->Init();
+	m_Engine->MainLoop();
+	m_Engine->Terminate();
 }
 
 Editor::~Editor()
 {
-	delete engine;
+	delete m_Engine;
 }

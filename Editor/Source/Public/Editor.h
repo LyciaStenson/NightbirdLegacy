@@ -13,5 +13,5 @@ public:
 	~Editor();
 
 private:
-	Engine* engine;
+	Engine* m_Engine;
 };

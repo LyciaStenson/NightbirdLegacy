@@ -19,8 +19,9 @@ bool Engine::Init()
 	glfwSetWindowUserPointer(m_Window, this);
 
 	glfwSetFramebufferSizeCallback(m_Window, FramebufferSizeCallback);
+	glfwSetKeyCallback(m_Window, KeyCallback);
 	glfwSetCursorEnterCallback(m_Window, CursorEnterCallback);
-	glfwSetCursorPosCallback(m_Window, MouseCallback);
+	glfwSetCursorPosCallback(m_Window, MouseMoveCallback);
 
 	glfwSetWindowSizeLimits(m_Window, 304, 190, GLFW_DONT_CARE, GLFW_DONT_CARE);
 
@@ -37,6 +38,8 @@ bool Engine::Init()
 	glDebugMessageCallback(DebugCallback, 0);
 
 	glEnable(GL_DEPTH_TEST);
+
+	m_World.add<InputComponent>();
 
 	flecs::system renderInitSystem = m_World.system<MeshComponent>("RenderInitSystem")
 		.kind(flecs::OnSet)
@@ -113,7 +116,7 @@ bool Engine::Init()
 
 						meshComponent[i].shader.SetVec3("objectColor", glm::vec3(1.0f, 1.0f, 1.0f));
 						meshComponent[i].shader.SetVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
-						meshComponent[i].shader.SetVec3("lightPos", glm::vec3(3.0f, 10.0f, -10.0f));
+						meshComponent[i].shader.SetVec3("lightPos", glm::vec3(10.0f, 10.0f, 10.0f));
 						
 						meshComponent[i].shader.SetVec3("viewPos", camera.get<TransformComponent>()->Position);
 
@@ -124,7 +127,8 @@ bool Engine::Init()
 						glm::mat4 projection = glm::perspective(glm::radians(70.0f), (float)width / (float)height, 0.1f, 1000.0f);
 						meshComponent[i].shader.SetMat4("projection", projection);
 
-						glm::mat4 view = glm::lookAt(camera.get<TransformComponent>()->Position, camera.get<TransformComponent>()->Position + glm::vec3(0.0f, 0.0f, 1.0f) * camera.get<TransformComponent>()->Rotation, glm::vec3(0.0f, 1.0f, 0.0f));;
+						glm::mat4 view = glm::lookAt(camera.get<TransformComponent>()->Position, camera.get<TransformComponent>()->Position + glm::vec3(0.0f, 0.0f, -1.0f) * camera.get<TransformComponent>()->Rotation, glm::vec3(0.0f, 1.0f, 0.0f));;
+						//glm::mat4 view = glm::lookAt(glm::vec3(0.0f, 0.0f, -3.0f), camera.get<TransformComponent>()->Position + glm::vec3(0.0f, 0.0f, 1.0f) * camera.get<TransformComponent>()->Rotation, glm::vec3(0.0f, 1.0f, 0.0f));;
 						meshComponent[i].shader.SetMat4("view", view);
 						
 						glBindVertexArray(meshComponent[i].VAO);
@@ -149,7 +153,7 @@ bool Engine::Init()
 						model *= glm::toMat4(globalTransform.Rotation);
 						model = glm::scale(model, globalTransform.Scale);
 						meshComponent[i].shader.SetMat4("model", model);
-
+						
 						glDrawArrays(GL_TRIANGLES, 0, 36);
 					}
 				}
@@ -164,15 +168,30 @@ bool Engine::Init()
 				glDeleteBuffers(1, &meshComponent.VBO);
 			}
 		);
-	
+
 	m_PlayerInputSystem = m_World.system<PlayerInputComponent, TransformComponent>("PlayerInputSystem")
-		.kind(flecs::OnSet)
-		.each([](PlayerInputComponent& playerInputComponent, TransformComponent& transformComponent)
+		.kind(flecs::OnUpdate)
+		.each([&](flecs::iter& it, size_t, PlayerInputComponent& playerInputComponent, TransformComponent& transformComponent)
 			{
-				std::cout << "PlayerInputSystem position z > " << transformComponent.Position.z << std::endl;
-				transformComponent.Position.z += 0.05f;
+				const InputComponent* input = m_World.get<InputComponent>();
+
+				if (input->moveForward)
+					transformComponent.Position.z -= 5.0f * it.delta_time();
+				if (input->moveBackward)
+					transformComponent.Position.z += 5.0f * it.delta_time();
+				if (input->moveRight)
+					transformComponent.Position.x += 5.0f * it.delta_time();
+				if (input->moveLeft)
+					transformComponent.Position.x -= 5.0f * it.delta_time();
+				if (input->moveUp)
+					transformComponent.Position.y += 5.0f * it.delta_time();
+				if (input->moveDown)
+					transformComponent.Position.y -= 5.0f * it.delta_time();
+
+				std::cout << transformComponent.Position.x << ", " << transformComponent.Position.y << ", " << transformComponent.Position.z << std::endl;
 			}
 		);
+
 	return true;
 }
 
@@ -193,8 +212,6 @@ void Engine::MainLoop()
 		lastFrameTime = currentFrameTime;
 
 		fps = (int)(1.0f / deltaTime);
-
-		ProcessInput(m_Window);
 
 		m_RenderTarget->Bind();
 
@@ -230,19 +247,19 @@ void Engine::CursorEnterCallback(GLFWwindow* window, int entered)
 void Engine::FramebufferSizeCallback(GLFWwindow* window, int width, int height)
 {
 	Engine* engine = (Engine*)glfwGetWindowUserPointer(window);
-	if (engine)
-	{
-		engine->HandleFramebuffer(width, height);
-	}
+	engine->HandleFramebuffer(width, height);
 }
 
-void Engine::MouseCallback(GLFWwindow* window, double xPosIn, double yPosIn)
+void Engine::KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
 	Engine* engine = (Engine*)glfwGetWindowUserPointer(window);
-	if (engine)
-	{
-		engine->HandleMouse(window, xPosIn, yPosIn);
-	}
+	engine->HandleKey(key, scancode, action, mods);
+}
+
+void Engine::MouseMoveCallback(GLFWwindow* window, double xPosIn, double yPosIn)
+{
+	Engine* engine = (Engine*)glfwGetWindowUserPointer(window);
+	engine->HandleMouseMove(window, xPosIn, yPosIn);
 }
 
 void Engine::ScrollCallback(GLFWwindow* window, double xOffset, double yOffset)
@@ -255,8 +272,41 @@ void Engine::HandleFramebuffer(int width, int height)
 	m_RenderTarget->WindowResize(width, height);
 }
 
-void Engine::HandleMouse(GLFWwindow* window, double xPosIn, double yPosIn)
+void Engine::HandleKey(int key, int scancode, int action, int mods)
 {
+	if (action == GLFW_PRESS || action == GLFW_RELEASE)
+	{
+		bool isPressed = (action == GLFW_PRESS);
+		InputComponent* input = m_World.get_mut<InputComponent>();
+		switch (key)
+		{
+		case GLFW_KEY_W:
+			input->moveForward = isPressed;
+			break;
+		case GLFW_KEY_S:
+			input->moveBackward = isPressed;
+			break;
+		case GLFW_KEY_D:
+			input->moveRight = isPressed;
+			break;
+		case GLFW_KEY_A:
+			input->moveLeft = isPressed;
+			break;
+		case GLFW_KEY_E:
+		case GLFW_KEY_SPACE:
+			input->moveUp = isPressed;
+			break;
+		case GLFW_KEY_Q:
+		case GLFW_KEY_LEFT_SHIFT:
+			input->moveDown = isPressed;
+			break;
+		}
+	}
+}
+
+void Engine::HandleMouseMove(GLFWwindow* window, double xPosIn, double yPosIn)
+{
+	/*
 	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_2) == GLFW_PRESS)
 	{
 		float xPos = (float)xPosIn;
@@ -281,6 +331,7 @@ void Engine::HandleMouse(GLFWwindow* window, double xPosIn, double yPosIn)
 	{
 		mouseDown = false;
 	}
+	*/
 }
 
 void Engine::HandleCursorEnter()
@@ -291,15 +342,6 @@ void Engine::HandleCursorEnter()
 void Engine::HandleScroll()
 {
 
-}
-
-void Engine::ProcessInput(GLFWwindow* window)
-{
-	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_2) == GLFW_PRESS)
-	{
-		m_PlayerInputSystem.run();
-		//camera.ProcessInput(window, deltaTime);
-	}
 }
 
 void DebugCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam)
