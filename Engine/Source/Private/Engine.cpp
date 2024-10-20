@@ -95,7 +95,7 @@ bool Engine::Init()
 
 	m_RenderTarget->Init();
 
-	flecs::system m_RenderSystem = m_World.system<TransformComponent, MeshComponent>("RenderSystem")
+	flecs::system renderSystem = m_World.system<TransformComponent, MeshComponent>("RenderSystem")
 		.kind(flecs::OnUpdate)
 		.run([&](flecs::iter& iter)
 			{
@@ -173,7 +173,7 @@ bool Engine::Init()
 		.kind(flecs::OnUpdate)
 		.each([&](flecs::iter& it, size_t, PlayerInputComponent& playerInputComponent, TransformComponent& transformComponent)
 			{
-				const InputComponent* input = m_World.get<InputComponent>();
+				InputComponent* input = m_World.get_mut<InputComponent>();
 
 				if (input->moveForward)
 					transformComponent.Position.z -= 5.0f * it.delta_time();
@@ -188,7 +188,15 @@ bool Engine::Init()
 				if (input->moveDown)
 					transformComponent.Position.y -= 5.0f * it.delta_time();
 
-				std::cout << transformComponent.Position.x << ", " << transformComponent.Position.y << ", " << transformComponent.Position.z << std::endl;
+				std::cout << input->lookX << ", " << input->lookY << std::endl;
+
+				glm::quat yaw = glm::angleAxis(input->lookX * 0.001f, glm::vec3(0.0f, 1.0f, 0.0f));
+				glm::quat pitch = glm::angleAxis(input->lookY * 0.001f, glm::vec3(1.0f, 0.0f, 0.0f));
+
+				transformComponent.Rotation *= yaw;
+				transformComponent.Rotation *= pitch;
+				input->lookX = 0.0f;
+				input->lookY = 0.0f;
 			}
 		);
 
@@ -304,34 +312,17 @@ void Engine::HandleKey(int key, int scancode, int action, int mods)
 	}
 }
 
-void Engine::HandleMouseMove(GLFWwindow* window, double xPosIn, double yPosIn)
+void Engine::HandleMouseMove(GLFWwindow* window, double xPos, double yPos)
 {
-	/*
-	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_2) == GLFW_PRESS)
-	{
-		float xPos = (float)xPosIn;
-		float yPos = (float)yPosIn;
+	float xOffset = (float)xPos - lastX;
+	float yOffset = (float)yPos - lastY;
 
-		if (!mouseDown)
-		{
-			lastX = xPos;
-			lastY = yPos;
-			mouseDown = true;
-		}
+	lastX = (float)xPos;
+	lastY = (float)yPos;
 
-		float xOffset = xPos - lastX;
-		float yOffset = lastY - yPos;
-
-		lastX = xPos;
-		lastY = yPos;
-
-		//camera.ProcessMouseMovement(window, xOffset, yOffset);
-	}
-	else if (mouseDown)
-	{
-		mouseDown = false;
-	}
-	*/
+	InputComponent* input = m_World.get_mut<InputComponent>();
+	input->lookX = xOffset;
+	input->lookY = yOffset;
 }
 
 void Engine::HandleCursorEnter()

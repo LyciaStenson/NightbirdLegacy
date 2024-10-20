@@ -1,7 +1,5 @@
 #pragma once
 
-#include <glm/glm.hpp>
-
 struct InputComponent
 {
 	bool moveForward = false;
@@ -12,5 +10,6 @@ struct InputComponent
 	bool moveUp = false;
 	bool moveDown = false;
 
-	glm::vec2 lookDir = glm::vec2(0.0f);
+	float lookX = 0.0f;
+	float lookY = 0.0f;
 };
