@@ -50,9 +50,9 @@ public:
 	void MainLoop();
 
 private:
-	flecs::system m_RenderShutdownSystem;
+	flecs::entity mainCamera;
 
-	flecs::system m_PlayerInputSystem;
+	flecs::system m_RenderShutdownSystem;
 
 	GLFWwindow* m_Window;
 

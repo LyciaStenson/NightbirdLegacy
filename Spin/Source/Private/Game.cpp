@@ -36,28 +36,30 @@ Game::Game()
 	meshComponent.fragmentPath = "Cube.frag";
 	meshComponent.texturePath = "stevie-nicks.jpg";
 
-	//flecs::entity stevieNicksCube = m_Engine->m_World.entity("StevieNicksCube");
+	flecs::entity stevieNicksCube = m_Engine->m_World.entity("StevieNicksCube");
 		//.child_of(parent);
-	//stevieNicksCube.set<TransformComponent>({ glm::vec3(0.0f, 0.0f, -3.0f) });
-	//stevieNicksCube.set<MeshComponent>(meshComponent);
+	stevieNicksCube.set<TransformComponent>({ glm::vec3(0.0f, 0.0f, -3.0f) });
+	stevieNicksCube.set<MeshComponent>(meshComponent);
 	//stevieNicksCube.set<SpinComponent>({ 1.0f, glm::vec3(0.0f, 1.0f, 0.0f) });
 
-	//flecs::entity stevieNicksCube2 = m_Engine->m_World.entity("StevieNicksCube2")
+	flecs::entity stevieNicksCube2 = m_Engine->m_World.entity("StevieNicksCube2");
 		//.child_of(parent);
-	//stevieNicksCube2.set<TransformComponent>({ glm::vec3(-1.0f, 0.0f, 0.0f), glm::quat(), glm::vec3(1.0f) });
-	//stevieNicksCube2.set<MeshComponent>(meshComponent);
+	stevieNicksCube2.set<TransformComponent>({ glm::vec3(0.0f, 5.0f, 0.0f), glm::quat(), glm::vec3(1.0f) });
+	stevieNicksCube2.set<MeshComponent>(meshComponent);
 	//stevieNicksCube2.set<SpinComponent>({ 1.0f, glm::vec3(0.0f, 0.0f, 1.0f) });
 
-	flecs::entity player = m_Engine->m_World.entity("Player");
-	player.set<TransformComponent>({ glm::vec3(0.0f, 0.0f, -3.0f) });
-	player.set<MeshComponent>(meshComponent);
-	player.add<PlayerInputComponent>();
+	//flecs::entity player = m_Engine->m_World.entity("Player");
+	//player.set<TransformComponent>({ glm::vec3(0.0f, 0.0f, -3.0f) });
+	//player.set<MeshComponent>(meshComponent);
+	//player.set<SpinComponent>({ 1.0f, glm::vec3(0.0f, 1.0f, 0.0f) });
+	//player.add<PlayerInputComponent>();
 
 	flecs::entity camera = m_Engine->m_World.entity("Camera");
+		//.child_of(player);
 	camera.set<TransformComponent>({ glm::vec3(0.0f, 0.0f, 0.0f) });
 	camera.add<CameraComponent>();
-	//camera.set<SpinComponent>({ 1.0f, glm::vec3(0.0f, 1.0f, 0.0f) });
-	//camera.add<PlayerInputComponent>();
+	//camera.set<SpinComponent>({1.0f, glm::vec3(0.0f, 1.0f, 0.0f)});
+	camera.add<PlayerInputComponent>();
 
 	flecs::system m_SpinSystem = m_Engine->m_World.system<SpinComponent, TransformComponent>("SpinSystem")
 		.kind(flecs::OnUpdate)
