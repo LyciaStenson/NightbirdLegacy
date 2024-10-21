@@ -196,7 +196,7 @@ bool Engine::Init()
 				glDeleteBuffers(1, &meshComponent.VBO);
 			}
 		);
-
+	
 	flecs::system playerInputSystem = m_World.system<PlayerInputComponent, TransformComponent>("PlayerInputSystem")
 		.kind(flecs::OnUpdate)
 		.each([&](flecs::iter& it, size_t, PlayerInputComponent& playerInputComponent, TransformComponent& transformComponent)
@@ -205,16 +205,30 @@ bool Engine::Init()
 
 				glm::vec3 forward = transformComponent.Rotation * glm::vec3(0.0f, 0.0f, -1.0f);
 				glm::vec3 right = transformComponent.Rotation * glm::vec3(1.0f, 0.0f, 0.0f);
-				glm::vec3 up = glm::inverse(transformComponent.Rotation) * glm::vec3(0.0f, 1.0f, 0.0f);
+				glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
 
+				glm::vec3 worldUp = glm::inverse(transformComponent.Rotation) * glm::vec3(0.0f, 1.0f, 0.0f);
+
+				//std::cout << worldUp.x << ", " << worldUp.y << ", " << worldUp.z << std::endl;
+				//std::cout << glm::length(worldUp) << std::endl;
+				std::cout << transformComponent.Rotation.z << std::endl;
+				
 				float movement = 5.0f * it.delta_time();
 
-				glm::quat pitch = glm::angleAxis(input->lookY * 0.001f, glm::vec3(1.0f, 0.0f, 0.0f));
-				glm::quat yaw = glm::angleAxis(input->lookX * 0.001f, up);
+				glm::vec3 eulerAngles = glm::eulerAngles(transformComponent.Rotation);
 
-				glm::quat orientation = pitch * yaw;
+				transformComponent.Rotation = glm::normalize(glm::quat(eulerAngles));
+
+				glm::quat pitch = glm::angleAxis(input->lookY * 0.001f, glm::vec3(1.0f, 0.0f, 0.0f));
+				glm::quat yaw = glm::angleAxis(input->lookX * 0.001f, worldUp);
+
+				glm::quat orientation = yaw * pitch;
 
 				transformComponent.Rotation *= glm::normalize(orientation);
+
+				//glm::vec3 eulerAngles = glm::eulerAngles(transformComponent.Rotation);
+
+				//std::cout << glm::degrees(eulerAngles.x) << ", " << glm::degrees(eulerAngles.y) << ", " << glm::degrees(eulerAngles.z) << std::endl;
 
 				if (input->moveForward)
 					transformComponent.Position += forward * movement;
