@@ -128,7 +128,6 @@ bool Engine::Init()
 						meshComponent[i].shader.SetMat4("projection", projection);
 
 						glm::mat4 view = glm::lookAt(camera.get<TransformComponent>()->Position, camera.get<TransformComponent>()->Position + glm::vec3(0.0f, 0.0f, -1.0f) * camera.get<TransformComponent>()->Rotation, glm::vec3(0.0f, 1.0f, 0.0f));;
-						//glm::mat4 view = glm::lookAt(glm::vec3(0.0f, 0.0f, -3.0f), camera.get<TransformComponent>()->Position + glm::vec3(0.0f, 0.0f, 1.0f) * camera.get<TransformComponent>()->Rotation, glm::vec3(0.0f, 1.0f, 0.0f));;
 						meshComponent[i].shader.SetMat4("view", view);
 						
 						glBindVertexArray(meshComponent[i].VAO);
@@ -175,28 +174,32 @@ bool Engine::Init()
 			{
 				InputComponent* input = m_World.get_mut<InputComponent>();
 
+				glm::vec3 forward = transformComponent.Rotation * glm::vec3(0.0f, 0.0f, -1.0f);
+				glm::vec3 right = transformComponent.Rotation * glm::vec3(1.0f, 0.0f, 0.0f);
+				glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
+
+				float movement = 5.0f * it.delta_time();
+
 				if (input->moveForward)
-					transformComponent.Position.z -= 5.0f * it.delta_time();
+					transformComponent.Position += forward * movement;
 				if (input->moveBackward)
-					transformComponent.Position.z += 5.0f * it.delta_time();
+					transformComponent.Position -= forward * movement;
 				if (input->moveRight)
-					transformComponent.Position.x += 5.0f * it.delta_time();
+					transformComponent.Position += right * movement;
 				if (input->moveLeft)
-					transformComponent.Position.x -= 5.0f * it.delta_time();
+					transformComponent.Position -= right * movement;
 				if (input->moveUp)
-					transformComponent.Position.y += 5.0f * it.delta_time();
+					transformComponent.Position += up * movement;
 				if (input->moveDown)
-					transformComponent.Position.y -= 5.0f * it.delta_time();
+					transformComponent.Position -= up * movement;
 
-				std::cout << input->lookX << ", " << input->lookY << std::endl;
-
-				glm::quat yaw = glm::angleAxis(input->lookX * 0.001f, glm::vec3(0.0f, 1.0f, 0.0f));
-				glm::quat pitch = glm::angleAxis(input->lookY * 0.001f, glm::vec3(1.0f, 0.0f, 0.0f));
+				glm::quat yaw = glm::angleAxis(input->lookX * 0.001f, up);
+				//glm::quat pitch = glm::angleAxis(input->lookY * 0.001f, right);
 
 				transformComponent.Rotation *= yaw;
-				transformComponent.Rotation *= pitch;
+				//transformComponent.Rotation *= pitch;
 				input->lookX = 0.0f;
-				input->lookY = 0.0f;
+				//input->lookY = 0.0f;
 			}
 		);
 
