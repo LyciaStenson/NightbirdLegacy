@@ -106,85 +106,60 @@ bool Engine::Init()
 
 	flecs::system renderSystem = m_World.system<TransformComponent, MeshComponent>("RenderSystem")
 		.kind(flecs::OnUpdate)
-		.run([&](flecs::iter& iter)
+		.each([&](flecs::iter& iter, size_t index, TransformComponent& transformComponent, MeshComponent& meshComponent)
 			{
-				while (iter.next())
+				const TransformComponent* cameraTransform = mainCamera.get<TransformComponent>();
+
+				glActiveTexture(GL_TEXTURE0);
+				glBindTexture(GL_TEXTURE_2D, meshComponent.texture);
+				glBindTexture(GL_TEXTURE_2D, 1);
+
+				meshComponent.shader.Use();
+
+				meshComponent.shader.SetVec3("objectColor", glm::vec3(1.0f, 1.0f, 1.0f));
+				meshComponent.shader.SetVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
+				meshComponent.shader.SetVec3("lightPos", glm::vec3(10.0f, 10.0f, 10.0f));
+						
+				meshComponent.shader.SetVec3("viewPos", cameraTransform->Position);
+
+				int width;
+				int height;
+				m_RenderTarget->GetWindowSize(width, height);
+
+				glm::mat4 projection = glm::perspective(glm::radians(70.0f), (float)width / (float)height, 0.1f, 1000.0f);
+				meshComponent.shader.SetMat4("projection", projection);
+
+				//glm::vec3 forward = glm::vec3(0.0f, 0.0f, -1.0f) * camera.get<TransformComponent>()->Rotation;
+				glm::vec3 forward = glm::rotate(cameraTransform->Rotation, glm::vec3(0.0f, 0.0f, -1.0f));
+				glm::vec3 up = glm::rotate(cameraTransform->Rotation, glm::vec3(0.0f, 1.0f, 0.0f));
+
+				glm::mat4 view = glm::lookAt(cameraTransform->Position, cameraTransform->Position + forward, up);;
+				meshComponent.shader.SetMat4("view", view);
+						
+				glBindVertexArray(meshComponent.VAO);
+
+				TransformComponent globalTransform = transformComponent;
+
+				flecs::entity current = iter.entity(index);
+				while (flecs::entity parent = current.parent())
 				{
-					flecs::field<TransformComponent> transformComponent = iter.field<TransformComponent>(0);
-					flecs::field<MeshComponent> meshComponent = iter.field<MeshComponent>(1);
-
-					flecs::entity current = mainCamera;
-					TransformComponent globalCameraTransform;
-					globalCameraTransform.Position = mainCamera.get<TransformComponent>()->Position;
-					globalCameraTransform.Rotation = mainCamera.get<TransformComponent>()->Rotation;
-					globalCameraTransform.Scale = mainCamera.get<TransformComponent>()->Scale;
-
-					while (flecs::entity parent = current.parent())
+					const TransformComponent* parentTransform = parent.get<TransformComponent>();
+					if (parentTransform)
 					{
-						const TransformComponent* parentTransform = parent.get<TransformComponent>();
-						if (parentTransform)
-						{
-							globalCameraTransform.Scale *= parentTransform->Scale;
-							globalCameraTransform.Rotation *= parentTransform->Rotation;
-							globalCameraTransform.Position = parentTransform->Position + (parentTransform->Rotation * (parentTransform->Scale * globalCameraTransform.Position));
-						}
-						current = parent;
+						globalTransform.Scale *= parentTransform->Scale;
+						globalTransform.Rotation *= parentTransform->Rotation;
+						globalTransform.Position = parentTransform->Position + (parentTransform->Rotation * (parentTransform->Scale * globalTransform.Position));
 					}
-
-					for (auto i : iter)
-					{
-						glActiveTexture(GL_TEXTURE0);
-						glBindTexture(GL_TEXTURE_2D, meshComponent[i].texture);
-						glBindTexture(GL_TEXTURE_2D, 1);
-
-						meshComponent[i].shader.Use();
-
-						meshComponent[i].shader.SetVec3("objectColor", glm::vec3(1.0f, 1.0f, 1.0f));
-						meshComponent[i].shader.SetVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
-						meshComponent[i].shader.SetVec3("lightPos", glm::vec3(10.0f, 10.0f, 10.0f));
-						
-						meshComponent[i].shader.SetVec3("viewPos", globalCameraTransform.Position);
-
-						int width;
-						int height;
-						m_RenderTarget->GetWindowSize(width, height);
-
-						glm::mat4 projection = glm::perspective(glm::radians(70.0f), (float)width / (float)height, 0.1f, 1000.0f);
-						meshComponent[i].shader.SetMat4("projection", projection);
-
-						//glm::vec3 forward = glm::vec3(0.0f, 0.0f, -1.0f) * camera.get<TransformComponent>()->Rotation;
-						glm::vec3 forward = glm::rotate(globalCameraTransform.Rotation, glm::vec3(0.0f, 0.0f, -1.0f));
-						glm::vec3 up = glm::rotate(globalCameraTransform.Rotation, glm::vec3(0.0f, 1.0f, 0.0f));
-
-						glm::mat4 view = glm::lookAt(globalCameraTransform.Position, globalCameraTransform.Position + forward, up);;
-						meshComponent[i].shader.SetMat4("view", view);
-						
-						glBindVertexArray(meshComponent[i].VAO);
-
-						TransformComponent globalTransform = transformComponent[i];
-
-						flecs::entity current = iter.entity(i);
-						while (flecs::entity parent = current.parent())
-						{
-							const TransformComponent* parentTransform = parent.get<TransformComponent>();
-							if (parentTransform)
-							{
-								globalTransform.Scale *= parentTransform->Scale;
-								globalTransform.Rotation *= parentTransform->Rotation;
-								globalTransform.Position = parentTransform->Position + (parentTransform->Rotation * (parentTransform->Scale * globalTransform.Position));
-							}
-							current = parent;
-						}
-
-						glm::mat4 model = glm::mat4(1.0f);
-						model = glm::translate(model, globalTransform.Position);
-						model *= glm::toMat4(globalTransform.Rotation);
-						model = glm::scale(model, globalTransform.Scale);
-						meshComponent[i].shader.SetMat4("model", model);
-						
-						glDrawArrays(GL_TRIANGLES, 0, 36);
-					}
+					current = parent;
 				}
+
+				glm::mat4 model = glm::mat4(1.0f);
+				model = glm::translate(model, globalTransform.Position);
+				model *= glm::toMat4(globalTransform.Rotation);
+				model = glm::scale(model, globalTransform.Scale);
+				meshComponent.shader.SetMat4("model", model);
+						
+				glDrawArrays(GL_TRIANGLES, 0, 36);
 			}
 		);
 
