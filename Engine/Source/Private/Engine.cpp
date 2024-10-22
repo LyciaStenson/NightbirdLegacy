@@ -222,6 +222,12 @@ bool Engine::Init()
 				transformComponent.Rotation *= glm::normalize(orientation);
 
 				glm::vec3 eulerAngles = glm::eulerAngles(transformComponent.Rotation);
+
+				//eulerAngles.z = 0.0f;
+
+				eulerAngles.x = glm::clamp(eulerAngles.x, glm::radians(-90.0f), glm::radians(90.0f));
+
+				transformComponent.Rotation = glm::quat(eulerAngles);
 				
 				std::cout << glm::degrees(eulerAngles.x) << ", " << glm::degrees(eulerAngles.y) << ", " << glm::degrees(eulerAngles.z) << std::endl;
 				
