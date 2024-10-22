@@ -208,22 +208,23 @@ bool Engine::Init()
 				glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
 
 				glm::vec3 worldUp = glm::inverse(transformComponent.Rotation) * glm::vec3(0.0f, 1.0f, 0.0f);
-
-				std::cout << transformComponent.Rotation.z << std::endl;
+				worldUp = glm::normalize(worldUp);
 				
 				float movement = playerInputComponent.speed * it.delta_time();
 
-				glm::vec3 eulerAngles = glm::eulerAngles(transformComponent.Rotation);
-
-				transformComponent.Rotation = glm::normalize(glm::quat(eulerAngles));
-
 				glm::quat pitch = glm::angleAxis(input->lookY * 0.001f, glm::vec3(1.0f, 0.0f, 0.0f));
+				pitch = glm::normalize(pitch);
 				glm::quat yaw = glm::angleAxis(input->lookX * 0.001f, worldUp);
+				yaw = glm::normalize(yaw);
 
 				glm::quat orientation = yaw * pitch;
 
 				transformComponent.Rotation *= glm::normalize(orientation);
 
+				glm::vec3 eulerAngles = glm::eulerAngles(transformComponent.Rotation);
+				
+				std::cout << glm::degrees(eulerAngles.x) << ", " << glm::degrees(eulerAngles.y) << ", " << glm::degrees(eulerAngles.z) << std::endl;
+				
 				if (input->moveForward)
 					transformComponent.Position += forward * movement;
 				if (input->moveBackward)
