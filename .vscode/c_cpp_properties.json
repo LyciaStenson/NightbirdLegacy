@@ -15,6 +15,7 @@
 				"${workspaceFolder}/Engine/Vendor/flecs/include",
 				"${workspaceFolder}/Engine/Vendor/glm",
 				"${workspaceFolder}/Engine/Vendor/stb",
+				"${workspaceFolder}/Engine/Vendor/cgltf",
 				"${workspaceFolder}/Editor/Vendor/imgui"
 			],
 			"defines": [],

@@ -51,7 +51,7 @@ Game::Game()
 	flecs::entity camera = m_Engine->m_World.entity("Camera")
 		.set<TransformComponent>({ glm::vec3(0.0f, 0.0f, 0.0f) })
 		.add<CameraComponent>()
-		.add<PlayerInputComponent>();
+		.set<PlayerInputComponent>({ 5.0f });
 
 	flecs::system m_SpinSystem = m_Engine->m_World.system<SpinComponent, TransformComponent>("SpinSystem")
 		.kind(flecs::OnUpdate)
