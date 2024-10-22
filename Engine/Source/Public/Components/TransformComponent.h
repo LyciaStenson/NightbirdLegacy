@@ -10,3 +10,11 @@ struct TransformComponent
 	glm::quat Rotation = glm::quat();
 	glm::vec3 Scale = glm::vec3(1.0f);
 };
+
+struct Local
+{
+};
+
+struct Global
+{
+};

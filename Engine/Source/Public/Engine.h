@@ -54,6 +54,8 @@ private:
 
 	flecs::system m_RenderShutdownSystem;
 
+	flecs::query<const TransformComponent, const TransformComponent*, TransformComponent> m_GlobalTransformQuery;
+
 	GLFWwindow* m_Window;
 
 	RenderTarget* m_RenderTarget;

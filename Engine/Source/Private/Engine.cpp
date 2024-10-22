@@ -43,9 +43,9 @@ bool Engine::Init()
 
 	flecs::system mainCameraInitSystem = m_World.system<CameraComponent>("MainCameraInitSystem")
 		.kind(0)
-		.each([&](flecs::iter& it, size_t, CameraComponent& cameraComponent)
+		.each([&](flecs::iter& iter, size_t index, CameraComponent& cameraComponent)
 			{
-				mainCamera = it.entity(0);
+				mainCamera = iter.entity(index);
 			}
 		);
 	mainCameraInitSystem.run();
@@ -196,10 +196,40 @@ bool Engine::Init()
 				glDeleteBuffers(1, &meshComponent.VBO);
 			}
 		);
+
+	m_GlobalTransformQuery = m_World.query_builder<const TransformComponent, const TransformComponent*, TransformComponent>()
+		.term_at(0).second<Local>()
+		.term_at(1).second<Global>()
+		.term_at(2).second<Global>()
+		.term_at(1)
+			.parent().cascade()
+		.build();
+
+	m_GlobalTransformQuery
+		.each([](const TransformComponent& transform, const TransformComponent* parentTransform, TransformComponent& transformOut)
+			{
+				transformOut.Position += transform.Position;
+				transformOut.Rotation *= transform.Rotation;
+				transformOut.Scale *= transform.Scale;
+				if (parentTransform)
+				{
+					transformOut.Position += parentTransform->Position;
+					transformOut.Rotation *= parentTransform->Rotation;
+					transformOut.Scale *= parentTransform->Scale;
+				}
+			}
+		);
+
+	m_World
+		.each([](flecs::entity entity, flecs::pair<TransformComponent, Global> transformComponent)
+			{
+				std::cout << entity.name() << ": " << transformComponent->Position.x << std::endl;
+			}
+		);
 	
 	flecs::system playerInputSystem = m_World.system<PlayerInputComponent, TransformComponent>("PlayerInputSystem")
 		.kind(flecs::OnUpdate)
-		.each([&](flecs::iter& it, size_t, PlayerInputComponent& playerInputComponent, TransformComponent& transformComponent)
+		.each([&](flecs::iter& iter, size_t index, PlayerInputComponent& playerInputComponent, TransformComponent& transformComponent)
 			{
 				InputComponent* input = m_World.get_mut<InputComponent>();
 
@@ -210,7 +240,7 @@ bool Engine::Init()
 				glm::vec3 worldUp = glm::inverse(transformComponent.Rotation) * glm::vec3(0.0f, 1.0f, 0.0f);
 				worldUp = glm::normalize(worldUp);
 				
-				float movement = playerInputComponent.speed * it.delta_time();
+				float movement = playerInputComponent.speed * iter.delta_time();
 
 				glm::quat pitch = glm::angleAxis(input->lookY * 0.001f, glm::vec3(1.0f, 0.0f, 0.0f));
 				pitch = glm::normalize(pitch);
@@ -220,16 +250,6 @@ bool Engine::Init()
 				glm::quat orientation = yaw * pitch;
 
 				transformComponent.Rotation *= glm::normalize(orientation);
-
-				glm::vec3 eulerAngles = glm::eulerAngles(transformComponent.Rotation);
-
-				//eulerAngles.z = 0.0f;
-
-				eulerAngles.x = glm::clamp(eulerAngles.x, glm::radians(-90.0f), glm::radians(90.0f));
-
-				transformComponent.Rotation = glm::quat(eulerAngles);
-				
-				std::cout << glm::degrees(eulerAngles.x) << ", " << glm::degrees(eulerAngles.y) << ", " << glm::degrees(eulerAngles.z) << std::endl;
 				
 				if (input->moveForward)
 					transformComponent.Position += forward * movement;
