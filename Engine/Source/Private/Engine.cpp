@@ -240,9 +240,19 @@ void Engine::MainLoop()
 					transformOut.Position = transform.Position;
 					if (parentTransform)
 					{
-						transformOut.Scale *= parentTransform->Scale;
-						transformOut.Rotation *= parentTransform->Rotation;
-						transformOut.Position += parentTransform->Position;
+						glm::vec3 scaledPosition = parentTransform->Scale * transform.Position;
+
+						glm::vec3 rotatedPosition = parentTransform->Rotation * scaledPosition;
+
+						transformOut.Position = parentTransform->Position + rotatedPosition;
+
+						transformOut.Rotation = parentTransform->Rotation * transform.Rotation;
+
+						transformOut.Scale = parentTransform->Scale * transform.Scale;
+
+						//transformOut.Scale *= parentTransform->Scale;
+						//transformOut.Rotation *= parentTransform->Rotation;
+						//transformOut.Position += parentTransform->Position;
 					}
 				}
 			);

@@ -41,15 +41,15 @@ Game::Game()
 		.child_of(cubes)
 		.add<TransformComponent, Global>()
 		.set<TransformComponent, Local>({ glm::vec3(1.0f, 0.0f, 0.0f) })
-		.set<MeshComponent>(meshComponent);
-		//.set<SpinComponent>({ 1.23f, glm::vec3(0.0f, 1.0f, 0.0f) });
+		.set<MeshComponent>(meshComponent)
+		.set<SpinComponent>({ 1.23f, glm::vec3(0.0f, 1.0f, 0.0f) });
 
 	flecs::entity stevieNicksCube2 = m_Engine->m_World.entity("StevieNicksCube2")
 		.child_of(cubes)
 		.add<TransformComponent, Global>()
 		.set<TransformComponent, Local>({ glm::vec3(-1.0f, 0.0f, 0.0f) })
-		.set<MeshComponent>(meshComponent);
-		//.set<SpinComponent>({ -1.35f, glm::vec3(0.0f, 0.0f, 1.0f) });
+		.set<MeshComponent>(meshComponent)
+		.set<SpinComponent>({ -1.35f, glm::vec3(0.0f, 0.0f, 1.0f) });
 
 	flecs::entity camera = m_Engine->m_World.entity("Camera")
 		.add<TransformComponent, Global>()
