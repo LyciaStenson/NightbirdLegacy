@@ -166,33 +166,13 @@ bool Engine::Init()
 		.term_at(1)
 			.parent().cascade()
 		.build();
-
-	m_GlobalTransformQuery
-		.each([](const TransformComponent& transform, const TransformComponent* parentTransform, TransformComponent& transformOut)
-			{
-				transformOut.Position += transform.Position;
-				transformOut.Rotation *= transform.Rotation;
-				transformOut.Scale *= transform.Scale;
-				if (parentTransform)
-				{
-					transformOut.Position += parentTransform->Position;
-					transformOut.Rotation *= parentTransform->Rotation;
-					transformOut.Scale *= parentTransform->Scale;
-				}
-			}
-		);
-
-	//m_World
-		//.each([](flecs::entity entity, flecs::pair<TransformComponent, Global> transformComponent)
-			//{
-				//std::cout << entity.name() << ": " << transformComponent->Position.x << std::endl;
-			//}
-		//);
 	
-	flecs::system playerInputSystem = m_World.system<PlayerInputComponent, flecs::pair<TransformComponent, Global>>("PlayerInputSystem")
+	flecs::system playerInputSystem = m_World.system<PlayerInputComponent, flecs::pair<TransformComponent, Local>>("PlayerInputSystem")
 		.kind(flecs::OnUpdate)
-		.each([&](flecs::iter& iter, size_t index, PlayerInputComponent& playerInputComponent, flecs::pair<TransformComponent, Global> transformComponent)
+		.each([&](flecs::iter& iter, size_t index, PlayerInputComponent& playerInputComponent, flecs::pair<TransformComponent, Local> transformComponent)
 			{
+				std::cout << iter.entity(index).name() << std::endl;
+
 				InputComponent* input = m_World.get_mut<InputComponent>();
 
 				glm::vec3 forward = transformComponent->Rotation * glm::vec3(0.0f, 0.0f, -1.0f);
@@ -251,6 +231,21 @@ void Engine::MainLoop()
 		lastFrameTime = currentFrameTime;
 
 		fps = (int)(1.0f / deltaTime);
+
+		m_GlobalTransformQuery
+			.each([](const TransformComponent& transform, const TransformComponent* parentTransform, TransformComponent& transformOut)
+				{
+					transformOut.Scale = transform.Scale;
+					transformOut.Rotation = transform.Rotation;
+					transformOut.Position = transform.Position;
+					if (parentTransform)
+					{
+						transformOut.Scale *= parentTransform->Scale;
+						transformOut.Rotation *= parentTransform->Rotation;
+						transformOut.Position += parentTransform->Position;
+					}
+				}
+			);
 
 		m_RenderTarget->Bind();
 

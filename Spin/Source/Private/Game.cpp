@@ -27,10 +27,10 @@ Game::Game()
 	GameRenderTarget* renderTarget = new GameRenderTarget(WIDTH, HEIGHT);
 	m_Engine = new Engine(window, renderTarget);
 
-	//flecs::entity cubes = m_Engine->m_World.entity("Cubes")
-		//.add<TransformComponent, Global>()
-		//.set<TransformComponent, Local>({ glm::vec3(0.0f, 0.0f, 0.0f) });
-		//.set<SpinComponent>({ 1.5f, glm::vec3(0.0f, 0.0f, 1.0f) });
+	flecs::entity cubes = m_Engine->m_World.entity("Cubes")
+		.add<TransformComponent, Global>()
+		.set<TransformComponent, Local>({ glm::vec3(0.0f, 0.0f, -3.0f) })
+		.set<SpinComponent>({ 1.5f, glm::vec3(0.0f, 0.0f, 1.0f) });
 
 	MeshComponent meshComponent;
 	meshComponent.vertexPath = "Cube.vert";
@@ -38,17 +38,17 @@ Game::Game()
 	meshComponent.texturePath = "stevie-nicks.jpg";
 
 	flecs::entity stevieNicksCube = m_Engine->m_World.entity("StevieNicksCube")
-		//.child_of(cubes)
+		.child_of(cubes)
 		.add<TransformComponent, Global>()
-		.set<TransformComponent, Local>({ glm::vec3(0.0f, 0.0f, -3.0f) })
-		.set<MeshComponent>(meshComponent)
-		.set<SpinComponent>({ 1.23f, glm::vec3(0.0f, 1.0f, 0.0f) });
+		.set<TransformComponent, Local>({ glm::vec3(1.0f, 0.0f, 0.0f) })
+		.set<MeshComponent>(meshComponent);
+		//.set<SpinComponent>({ 1.23f, glm::vec3(0.0f, 1.0f, 0.0f) });
 
-	//flecs::entity stevieNicksCube2 = m_Engine->m_World.entity("StevieNicksCube2")
-		//.child_of(cubes)
-		//.add<TransformComponent, Global>()
-		//.set<TransformComponent, Local>({ glm::vec3(0.0f, 0.0f, 0.0f) })
-		//.set<MeshComponent>(meshComponent);
+	flecs::entity stevieNicksCube2 = m_Engine->m_World.entity("StevieNicksCube2")
+		.child_of(cubes)
+		.add<TransformComponent, Global>()
+		.set<TransformComponent, Local>({ glm::vec3(-1.0f, 0.0f, 0.0f) })
+		.set<MeshComponent>(meshComponent);
 		//.set<SpinComponent>({ -1.35f, glm::vec3(0.0f, 0.0f, 1.0f) });
 
 	flecs::entity camera = m_Engine->m_World.entity("Camera")
