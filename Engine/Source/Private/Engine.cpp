@@ -104,11 +104,13 @@ bool Engine::Init()
 
 	m_RenderTarget->Init();
 
-	flecs::system renderSystem = m_World.system<TransformComponent, MeshComponent>("RenderSystem")
+	flecs::system renderSystem = m_World.system<flecs::pair<TransformComponent, Global>, MeshComponent>("RenderSystem")
 		.kind(flecs::OnUpdate)
-		.each([&](flecs::iter& iter, size_t index, TransformComponent& transformComponent, MeshComponent& meshComponent)
+		.each([&](flecs::iter& iter, size_t index, flecs::pair<TransformComponent, Global> transformComponent, MeshComponent& meshComponent)
 			{
-				const TransformComponent* cameraTransform = mainCamera.get<TransformComponent>();
+				//std::cout << iter.entity(index).name() << std::endl;
+
+				const TransformComponent* cameraTransform = mainCamera.get<TransformComponent, Global>();
 
 				glActiveTexture(GL_TEXTURE0);
 				glBindTexture(GL_TEXTURE_2D, meshComponent.texture);
@@ -119,7 +121,7 @@ bool Engine::Init()
 				meshComponent.shader.SetVec3("objectColor", glm::vec3(1.0f, 1.0f, 1.0f));
 				meshComponent.shader.SetVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
 				meshComponent.shader.SetVec3("lightPos", glm::vec3(10.0f, 10.0f, 10.0f));
-						
+				
 				meshComponent.shader.SetVec3("viewPos", cameraTransform->Position);
 
 				int width;
@@ -135,30 +137,15 @@ bool Engine::Init()
 
 				glm::mat4 view = glm::lookAt(cameraTransform->Position, cameraTransform->Position + forward, up);;
 				meshComponent.shader.SetMat4("view", view);
-						
+				
 				glBindVertexArray(meshComponent.VAO);
 
-				TransformComponent globalTransform = transformComponent;
-
-				flecs::entity current = iter.entity(index);
-				while (flecs::entity parent = current.parent())
-				{
-					const TransformComponent* parentTransform = parent.get<TransformComponent>();
-					if (parentTransform)
-					{
-						globalTransform.Scale *= parentTransform->Scale;
-						globalTransform.Rotation *= parentTransform->Rotation;
-						globalTransform.Position = parentTransform->Position + (parentTransform->Rotation * (parentTransform->Scale * globalTransform.Position));
-					}
-					current = parent;
-				}
-
 				glm::mat4 model = glm::mat4(1.0f);
-				model = glm::translate(model, globalTransform.Position);
-				model *= glm::toMat4(globalTransform.Rotation);
-				model = glm::scale(model, globalTransform.Scale);
+				model = glm::translate(model, transformComponent->Position);
+				model *= glm::toMat4(transformComponent->Rotation);
+				model = glm::scale(model, transformComponent->Scale);
 				meshComponent.shader.SetMat4("model", model);
-						
+				
 				glDrawArrays(GL_TRIANGLES, 0, 36);
 			}
 		);
@@ -195,24 +182,24 @@ bool Engine::Init()
 			}
 		);
 
-	m_World
-		.each([](flecs::entity entity, flecs::pair<TransformComponent, Global> transformComponent)
-			{
-				std::cout << entity.name() << ": " << transformComponent->Position.x << std::endl;
-			}
-		);
+	//m_World
+		//.each([](flecs::entity entity, flecs::pair<TransformComponent, Global> transformComponent)
+			//{
+				//std::cout << entity.name() << ": " << transformComponent->Position.x << std::endl;
+			//}
+		//);
 	
-	flecs::system playerInputSystem = m_World.system<PlayerInputComponent, TransformComponent>("PlayerInputSystem")
+	flecs::system playerInputSystem = m_World.system<PlayerInputComponent, flecs::pair<TransformComponent, Global>>("PlayerInputSystem")
 		.kind(flecs::OnUpdate)
-		.each([&](flecs::iter& iter, size_t index, PlayerInputComponent& playerInputComponent, TransformComponent& transformComponent)
+		.each([&](flecs::iter& iter, size_t index, PlayerInputComponent& playerInputComponent, flecs::pair<TransformComponent, Global> transformComponent)
 			{
 				InputComponent* input = m_World.get_mut<InputComponent>();
 
-				glm::vec3 forward = transformComponent.Rotation * glm::vec3(0.0f, 0.0f, -1.0f);
-				glm::vec3 right = transformComponent.Rotation * glm::vec3(1.0f, 0.0f, 0.0f);
+				glm::vec3 forward = transformComponent->Rotation * glm::vec3(0.0f, 0.0f, -1.0f);
+				glm::vec3 right = transformComponent->Rotation * glm::vec3(1.0f, 0.0f, 0.0f);
 				glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
 
-				glm::vec3 worldUp = glm::inverse(transformComponent.Rotation) * glm::vec3(0.0f, 1.0f, 0.0f);
+				glm::vec3 worldUp = glm::inverse(transformComponent->Rotation) * glm::vec3(0.0f, 1.0f, 0.0f);
 				worldUp = glm::normalize(worldUp);
 				
 				float movement = playerInputComponent.speed * iter.delta_time();
@@ -224,20 +211,20 @@ bool Engine::Init()
 
 				glm::quat orientation = yaw * pitch;
 
-				transformComponent.Rotation *= glm::normalize(orientation);
+				transformComponent->Rotation *= glm::normalize(orientation);
 				
 				if (input->moveForward)
-					transformComponent.Position += forward * movement;
+					transformComponent->Position += forward * movement;
 				if (input->moveBackward)
-					transformComponent.Position -= forward * movement;
+					transformComponent->Position -= forward * movement;
 				if (input->moveRight)
-					transformComponent.Position += right * movement;
+					transformComponent->Position += right * movement;
 				if (input->moveLeft)
-					transformComponent.Position -= right * movement;
+					transformComponent->Position -= right * movement;
 				if (input->moveUp)
-					transformComponent.Position += up * movement;
+					transformComponent->Position += up * movement;
 				if (input->moveDown)
-					transformComponent.Position -= up * movement;
+					transformComponent->Position -= up * movement;
 
 				input->lookX = 0.0f;
 				input->lookY = 0.0f;

@@ -28,7 +28,8 @@ Game::Game()
 	m_Engine = new Engine(window, renderTarget);
 
 	//flecs::entity cubes = m_Engine->m_World.entity("Cubes")
-		//.set<TransformComponent>({ glm::vec3(0.0f, 0.0f, -3.0f) });
+		//.add<TransformComponent, Global>()
+		//.set<TransformComponent, Local>({ glm::vec3(0.0f, 0.0f, 0.0f) });
 		//.set<SpinComponent>({ 1.5f, glm::vec3(0.0f, 0.0f, 1.0f) });
 
 	MeshComponent meshComponent;
@@ -38,29 +39,29 @@ Game::Game()
 
 	flecs::entity stevieNicksCube = m_Engine->m_World.entity("StevieNicksCube")
 		//.child_of(cubes)
-		//.add<TransformComponent, Global>()
-		.set<TransformComponent>({ glm::vec3(1.0f, 0.0f, -3.0f) })
-		.set<MeshComponent>(meshComponent);
-		//.set<SpinComponent>({ 1.23f, glm::vec3(0.0f, 1.0f, 0.0f) });
+		.add<TransformComponent, Global>()
+		.set<TransformComponent, Local>({ glm::vec3(0.0f, 0.0f, -3.0f) })
+		.set<MeshComponent>(meshComponent)
+		.set<SpinComponent>({ 1.23f, glm::vec3(0.0f, 1.0f, 0.0f) });
 
-	flecs::entity stevieNicksCube2 = m_Engine->m_World.entity("StevieNicksCube2")
+	//flecs::entity stevieNicksCube2 = m_Engine->m_World.entity("StevieNicksCube2")
 		//.child_of(cubes)
 		//.add<TransformComponent, Global>()
-		.set<TransformComponent>({ glm::vec3(-1.0f, 0.0f, -3.0f) })
-		.set<MeshComponent>(meshComponent);
+		//.set<TransformComponent, Local>({ glm::vec3(0.0f, 0.0f, 0.0f) })
+		//.set<MeshComponent>(meshComponent);
 		//.set<SpinComponent>({ -1.35f, glm::vec3(0.0f, 0.0f, 1.0f) });
 
 	flecs::entity camera = m_Engine->m_World.entity("Camera")
-		//.add<TransformComponent, Global>()
-		.set<TransformComponent>({ glm::vec3(0.0f, 0.0f, 0.0f) })
+		.add<TransformComponent, Global>()
+		.set<TransformComponent, Local>({ glm::vec3(0.0f, 0.0f, 0.0f) })
 		.add<CameraComponent>()
 		.set<PlayerInputComponent>({ 5.0f });
 
-	flecs::system m_SpinSystem = m_Engine->m_World.system<SpinComponent, TransformComponent>("SpinSystem")
+	flecs::system m_SpinSystem = m_Engine->m_World.system<SpinComponent, flecs::pair<TransformComponent, Local>>("SpinSystem")
 		.kind(flecs::OnUpdate)
-		.each([](flecs::iter& it, size_t, SpinComponent& spinComponent, TransformComponent& transformComponent)
+		.each([](flecs::iter& it, size_t, SpinComponent& spinComponent, flecs::pair<TransformComponent, Local> transformComponent)
 			{
-				transformComponent.Rotation *= glm::angleAxis(spinComponent.speed * it.delta_time(), spinComponent.axis);
+				transformComponent->Rotation *= glm::angleAxis(spinComponent.speed * it.delta_time(), spinComponent.axis);
 			}
 		);
 
