@@ -131,8 +131,8 @@ bool Engine::Init()
 				glm::mat4 projection = glm::perspective(glm::radians(70.0f), (float)width / (float)height, 0.1f, 1000.0f);
 				meshComponent.shader.SetMat4("projection", projection);
 
-				//glm::vec3 forward = glm::vec3(0.0f, 0.0f, -1.0f) * camera.get<TransformComponent>()->Rotation;
-				glm::vec3 forward = glm::rotate(cameraTransform->Rotation, glm::vec3(0.0f, 0.0f, -1.0f));
+				glm::vec3 forward = cameraTransform->Rotation * glm::vec3(0.0f, 0.0f, -1.0f);
+				//glm::vec3 forward = glm::rotate(cameraTransform->Rotation, glm::vec3(0.0f, 0.0f, -1.0f));
 				glm::vec3 up = glm::rotate(cameraTransform->Rotation, glm::vec3(0.0f, 1.0f, 0.0f));
 
 				glm::mat4 view = glm::lookAt(cameraTransform->Position, cameraTransform->Position + forward, up);;
@@ -171,8 +171,6 @@ bool Engine::Init()
 		.kind(flecs::OnUpdate)
 		.each([&](flecs::iter& iter, size_t index, PlayerInputComponent& playerInputComponent, flecs::pair<TransformComponent, Local> transformComponent)
 			{
-				std::cout << iter.entity(index).name() << std::endl;
-
 				InputComponent* input = m_World.get_mut<InputComponent>();
 
 				glm::vec3 forward = transformComponent->Rotation * glm::vec3(0.0f, 0.0f, -1.0f);
@@ -232,6 +230,8 @@ void Engine::MainLoop()
 
 		fps = (int)(1.0f / deltaTime);
 
+		//std::cout << "FPS: " << fps << std::endl;
+
 		m_GlobalTransformQuery
 			.each([](const TransformComponent& transform, const TransformComponent* parentTransform, TransformComponent& transformOut)
 				{
@@ -249,10 +249,6 @@ void Engine::MainLoop()
 						transformOut.Rotation = parentTransform->Rotation * transform.Rotation;
 
 						transformOut.Scale = parentTransform->Scale * transform.Scale;
-
-						//transformOut.Scale *= parentTransform->Scale;
-						//transformOut.Rotation *= parentTransform->Rotation;
-						//transformOut.Position += parentTransform->Position;
 					}
 				}
 			);
