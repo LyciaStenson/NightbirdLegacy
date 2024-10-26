@@ -42,8 +42,8 @@ Game::Game()
 
 	flecs::entity skybox = m_Engine->m_World.entity("Skybox")
 		.add<TransformComponent, Global>()
-		.add<TransformComponent, Local>()
-		.set<SkyboxComponent>(skyboxComponent);
+		.add<TransformComponent, Local>();
+		//.set<SkyboxComponent>(skyboxComponent);
 
 	flecs::entity cubes = m_Engine->m_World.entity("Cubes")
 		.add<TransformComponent, Global>()
