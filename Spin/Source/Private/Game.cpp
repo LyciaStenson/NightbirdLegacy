@@ -28,10 +28,27 @@ Game::Game()
 	GameRenderTarget* renderTarget = new GameRenderTarget(WIDTH, HEIGHT);
 	m_Engine = new Engine(window, renderTarget);
 
+	SkyboxComponent skyboxComponent;
+	skyboxComponent.vertexPath = "Skybox/skybox.vert";
+	skyboxComponent.fragmentPath = "Skybox/skybox.frag";
+	skyboxComponent.texturePaths = {
+		"Skybox/right.jpg",
+		"Skybox/left.jpg",
+		"Skybox/top.jpg",
+		"Skybox/bottom.jpg",
+		"Skybox/front.jpg",
+		"Skybox/back.jpg",
+	};
+
+	flecs::entity skybox = m_Engine->m_World.entity("Skybox")
+		.add<TransformComponent, Global>()
+		.add<TransformComponent, Local>()
+		.set<SkyboxComponent>(skyboxComponent);
+
 	flecs::entity cubes = m_Engine->m_World.entity("Cubes")
 		.add<TransformComponent, Global>()
-		.set<TransformComponent, Local>({ glm::vec3(0.0f, 0.0f, -3.0f) })
-		.set<SpinComponent>({ 1.5f, glm::vec3(0.0f, 0.0f, 1.0f) });
+		.set<TransformComponent, Local>({ glm::vec3(0.0f, 0.0f, -3.0f) });
+		//.set<SpinComponent>({ 1.5f, glm::vec3(0.0f, 0.0f, 1.0f) });
 
 	MeshComponent meshComponent;
 	meshComponent.vertexPath = "Cube.vert";

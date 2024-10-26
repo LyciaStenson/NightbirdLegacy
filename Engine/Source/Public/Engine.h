@@ -17,6 +17,7 @@
 #include <Shader.h>
 
 #include <TransformComponent.h>
+#include <SkyboxComponent.h>
 #include <MeshComponent.h>
 #include <CameraComponent.h>
 #include <InputComponent.h>

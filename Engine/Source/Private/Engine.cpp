@@ -50,7 +50,51 @@ bool Engine::Init()
 		);
 	mainCameraInitSystem.run();
 
-	flecs::system renderInitSystem = m_World.system<MeshComponent>("RenderInitSystem")
+	flecs::system skyboxRenderInitSystem = m_World.system<SkyboxComponent>("SkyboxRenderInitSystem")
+		.kind(0)
+		.each([](SkyboxComponent& skyboxComponent)
+			{
+				skyboxComponent.shader = Shader(skyboxComponent.vertexPath, skyboxComponent.fragmentPath);
+
+				glGenVertexArrays(1, &skyboxComponent.VAO);
+				glGenBuffers(1, &skyboxComponent.VBO);
+				glBindVertexArray(skyboxComponent.VAO);
+				glBindBuffer(GL_ARRAY_BUFFER, skyboxComponent.VBO);
+				glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxComponent.vertices), &skyboxComponent.vertices[0], GL_STATIC_DRAW);
+
+				// Position Attribute
+				glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 8, (void*)0);
+				glEnableVertexAttribArray(0);
+
+				glGenTextures(1, &skyboxComponent.texture);
+				glBindTexture(GL_TEXTURE_CUBE_MAP, skyboxComponent.texture);
+
+				int width, height, nrChannels;
+				for (unsigned int i = 0; i < skyboxComponent.texturePaths.size(); i++)
+				{
+					unsigned char* data = stbi_load(skyboxComponent.texturePaths[i], &width, &height, &nrChannels, 0);
+					if (data)
+					{
+						glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+						stbi_image_free(data);
+					}
+					else
+					{
+						std::cout << "Cubemap texture failed to load: " << skyboxComponent.texturePaths[i] << std::endl;
+						stbi_image_free(data);
+					}
+				}
+
+				glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+				glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+				glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+				glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+				glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+			}
+		);
+	skyboxRenderInitSystem.run();
+
+	flecs::system meshRenderInitSystem = m_World.system<MeshComponent>("RenderInitSystem")
 		.kind(0)
 		.each([](MeshComponent& meshComponent)
 			{
@@ -100,21 +144,36 @@ bool Engine::Init()
 				stbi_image_free(data);
 			}
 		);
-	renderInitSystem.run();
+	meshRenderInitSystem.run();
 
 	m_RenderTarget->Init();
 
-	flecs::system renderSystem = m_World.system<flecs::pair<TransformComponent, Global>, MeshComponent>("RenderSystem")
+	flecs::system skyboxRenderSystem = m_World.system<flecs::pair<TransformComponent, Global>, SkyboxComponent>("")
+		.kind(flecs::OnUpdate)
+		.each([&](flecs::iter& iter, size_t index, flecs::pair<TransformComponent, Global> transformComponent, SkyboxComponent& skyboxComponent)
+			{
+				std::cout << "SkyboxRenderSystem" << std::endl;
+
+				glDepthMask(GL_FALSE);
+				skyboxComponent.shader.Use();
+				glBindVertexArray(skyboxComponent.VAO);
+				glBindTexture(GL_TEXTURE_CUBE_MAP, skyboxComponent.texture);
+				glDrawArrays(GL_TRIANGLES, 0, 36);
+				glDepthMask(GL_TRUE);
+			}
+		);
+	
+	flecs::system meshRenderSystem = m_World.system<flecs::pair<TransformComponent, Global>, MeshComponent>("RenderSystem")
 		.kind(flecs::OnUpdate)
 		.each([&](flecs::iter& iter, size_t index, flecs::pair<TransformComponent, Global> transformComponent, MeshComponent& meshComponent)
 			{
-				//std::cout << iter.entity(index).name() << std::endl;
+				std::cout << "MeshRenderSystem" << std::endl;
 
 				const TransformComponent* cameraTransform = mainCamera.get<TransformComponent, Global>();
 
 				glActiveTexture(GL_TEXTURE0);
 				glBindTexture(GL_TEXTURE_2D, meshComponent.texture);
-				glBindTexture(GL_TEXTURE_2D, 1);
+				glBindTexture(GL_TEXTURE_2D, meshComponent.texture);
 
 				meshComponent.shader.Use();
 
@@ -132,7 +191,6 @@ bool Engine::Init()
 				meshComponent.shader.SetMat4("projection", projection);
 
 				glm::vec3 forward = cameraTransform->Rotation * glm::vec3(0.0f, 0.0f, -1.0f);
-				//glm::vec3 forward = glm::rotate(cameraTransform->Rotation, glm::vec3(0.0f, 0.0f, -1.0f));
 				glm::vec3 up = glm::rotate(cameraTransform->Rotation, glm::vec3(0.0f, 1.0f, 0.0f));
 
 				glm::mat4 view = glm::lookAt(cameraTransform->Position, cameraTransform->Position + forward, up);;
@@ -369,5 +427,25 @@ void Engine::HandleScroll()
 
 void DebugCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam)
 {
-	std::cout << message << std::endl;
+	switch (severity)
+	{
+	case GL_DEBUG_SEVERITY_HIGH:
+		std::cout << "GL_DEBUG_SEVERITY_HIGH" << std::endl;
+		std::cout << message << std::endl;
+		break;
+	case GL_DEBUG_SEVERITY_MEDIUM:
+		std::cout << "GL_DEBUG_SEVERITY_MEDIUM" << std::endl;
+		std::cout << message << std::endl;
+		break;
+	case GL_DEBUG_SEVERITY_LOW:
+		std::cout << "GL_DEBUG_SEVERITY_LOW" << std::endl;
+		std::cout << message << std::endl;
+		break;
+	case GL_DEBUG_SEVERITY_NOTIFICATION:
+		std::cout << "GL_DEBUG_SEVERITY_NOTIFICATION" << std::endl;
+		break;
+	default:
+		std::cout << "Unknown severity enum" << std::endl;
+		break;
+	}
 }
