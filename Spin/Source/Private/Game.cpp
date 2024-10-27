@@ -32,12 +32,12 @@ Game::Game()
 	skyboxComponent.vertexPath = "Skybox/Skybox.vert";
 	skyboxComponent.fragmentPath = "Skybox/Skybox.frag";
 	skyboxComponent.texturePaths = {
-		"Skybox/right.jpg",
-		"Skybox/left.jpg",
-		"Skybox/top.jpg",
-		"Skybox/bottom.jpg",
-		"Skybox/front.jpg",
-		"Skybox/back.jpg",
+		"Skybox/Right.hdr",
+		"Skybox/Left.hdr",
+		"Skybox/Top.hdr",
+		"Skybox/Bottom.hdr",
+		"Skybox/Front.hdr",
+		"Skybox/Back.hdr",
 	};
 
 	flecs::entity skybox = m_Engine->m_World.entity("Skybox")
