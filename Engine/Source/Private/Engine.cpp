@@ -127,7 +127,7 @@ bool Engine::Init()
 				glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(skyboxComponent.indices), &skyboxComponent.indices, GL_STATIC_DRAW);
 
 				// Position Attribute
-				glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 8, (void*)0);
+				glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, (void*)0);
 				glEnableVertexAttribArray(0);
 
 				glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -160,8 +160,8 @@ bool Engine::Init()
 					}
 				}
 
-				//skyboxComponent.shader.Use();
-				//skyboxComponent.shader.SetInt("skybox", 0);
+				skyboxComponent.shader.Use();
+				skyboxComponent.shader.SetInt("skybox", 0);
 			}
 		);
 	skyboxRenderInitSystem.run();
@@ -216,8 +216,7 @@ bool Engine::Init()
 		.each([&](flecs::iter& iter, size_t index, SkyboxComponent& skyboxComponent)
 			{
 				const TransformComponent* cameraTransform = mainCamera.get<TransformComponent, Global>();
-
-				glDisable(GL_DEPTH_TEST);
+				
 				glDepthFunc(GL_LEQUAL);
 
 				skyboxComponent.shader.Use();
@@ -229,11 +228,11 @@ bool Engine::Init()
 				glm::mat4 projection = glm::perspective(glm::radians(70.0f), (float)width / (float)height, 0.1f, 1000.0f);
 				skyboxComponent.shader.SetMat4("projection", projection);
 
-				//glm::vec3 forward = cameraTransform->Rotation * glm::vec3(0.0f, 0.0f, -1.0f);
-				//glm::vec3 up = glm::rotate(cameraTransform->Rotation, glm::vec3(0.0f, 1.0f, 0.0f));
+				glm::vec3 forward = cameraTransform->Rotation * glm::vec3(0.0f, 0.0f, -1.0f);
+				glm::vec3 up = glm::rotate(cameraTransform->Rotation, glm::vec3(0.0f, 1.0f, 0.0f));
 
-				glm::mat4 view = glm::lookAt(glm::vec3(), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-				//glm::mat4 view = glm::mat4(glm::mat3(glm::lookAt(cameraTransform->Position, cameraTransform->Position + forward, up)));
+				//glm::mat4 view = glm::lookAt(glm::vec3(), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+				glm::mat4 view = glm::mat4(glm::mat3(glm::lookAt(cameraTransform->Position, cameraTransform->Position + forward, up)));
 				skyboxComponent.shader.SetMat4("view", view);
 				
 				glBindVertexArray(skyboxComponent.VAO);
@@ -243,7 +242,6 @@ bool Engine::Init()
 				glBindVertexArray(0);
 
 				glDepthFunc(GL_LESS);
-				glEnable(GL_DEPTH_TEST);
 			}
 		);
 
