@@ -29,8 +29,8 @@ Game::Game()
 	m_Engine = new Engine(window, renderTarget);
 
 	SkyboxComponent skyboxComponent;
-	skyboxComponent.vertexPath = "Skybox/skybox.vert";
-	skyboxComponent.fragmentPath = "Skybox/skybox.frag";
+	skyboxComponent.vertexPath = "Skybox/Skybox.vert";
+	skyboxComponent.fragmentPath = "Skybox/Skybox.frag";
 	skyboxComponent.texturePaths = {
 		"Skybox/right.jpg",
 		"Skybox/left.jpg",
@@ -41,13 +41,11 @@ Game::Game()
 	};
 
 	flecs::entity skybox = m_Engine->m_World.entity("Skybox")
-		.add<TransformComponent, Global>()
-		.add<TransformComponent, Local>();
-		//.set<SkyboxComponent>(skyboxComponent);
+		.set<SkyboxComponent>(skyboxComponent);
 
-	flecs::entity cubes = m_Engine->m_World.entity("Cubes")
-		.add<TransformComponent, Global>()
-		.set<TransformComponent, Local>({ glm::vec3(0.0f, 0.0f, -3.0f) });
+	//flecs::entity cubes = m_Engine->m_World.entity("Cubes")
+		//.add<TransformComponent, Global>()
+		//.set<TransformComponent, Local>({ glm::vec3(0.0f, 0.0f, -3.0f) })
 		//.set<SpinComponent>({ 1.5f, glm::vec3(0.0f, 0.0f, 1.0f) });
 
 	MeshComponent meshComponent;
@@ -56,19 +54,21 @@ Game::Game()
 	meshComponent.texturePath = "stevie-nicks.jpg";
 
 	flecs::entity stevieNicksCube = m_Engine->m_World.entity("StevieNicksCube")
-		.child_of(cubes)
+		//.child_of(cubes)
 		.add<TransformComponent, Global>()
-		.set<TransformComponent, Local>({ glm::vec3(1.0f, 0.0f, 0.0f) })
-		.set<MeshComponent>(meshComponent)
-		.set<SpinComponent>({ 1.23f, glm::vec3(0.0f, 1.0f, 0.0f) });
+		.set<TransformComponent, Local>({ glm::vec3(0.0f, 0.0f, -3.0f) })
+		.set<MeshComponent>(meshComponent);
+		//.set<SpinComponent>({ 1.23f, glm::vec3(0.0f, 1.0f, 0.0f) });
 
+	/*
 	flecs::entity stevieNicksCube2 = m_Engine->m_World.entity("StevieNicksCube2")
 		.child_of(cubes)
 		.add<TransformComponent, Global>()
 		.set<TransformComponent, Local>({ glm::vec3(-1.0f, 0.0f, 0.0f) })
 		.set<MeshComponent>(meshComponent)
 		.set<SpinComponent>({ -1.35f, glm::vec3(0.0f, 0.0f, 1.0f) });
-
+	*/
+	
 	flecs::entity camera = m_Engine->m_World.entity("Camera")
 		.add<TransformComponent, Global>()
 		.set<TransformComponent, Local>({ glm::vec3(0.0f, 0.0f, 0.0f) })

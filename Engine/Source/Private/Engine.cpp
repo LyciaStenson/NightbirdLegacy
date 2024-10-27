@@ -37,6 +37,8 @@ bool Engine::Init()
 	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
 	glDebugMessageCallback(DebugCallback, 0);
 
+	glDisable(GL_CULL_FACE);
+
 	glEnable(GL_DEPTH_TEST);
 
 	m_World.add<InputComponent>();
@@ -49,50 +51,6 @@ bool Engine::Init()
 			}
 		);
 	mainCameraInitSystem.run();
-
-	flecs::system skyboxRenderInitSystem = m_World.system<SkyboxComponent>("SkyboxRenderInitSystem")
-		.kind(0)
-		.each([](SkyboxComponent& skyboxComponent)
-			{
-				skyboxComponent.shader = Shader(skyboxComponent.vertexPath, skyboxComponent.fragmentPath);
-
-				glGenVertexArrays(1, &skyboxComponent.VAO);
-				glGenBuffers(1, &skyboxComponent.VBO);
-				glBindVertexArray(skyboxComponent.VAO);
-				glBindBuffer(GL_ARRAY_BUFFER, skyboxComponent.VBO);
-				glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxComponent.vertices), &skyboxComponent.vertices[0], GL_STATIC_DRAW);
-
-				// Position Attribute
-				glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 8, (void*)0);
-				glEnableVertexAttribArray(0);
-
-				glGenTextures(1, &skyboxComponent.texture);
-				glBindTexture(GL_TEXTURE_CUBE_MAP, skyboxComponent.texture);
-
-				int width, height, nrChannels;
-				for (unsigned int i = 0; i < skyboxComponent.texturePaths.size(); i++)
-				{
-					unsigned char* data = stbi_load(skyboxComponent.texturePaths[i], &width, &height, &nrChannels, 0);
-					if (data)
-					{
-						glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-						stbi_image_free(data);
-					}
-					else
-					{
-						std::cout << "Cubemap texture failed to load: " << skyboxComponent.texturePaths[i] << std::endl;
-						stbi_image_free(data);
-					}
-				}
-
-				glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-				glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-				glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-				glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-				glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-			}
-		);
-	skyboxRenderInitSystem.run();
 
 	flecs::system meshRenderInitSystem = m_World.system<MeshComponent>("RenderInitSystem")
 		.kind(0)
@@ -118,6 +76,10 @@ bool Engine::Init()
 				glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 8, (void*)(6 * sizeof(float)));
 				glEnableVertexAttribArray(2);
 
+				glBindBuffer(GL_ARRAY_BUFFER, 0);
+				glBindVertexArray(0);
+				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
 				// TEXTURE
 				glGenTextures(1, &meshComponent.texture);
 				glBindTexture(GL_TEXTURE_2D, meshComponent.texture);
@@ -142,33 +104,74 @@ bool Engine::Init()
 				}
 
 				stbi_image_free(data);
+
+				meshComponent.shader.Use();
+				meshComponent.shader.SetInt("ourTexture", 0);
 			}
 		);
 	meshRenderInitSystem.run();
 
-	m_RenderTarget->Init();
-
-	flecs::system skyboxRenderSystem = m_World.system<flecs::pair<TransformComponent, Global>, SkyboxComponent>("")
-		.kind(flecs::OnUpdate)
-		.each([&](flecs::iter& iter, size_t index, flecs::pair<TransformComponent, Global> transformComponent, SkyboxComponent& skyboxComponent)
+	flecs::system skyboxRenderInitSystem = m_World.system<SkyboxComponent>("SkyboxRenderInitSystem")
+		.kind(0)
+		.each([](SkyboxComponent& skyboxComponent)
 			{
-				std::cout << "SkyboxRenderSystem" << std::endl;
+				skyboxComponent.shader = Shader(skyboxComponent.vertexPath, skyboxComponent.fragmentPath);
 
-				glDepthMask(GL_FALSE);
-				skyboxComponent.shader.Use();
+				glGenVertexArrays(1, &skyboxComponent.VAO);
+				glGenBuffers(1, &skyboxComponent.VBO);
+				glGenBuffers(1, &skyboxComponent.EBO);
 				glBindVertexArray(skyboxComponent.VAO);
+				glBindBuffer(GL_ARRAY_BUFFER, skyboxComponent.VBO);
+				glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxComponent.vertices), &skyboxComponent.vertices[0], GL_STATIC_DRAW);
+				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, skyboxComponent.EBO);
+				glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(skyboxComponent.indices), &skyboxComponent.indices, GL_STATIC_DRAW);
+
+				// Position Attribute
+				glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 8, (void*)0);
+				glEnableVertexAttribArray(0);
+
+				glBindBuffer(GL_ARRAY_BUFFER, 0);
+				glBindVertexArray(0);
+				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+				glGenTextures(1, &skyboxComponent.texture);
 				glBindTexture(GL_TEXTURE_CUBE_MAP, skyboxComponent.texture);
-				glDrawArrays(GL_TRIANGLES, 0, 36);
-				glDepthMask(GL_TRUE);
+
+				glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+				glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+				glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+				glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+				glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+				int width, height, nrChannels;
+				stbi_set_flip_vertically_on_load(false);
+				for (unsigned int i = 0; i < skyboxComponent.texturePaths.size(); i++)
+				{
+					unsigned char* data = stbi_load(skyboxComponent.texturePaths[i], &width, &height, &nrChannels, 0);
+					if (data)
+					{
+						glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+						stbi_image_free(data);
+					}
+					else
+					{
+						std::cout << "Cubemap texture failed to load: " << skyboxComponent.texturePaths[i] << std::endl;
+						stbi_image_free(data);
+					}
+				}
+
+				//skyboxComponent.shader.Use();
+				//skyboxComponent.shader.SetInt("skybox", 0);
 			}
 		);
+	skyboxRenderInitSystem.run();
+
+	m_RenderTarget->Init();
 	
 	flecs::system meshRenderSystem = m_World.system<flecs::pair<TransformComponent, Global>, MeshComponent>("RenderSystem")
 		.kind(flecs::OnUpdate)
 		.each([&](flecs::iter& iter, size_t index, flecs::pair<TransformComponent, Global> transformComponent, MeshComponent& meshComponent)
 			{
-				std::cout << "MeshRenderSystem" << std::endl;
-
 				const TransformComponent* cameraTransform = mainCamera.get<TransformComponent, Global>();
 
 				glActiveTexture(GL_TEXTURE0);
@@ -193,7 +196,7 @@ bool Engine::Init()
 				glm::vec3 forward = cameraTransform->Rotation * glm::vec3(0.0f, 0.0f, -1.0f);
 				glm::vec3 up = glm::rotate(cameraTransform->Rotation, glm::vec3(0.0f, 1.0f, 0.0f));
 
-				glm::mat4 view = glm::lookAt(cameraTransform->Position, cameraTransform->Position + forward, up);;
+				glm::mat4 view = glm::lookAt(cameraTransform->Position, cameraTransform->Position + forward, up);
 				meshComponent.shader.SetMat4("view", view);
 				
 				glBindVertexArray(meshComponent.VAO);
@@ -208,8 +211,44 @@ bool Engine::Init()
 			}
 		);
 
+	flecs::system skyboxRenderSystem = m_World.system<SkyboxComponent>("SkyboxRenderSystem")
+		.kind(flecs::OnUpdate)
+		.each([&](flecs::iter& iter, size_t index, SkyboxComponent& skyboxComponent)
+			{
+				const TransformComponent* cameraTransform = mainCamera.get<TransformComponent, Global>();
+
+				glDisable(GL_DEPTH_TEST);
+				glDepthFunc(GL_LEQUAL);
+
+				skyboxComponent.shader.Use();
+
+				int width;
+				int height;
+				m_RenderTarget->GetWindowSize(width, height);
+
+				glm::mat4 projection = glm::perspective(glm::radians(70.0f), (float)width / (float)height, 0.1f, 1000.0f);
+				skyboxComponent.shader.SetMat4("projection", projection);
+
+				//glm::vec3 forward = cameraTransform->Rotation * glm::vec3(0.0f, 0.0f, -1.0f);
+				//glm::vec3 up = glm::rotate(cameraTransform->Rotation, glm::vec3(0.0f, 1.0f, 0.0f));
+
+				glm::mat4 view = glm::lookAt(glm::vec3(), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+				//glm::mat4 view = glm::mat4(glm::mat3(glm::lookAt(cameraTransform->Position, cameraTransform->Position + forward, up)));
+				skyboxComponent.shader.SetMat4("view", view);
+				
+				glBindVertexArray(skyboxComponent.VAO);
+				glActiveTexture(GL_TEXTURE0);
+				glBindTexture(GL_TEXTURE_CUBE_MAP, skyboxComponent.texture);
+				glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+				glBindVertexArray(0);
+
+				glDepthFunc(GL_LESS);
+				glEnable(GL_DEPTH_TEST);
+			}
+		);
+
 	m_RenderShutdownSystem = m_World.system<MeshComponent>("RenderShutdownSystem")
-		.kind(flecs::OnSet)
+		.kind(0)
 		.each([](MeshComponent& meshComponent)
 			{
 				glDeleteVertexArrays(1, &meshComponent.VAO);
@@ -312,8 +351,8 @@ void Engine::MainLoop()
 			);
 
 		m_RenderTarget->Bind();
-
-		glClearColor(0.45f, 0.45f, 0.45f, 1.0f);
+		
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		if (m_RenderTarget->ShouldRun())
