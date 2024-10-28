@@ -319,6 +319,10 @@ bool Engine::Init()
 
 				transformComponent->Rotation *= pitch;
 
+				glm::vec3 eulerAngles = glm::eulerAngles(transformComponent->Rotation);
+				eulerAngles.x = glm::clamp(eulerAngles.x, glm::radians(-90.0f), glm::radians(90.0f));
+				transformComponent->Rotation = glm::quat(eulerAngles);
+				
 				input->lookY = 0.0f;
 			}
 		);
