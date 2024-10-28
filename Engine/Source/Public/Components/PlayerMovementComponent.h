@@ -1,6 +1,6 @@
 #pragma once
 
-struct PlayerInputComponent
+struct PlayerMovementComponent
 {
 	float speed;
 };

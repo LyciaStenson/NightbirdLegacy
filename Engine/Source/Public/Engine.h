@@ -21,7 +21,9 @@
 #include <MeshComponent.h>
 #include <CameraComponent.h>
 #include <InputComponent.h>
-#include <PlayerInputComponent.h>
+#include <PlayerMovementComponent.h>
+#include <PlayerYawComponent.h>
+#include <PlayerPitchComponent.h>
 
 #include <RenderSystem.h>
 

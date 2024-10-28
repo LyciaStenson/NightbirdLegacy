@@ -145,9 +145,12 @@ bool Engine::Init()
 
 				int width, height, nrChannels;
 				stbi_set_flip_vertically_on_load(false);
+				std::cout << skyboxComponent.texturePaths.size() << std::endl;
 				for (unsigned int i = 0; i < skyboxComponent.texturePaths.size(); i++)
 				{
+					std::cout << "Before load: " << glfwGetTime() << std::endl;
 					unsigned char* data = stbi_load(skyboxComponent.texturePaths[i], &width, &height, &nrChannels, 0);
+					std::cout << "After load: " << glfwGetTime() << std::endl;
 					if (data)
 					{
 						glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
@@ -261,29 +264,17 @@ bool Engine::Init()
 			.parent().cascade()
 		.build();
 	
-	flecs::system playerInputSystem = m_World.system<PlayerInputComponent, flecs::pair<TransformComponent, Local>>("PlayerInputSystem")
+	flecs::system playerMovementSystem = m_World.system<PlayerMovementComponent, flecs::pair<TransformComponent, Local>>("PlayerMovementSystem")
 		.kind(flecs::OnUpdate)
-		.each([&](flecs::iter& iter, size_t index, PlayerInputComponent& playerInputComponent, flecs::pair<TransformComponent, Local> transformComponent)
+		.each([&](flecs::iter& iter, size_t index, PlayerMovementComponent& playerMovementComponent, flecs::pair<TransformComponent, Local> transformComponent)
 			{
-				InputComponent* input = m_World.get_mut<InputComponent>();
+				const InputComponent* input = m_World.get<InputComponent>();
 
 				glm::vec3 forward = transformComponent->Rotation * glm::vec3(0.0f, 0.0f, -1.0f);
 				glm::vec3 right = transformComponent->Rotation * glm::vec3(1.0f, 0.0f, 0.0f);
 				glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
 
-				glm::vec3 worldUp = glm::inverse(transformComponent->Rotation) * glm::vec3(0.0f, 1.0f, 0.0f);
-				worldUp = glm::normalize(worldUp);
-				
-				float movement = playerInputComponent.speed * iter.delta_time();
-
-				glm::quat pitch = glm::angleAxis(input->lookY * 0.001f, glm::vec3(1.0f, 0.0f, 0.0f));
-				pitch = glm::normalize(pitch);
-				glm::quat yaw = glm::angleAxis(input->lookX * 0.001f, worldUp);
-				yaw = glm::normalize(yaw);
-
-				glm::quat orientation = yaw * pitch;
-
-				transformComponent->Rotation *= glm::normalize(orientation);
+				float movement = playerMovementComponent.speed * iter.delta_time();
 				
 				if (input->moveForward)
 					transformComponent->Position += forward * movement;
@@ -297,8 +288,37 @@ bool Engine::Init()
 					transformComponent->Position += up * movement;
 				if (input->moveDown)
 					transformComponent->Position -= up * movement;
+			}
+		);
+
+	flecs::system playerYawSystem = m_World.system<PlayerYawComponent, flecs::pair<TransformComponent, Local>>("PlayerYawSystem")
+		.kind(flecs::OnUpdate)
+		.each([&](flecs::iter& iter, size_t index, PlayerYawComponent& playerYawComponent, flecs::pair<TransformComponent, Local> transformComponent)
+			{
+				InputComponent* input = m_World.get_mut<InputComponent>();
+				
+				glm::quat yaw = glm::angleAxis(input->lookX * 0.001f * playerYawComponent.sensitivity, glm::vec3(0.0f, 1.0f, 0.0f));
+				yaw = glm::normalize(yaw);
+
+				transformComponent->Rotation *= yaw;
 
 				input->lookX = 0.0f;
+			}
+		);
+
+	flecs::system playerPitchSystem = m_World.system<PlayerPitchComponent, flecs::pair<TransformComponent, Local>>("PlayerPitchSystem")
+		.kind(flecs::OnUpdate)
+		.each([&](flecs::iter& iter, size_t index, PlayerPitchComponent& playerPitchComponent, flecs::pair<TransformComponent, Local> transformComponent)
+			{
+				InputComponent* input = m_World.get_mut<InputComponent>();
+
+				glm::vec3 right = transformComponent->Rotation * glm::vec3(1.0f, 0.0f, 0.0f);
+				
+				glm::quat pitch = glm::angleAxis(input->lookY * 0.001f * playerPitchComponent.sensitivity, right);
+				pitch = glm::normalize(pitch);
+
+				transformComponent->Rotation *= pitch;
+
 				input->lookY = 0.0f;
 			}
 		);
