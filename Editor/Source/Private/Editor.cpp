@@ -2,6 +2,15 @@
 
 Editor::Editor()
 {
+#ifdef _WIN32
+	std::cout << "WIN32" << std::endl;
+#endif // _WIN32
+
+#ifdef __LINUX__
+	std::cout << "LINUX" << std::endl;
+#endif // __LINUX__
+
+
 	glfwInit();
 
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
