@@ -1,5 +1,12 @@
 #include <Engine.h>
 
+#ifdef _WIN32
+#define GLFW_EXPOSE_NATIVE_WIN32
+#include <GLFW/glfw3native.h>
+#include <dwmapi.h>
+#pragma comment(lib, "dwmapi.lib")
+#endif // _WIN32
+
 Engine::Engine(int width, int height, const char* name, RenderTarget* renderTarget)
 {
 	m_Window = glfwCreateWindow(width, height, "Spin", NULL, NULL);
@@ -23,6 +30,12 @@ Engine::~Engine()
 bool Engine::Init()
 {
 	std::filesystem::current_path("Assets");
+
+#ifdef _WIN32
+	HWND hwnd = glfwGetWin32Window(m_Window);
+	BOOL value = 1;
+	DwmSetWindowAttribute(hwnd, DWMWA_USE_IMMERSIVE_DARK_MODE, &value, sizeof(value));
+#endif // _WIN32
 
 	glfwSetWindowUserPointer(m_Window, this);
 
