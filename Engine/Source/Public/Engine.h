@@ -35,6 +35,8 @@
 class Engine
 {
 public:
+	GLFWwindow* m_Window;
+
 	flecs::world m_World;
 
 	float lastX = 0.0f;
@@ -45,7 +47,7 @@ public:
 	double lastFrameTime = 0.0;
 	unsigned int fps = 0;
 
-	Engine(GLFWwindow* window, RenderTarget* renderTarget);
+	Engine(int width, int height, const char* name, RenderTarget* renderTarget);
 	~Engine();
 
 	bool Init();
@@ -58,8 +60,6 @@ private:
 	flecs::system m_RenderShutdownSystem;
 
 	flecs::query<const TransformComponent, const TransformComponent*, TransformComponent> m_GlobalTransformQuery;
-
-	GLFWwindow* m_Window;
 
 	RenderTarget* m_RenderTarget;
 

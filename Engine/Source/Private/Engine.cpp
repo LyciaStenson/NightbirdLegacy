@@ -1,8 +1,16 @@
 #include <Engine.h>
 
-Engine::Engine(GLFWwindow* window, RenderTarget* renderTarget)
+Engine::Engine(int width, int height, const char* name, RenderTarget* renderTarget)
 {
-	m_Window = window;
+	m_Window = glfwCreateWindow(width, height, "Spin", NULL, NULL);
+
+	if (m_Window == NULL)
+	{
+		std::cout << "Failed to create GFLW window" << std::endl;
+		glfwTerminate();
+	}
+	glfwMakeContextCurrent(m_Window);
+	glfwSwapInterval(0);
 
 	m_RenderTarget = renderTarget;
 }
@@ -36,6 +44,8 @@ bool Engine::Init()
 
 	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
 	glDebugMessageCallback(DebugCallback, 0);
+
+	m_RenderTarget->Init(m_Window);
 
 	glDisable(GL_CULL_FACE);
 
@@ -145,12 +155,9 @@ bool Engine::Init()
 
 				int width, height, nrChannels;
 				stbi_set_flip_vertically_on_load(false);
-				std::cout << skyboxComponent.texturePaths.size() << std::endl;
 				for (unsigned int i = 0; i < skyboxComponent.texturePaths.size(); i++)
 				{
-					std::cout << "Before load: " << glfwGetTime() << std::endl;
 					unsigned char* data = stbi_load(skyboxComponent.texturePaths[i], &width, &height, &nrChannels, 0);
-					std::cout << "After load: " << glfwGetTime() << std::endl;
 					if (data)
 					{
 						glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
@@ -168,8 +175,6 @@ bool Engine::Init()
 			}
 		);
 	skyboxRenderInitSystem.run();
-
-	m_RenderTarget->Init();
 	
 	flecs::system meshRenderSystem = m_World.system<flecs::pair<TransformComponent, Global>, MeshComponent>("RenderSystem")
 		.kind(flecs::OnUpdate)

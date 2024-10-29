@@ -17,9 +17,9 @@
 class EditorRenderTarget : public RenderTarget
 {
 public:
-	EditorRenderTarget(GLFWwindow* window);
+	EditorRenderTarget();
 	~EditorRenderTarget();
-	void Init() override;
+	void Init(GLFWwindow* window) override;
 	void Bind() override;
 	void Unbind() override;
 	void Render() override;
@@ -37,8 +37,6 @@ private:
 
 	int m_SceneWidth = 1280;
 	int m_SceneHeight = 720;
-
-	Engine* m_Engine;
 
 	std::vector<std::string> m_ConsoleText;
 

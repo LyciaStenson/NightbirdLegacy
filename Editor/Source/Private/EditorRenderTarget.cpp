@@ -1,25 +1,7 @@
 #include <EditorRenderTarget.h>
 
-EditorRenderTarget::EditorRenderTarget(GLFWwindow* window)
+EditorRenderTarget::EditorRenderTarget()
 {
-	m_Window = window;
-
-	m_Engine = (Engine*)glfwGetWindowUserPointer(window);
-
-	glfwGetWindowSize(window, &m_Width, &m_Height);
-	
-	IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
-	ImGuiIO& io = ImGui::GetIO();
-	(void)io;
-	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
-	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
-	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-
-	io.Fonts->AddFontFromFileTTF("Assets/Fonts/RobotoFlex-Regular.ttf", 16.0f);
-
-	ImGui_ImplGlfw_InitForOpenGL(window, true);
-	ImGui_ImplOpenGL3_Init("#version 460");
 }
 
 EditorRenderTarget::~EditorRenderTarget()
@@ -29,8 +11,25 @@ EditorRenderTarget::~EditorRenderTarget()
 	ImGui::DestroyContext();
 }
 
-void EditorRenderTarget::Init()
+void EditorRenderTarget::Init(GLFWwindow* window)
 {
+	m_Window = window;
+
+	glfwGetWindowSize(window, &m_Width, &m_Height);
+
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO();
+	(void)io;
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
+	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+
+	io.Fonts->AddFontFromFileTTF("Fonts/RobotoFlex-Regular.ttf", 16.0f);
+
+	ImGui_ImplGlfw_InitForOpenGL(window, true);
+	ImGui_ImplOpenGL3_Init("#version 460");
+
 	glDeleteFramebuffers(1, &m_Framebuffer);
 	glDeleteTextures(1, &m_FramebufferTexture);
 	glDeleteRenderbuffers(1, &m_Rbo);

@@ -7,7 +7,7 @@ class RenderTarget
 {
 public:
 	virtual ~RenderTarget() = default;
-	virtual void Init() = 0;
+	virtual void Init(GLFWwindow* window) = 0;
 	virtual void Bind() = 0;
 	virtual void Unbind() = 0;
 	virtual void Render() = 0;

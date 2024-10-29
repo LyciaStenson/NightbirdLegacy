@@ -13,28 +13,8 @@ Game::Game()
 	int WIDTH = 1280;
 	int HEIGHT = 720;
 
-	GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "Neurons", NULL, NULL);
-
-	if (window == NULL)
-	{
-		std::cout << "Failed to create GFLW window" << std::endl;
-		glfwTerminate();
-	}
-	glfwMakeContextCurrent(window);
-
 	GameRenderTarget* renderTarget = new GameRenderTarget(WIDTH, HEIGHT);
-	m_Engine = new Engine(window, renderTarget);
-
-	flecs::entity neuron = m_Engine->m_World.entity("Neuron");
-	neuron.add<TransformComponent>();
-	neuron.add<MeshComponent>();
-
-	flecs::entity camera = m_Engine->m_World.entity("Camera");
-	camera.add<TransformComponent>();
-	camera.add<CameraComponent>();
-	camera.add<PlayerInputComponent>();
-
-	camera.set<TransformComponent>({ glm::vec3(0.0f, 0.0f, -3.0f) });
+	m_Engine = new Engine(WIDTH, HEIGHT, "Neurons", renderTarget);
 
 	m_Engine->Init();
 

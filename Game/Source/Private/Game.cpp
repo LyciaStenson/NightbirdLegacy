@@ -13,17 +13,8 @@ Game::Game()
 	int WIDTH = 1280;
 	int HEIGHT = 720;
 
-	GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "Game", NULL, NULL);
-
-	if (window == NULL)
-	{
-		std::cout << "Failed to create GFLW window" << std::endl;
-		glfwTerminate();
-	}
-	glfwMakeContextCurrent(window);
-
 	GameRenderTarget* renderTarget = new GameRenderTarget(WIDTH, HEIGHT);
-	m_Engine = new Engine(window, renderTarget);
+	m_Engine = new Engine(WIDTH, HEIGHT, "Game", renderTarget);
 
 	m_Engine->Init();
 

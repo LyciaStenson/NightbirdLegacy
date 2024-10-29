@@ -12,18 +12,9 @@ Editor::Editor()
 
 	int WIDTH = 1920;
 	int HEIGHT = 1080;
-
-	GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "Nightbird", NULL, NULL);
-
-	if (window == NULL)
-	{
-		std::cout << "Failed to create GLFW window" << std::endl;
-		glfwTerminate();
-	}
-	glfwMakeContextCurrent(window);
 	
-	EditorRenderTarget* renderTarget = new EditorRenderTarget(window);
-	m_Engine = new Engine(window, renderTarget);
+	EditorRenderTarget* renderTarget = new EditorRenderTarget();
+	m_Engine = new Engine(WIDTH, HEIGHT, "Editor", renderTarget);
 
 	m_Engine->Init();
 	m_Engine->MainLoop();

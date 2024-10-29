@@ -11,7 +11,7 @@ GameRenderTarget::~GameRenderTarget()
 
 }
 
-void GameRenderTarget::Init()
+void GameRenderTarget::Init(GLFWwindow* window)
 {
 	float screenVertices[] =
 	{
