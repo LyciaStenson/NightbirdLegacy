@@ -3,8 +3,18 @@
 #ifdef _WIN32
 #define GLFW_EXPOSE_NATIVE_WIN32
 #include <GLFW/glfw3native.h>
+//#include <pch.h>
+#include <winrt/Windows.UI.ViewManagement.h>
 #include <dwmapi.h>
 #pragma comment(lib, "dwmapi.lib")
+
+using namespace winrt::Windows::UI::ViewManagement;
+
+inline BOOL IsColorLight(winrt::Windows::UI::Color& clr)
+{
+	return (((5 * clr.G) + (2 * clr.R) + clr.B) > (8 * 128));
+}
+
 #endif // _WIN32
 
 Engine::Engine(int width, int height, const char* name, RenderTarget* renderTarget)
@@ -30,12 +40,6 @@ Engine::~Engine()
 bool Engine::Init()
 {
 	std::filesystem::current_path("Assets");
-
-#ifdef _WIN32
-	HWND hwnd = glfwGetWin32Window(m_Window);
-	BOOL value = 1;
-	DwmSetWindowAttribute(hwnd, DWMWA_USE_IMMERSIVE_DARK_MODE, &value, sizeof(value));
-#endif // _WIN32
 
 	glfwSetWindowUserPointer(m_Window, this);
 
@@ -367,6 +371,14 @@ void Engine::MainLoop()
 		fps = (int)(1.0f / deltaTime);
 		
 		//std::cout << "FPS: " << fps << std::endl;
+
+#ifdef _WIN32
+		HWND hwnd = glfwGetWin32Window(m_Window);
+		UISettings settings = UISettings();
+		auto foreground = settings.GetColorValue(UIColorType::Foreground);
+		BOOL isDarkMode = IsColorLight(foreground);
+		DwmSetWindowAttribute(hwnd, DWMWA_USE_IMMERSIVE_DARK_MODE, &isDarkMode, sizeof(isDarkMode));
+#endif // _WIN32
 
 		m_GlobalTransformQuery
 			.each([](const TransformComponent& transform, const TransformComponent* parentTransform, TransformComponent& transformOut)

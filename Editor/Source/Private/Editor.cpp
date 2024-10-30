@@ -2,10 +2,6 @@
 
 Editor::Editor()
 {
-#ifdef __linux__
-	std::cout << "LINUX" << std::endl;
-#endif // __linux__
-
 	glfwInit();
 
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
