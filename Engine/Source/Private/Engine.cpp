@@ -233,7 +233,7 @@ bool Engine::Init()
 				meshComponent.shader.SetMat4("view", view);
 				
 				glBindVertexArray(meshComponent.VAO);
-
+				
 				glm::mat4 model = glm::mat4(1.0f);
 				model = glm::translate(model, transformComponent->Position);
 				model *= glm::toMat4(transformComponent->Rotation);
@@ -351,7 +351,6 @@ bool Engine::Init()
 
 				glm::vec3 eulerAngles = glm::eulerAngles(transformComponent->Rotation);
 				eulerAngles.x = glm::clamp(eulerAngles.x, glm::radians(-90.0f), glm::radians(90.0f));
-				std::cout << glm::degrees(eulerAngles.x) << std::endl;
 				transformComponent->Rotation = glm::quat(eulerAngles);
 				
 				input->mouseY = 0.0f;
