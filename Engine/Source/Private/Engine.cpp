@@ -27,7 +27,7 @@ Engine::Engine(int width, int height, const char* name, RenderTarget* renderTarg
 		glfwTerminate();
 	}
 	glfwMakeContextCurrent(m_Window);
-	glfwSwapInterval(0);
+	//glfwSwapInterval(0);
 
 	m_RenderTarget = renderTarget;
 }
@@ -49,6 +49,14 @@ bool Engine::Init()
 	glfwSetCursorPosCallback(m_Window, MouseMoveCallback);
 
 	glfwSetWindowSizeLimits(m_Window, 304, 190, GLFW_DONT_CARE, GLFW_DONT_CARE);
+
+#ifdef _WIN32
+	HWND hwnd = glfwGetWin32Window(m_Window);
+	UISettings settings = UISettings();
+	auto foreground = settings.GetColorValue(UIColorType::Foreground);
+	BOOL isDarkMode = IsColorLight(foreground);
+	DwmSetWindowAttribute(hwnd, DWMWA_USE_IMMERSIVE_DARK_MODE, &isDarkMode, sizeof(isDarkMode));
+#endif // _WIN32
 
 	int version = gladLoadGL(glfwGetProcAddress);
 	if (version == 0)
@@ -298,17 +306,17 @@ bool Engine::Init()
 
 				float movement = playerMovementComponent.speed * iter.delta_time();
 				
-				if (input->moveForward)
+				if (input->keyW)
 					transformComponent->Position += forward * movement;
-				if (input->moveBackward)
+				if (input->keyS)
 					transformComponent->Position -= forward * movement;
-				if (input->moveRight)
+				if (input->keyD)
 					transformComponent->Position += right * movement;
-				if (input->moveLeft)
+				if (input->keyA)
 					transformComponent->Position -= right * movement;
-				if (input->moveUp)
+				if (input->keyE)
 					transformComponent->Position += up * movement;
-				if (input->moveDown)
+				if (input->keyQ)
 					transformComponent->Position -= up * movement;
 			}
 		);
@@ -319,12 +327,12 @@ bool Engine::Init()
 			{
 				InputComponent* input = m_World.get_mut<InputComponent>();
 				
-				glm::quat yaw = glm::angleAxis(input->lookX * 0.001f * playerYawComponent.sensitivity, glm::vec3(0.0f, 1.0f, 0.0f));
+				glm::quat yaw = glm::angleAxis(input->mouseX * 0.001f * playerYawComponent.sensitivity, glm::vec3(0.0f, 1.0f, 0.0f));
 				yaw = glm::normalize(yaw);
 
 				transformComponent->Rotation *= yaw;
 
-				input->lookX = 0.0f;
+				input->mouseX = 0.0f;
 			}
 		);
 
@@ -336,7 +344,7 @@ bool Engine::Init()
 
 				glm::vec3 right = transformComponent->Rotation * glm::vec3(1.0f, 0.0f, 0.0f);
 				
-				glm::quat pitch = glm::angleAxis(input->lookY * 0.001f * playerPitchComponent.sensitivity, right);
+				glm::quat pitch = glm::angleAxis(input->mouseY * 0.001f * playerPitchComponent.sensitivity, right);
 				pitch = glm::normalize(pitch);
 
 				transformComponent->Rotation *= pitch;
@@ -345,7 +353,7 @@ bool Engine::Init()
 				eulerAngles.x = glm::clamp(eulerAngles.x, glm::radians(-90.0f), glm::radians(90.0f));
 				transformComponent->Rotation = glm::quat(eulerAngles);
 				
-				input->lookY = 0.0f;
+				input->mouseY = 0.0f;
 			}
 		);
 
@@ -371,14 +379,6 @@ void Engine::MainLoop()
 		fps = (int)(1.0f / deltaTime);
 		
 		//std::cout << "FPS: " << fps << std::endl;
-
-#ifdef _WIN32
-		HWND hwnd = glfwGetWin32Window(m_Window);
-		UISettings settings = UISettings();
-		auto foreground = settings.GetColorValue(UIColorType::Foreground);
-		BOOL isDarkMode = IsColorLight(foreground);
-		DwmSetWindowAttribute(hwnd, DWMWA_USE_IMMERSIVE_DARK_MODE, &isDarkMode, sizeof(isDarkMode));
-#endif // _WIN32
 
 		m_GlobalTransformQuery
 			.each([](const TransformComponent& transform, const TransformComponent* parentTransform, TransformComponent& transformOut)
@@ -469,24 +469,24 @@ void Engine::HandleKey(int key, int scancode, int action, int mods)
 		switch (key)
 		{
 		case GLFW_KEY_W:
-			input->moveForward = isPressed;
+			input->keyW = isPressed;
 			break;
 		case GLFW_KEY_S:
-			input->moveBackward = isPressed;
+			input->keyS = isPressed;
 			break;
 		case GLFW_KEY_D:
-			input->moveRight = isPressed;
+			input->keyD = isPressed;
 			break;
 		case GLFW_KEY_A:
-			input->moveLeft = isPressed;
+			input->keyA = isPressed;
 			break;
 		case GLFW_KEY_E:
-		case GLFW_KEY_SPACE:
-			input->moveUp = isPressed;
+		//case GLFW_KEY_SPACE:
+			input->keyE = isPressed;
 			break;
 		case GLFW_KEY_Q:
-		case GLFW_KEY_LEFT_SHIFT:
-			input->moveDown = isPressed;
+		//case GLFW_KEY_LEFT_SHIFT:
+			input->keyQ = isPressed;
 			break;
 		}
 	}
@@ -501,8 +501,8 @@ void Engine::HandleMouseMove(GLFWwindow* window, double xPos, double yPos)
 	lastY = (float)yPos;
 
 	InputComponent* input = m_World.get_mut<InputComponent>();
-	input->lookX = xOffset;
-	input->lookY = yOffset;
+	input->mouseX = xOffset;
+	input->mouseY = yOffset;
 }
 
 void Engine::HandleCursorEnter()

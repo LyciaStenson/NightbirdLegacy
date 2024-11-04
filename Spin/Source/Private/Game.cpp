@@ -36,26 +36,38 @@ Game::Game()
 	flecs::entity cubes = m_Engine->m_World.entity("Cubes")
 		.add<TransformComponent, Global>()
 		.set<TransformComponent, Local>({ glm::vec3(0.0f, 0.0f, -3.0f) })
-		.set<SpinComponent>({ 1.5f, glm::vec3(0.0f, 0.0f, 1.0f) });
+		.set<SpinComponent>({ 0.1f, glm::vec3(0.0f, 0.0f, 1.0f) });
 
 	MeshComponent meshComponent;
 	meshComponent.vertexPath = "Cube.vert";
 	meshComponent.fragmentPath = "Cube.frag";
 	meshComponent.texturePath = "stevie-nicks.jpg";
-
-	flecs::entity stevieNicksCube = m_Engine->m_World.entity("StevieNicksCube")
-		.child_of(cubes)
-		.add<TransformComponent, Global>()
-		.set<TransformComponent, Local>({ glm::vec3(1.0f, 0.0f, 0.0f) })
-		.set<MeshComponent>(meshComponent)
-		.set<SpinComponent>({ 1.23f, glm::vec3(0.0f, 1.0f, 0.0f) });
 	
-	flecs::entity stevieNicksCube2 = m_Engine->m_World.entity("StevieNicksCube2")
-		.child_of(cubes)
-		.add<TransformComponent, Global>()
-		.set<TransformComponent, Local>({ glm::vec3(-1.0f, 0.0f, 0.0f) })
-		.set<MeshComponent>(meshComponent)
-		.set<SpinComponent>({ -1.35f, glm::vec3(0.0f, 0.0f, 1.0f) });
+	float numOfCubes = 300;
+	for (float i = -numOfCubes / 2.0f; i < numOfCubes / 2.0f; i++)
+	{
+		std::string entityName = "SteveNicksCube" + std::to_string(i);
+		flecs::entity stevieNicksCube = m_Engine->m_World.entity(entityName.c_str())
+			.child_of(cubes)
+			.add<TransformComponent, Global>()
+			.set<TransformComponent, Local>({ glm::vec3(i, 0.0f, 0.0f) })
+			.set<MeshComponent>(meshComponent);
+			//.set<SpinComponent>({ 0.3f, glm::vec3(1.0f, 0.0f, 0.0f) });
+	}
+
+	//flecs::entity stevieNicksCube = m_Engine->m_World.entity("StevieNicksCube")
+		//.child_of(cubes)
+		//.add<TransformComponent, Global>()
+		//.set<TransformComponent, Local>({ glm::vec3(1.0f, 0.0f, 0.0f) })
+		//.set<MeshComponent>(meshComponent)
+		//.set<SpinComponent>({ 1.23f, glm::vec3(0.0f, 1.0f, 0.0f) });
+	
+	//flecs::entity stevieNicksCube2 = m_Engine->m_World.entity("StevieNicksCube2")
+		//.child_of(cubes)
+		//.add<TransformComponent, Global>()
+		//.set<TransformComponent, Local>({ glm::vec3(-1.0f, 0.0f, 0.0f) })
+		//.set<MeshComponent>(meshComponent)
+		//.set<SpinComponent>({ -1.35f, glm::vec3(0.0f, 0.0f, 1.0f) });
 
 	flecs::entity player = m_Engine->m_World.entity("Player")
 		.add<TransformComponent, Global>()

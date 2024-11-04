@@ -2,14 +2,14 @@
 
 struct InputComponent
 {
-	bool moveForward = false;
-	bool moveBackward = false;
-	bool moveRight = false;
-	bool moveLeft = false;
+	bool keyW = false;
+	bool keyS = false;
+	bool keyD = false;
+	bool keyA = false;
 
-	bool moveUp = false;
-	bool moveDown = false;
+	bool keyE = false;
+	bool keyQ = false;
 
-	float lookX = 0.0f;
-	float lookY = 0.0f;
+	float mouseX = 0.0f;
+	float mouseY = 0.0f;
 };
