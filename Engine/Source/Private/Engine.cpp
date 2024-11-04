@@ -351,6 +351,7 @@ bool Engine::Init()
 
 				glm::vec3 eulerAngles = glm::eulerAngles(transformComponent->Rotation);
 				eulerAngles.x = glm::clamp(eulerAngles.x, glm::radians(-90.0f), glm::radians(90.0f));
+				std::cout << glm::degrees(eulerAngles.x) << std::endl;
 				transformComponent->Rotation = glm::quat(eulerAngles);
 				
 				input->mouseY = 0.0f;
@@ -481,11 +482,9 @@ void Engine::HandleKey(int key, int scancode, int action, int mods)
 			input->keyA = isPressed;
 			break;
 		case GLFW_KEY_E:
-		//case GLFW_KEY_SPACE:
 			input->keyE = isPressed;
 			break;
 		case GLFW_KEY_Q:
-		//case GLFW_KEY_LEFT_SHIFT:
 			input->keyQ = isPressed;
 			break;
 		}
