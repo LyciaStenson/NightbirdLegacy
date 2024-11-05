@@ -4,6 +4,8 @@
 
 #include <GameRenderTarget.h>
 
+#include <Components/NeuronsComponent.h>
+
 #include <iostream>
 
 class Game

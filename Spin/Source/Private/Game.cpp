@@ -14,9 +14,9 @@ Game::Game()
 	int HEIGHT = 720;
 
 	GameRenderTarget* renderTarget = new GameRenderTarget(WIDTH, HEIGHT);
-	m_Engine = new Engine(WIDTH, HEIGHT, "Neurons", renderTarget);
+	m_Engine = new Engine(WIDTH, HEIGHT, "Spin", renderTarget);
 
-	glfwSetInputMode(m_Engine->m_Window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	//glfwSetInputMode(m_Engine->m_Window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	MeshComponent meshComponent;
 	meshComponent.vertexPath = "Cube.vert";
@@ -25,7 +25,7 @@ Game::Game()
 
 	flecs::entity cube = m_Engine->m_World.entity("Cube")
 		.add<TransformComponent, Global>()
-		.set<TransformComponent, Local>({glm::vec3(0.0f, 3.0f, -3.0f)})
+		.set<TransformComponent, Local>({glm::vec3(0.0f, 0.0f, -3.0f)})
 		.set<MeshComponent>(meshComponent);
 
 	flecs::entity player = m_Engine->m_World.entity("Player")

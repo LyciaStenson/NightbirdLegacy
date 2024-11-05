@@ -3,7 +3,6 @@
 #ifdef _WIN32
 #define GLFW_EXPOSE_NATIVE_WIN32
 #include <GLFW/glfw3native.h>
-//#include <pch.h>
 #include <winrt/Windows.UI.ViewManagement.h>
 #include <dwmapi.h>
 #pragma comment(lib, "dwmapi.lib")
@@ -14,12 +13,11 @@ inline BOOL IsColorLight(winrt::Windows::UI::Color& clr)
 {
 	return (((5 * clr.G) + (2 * clr.R) + clr.B) > (8 * 128));
 }
-
 #endif // _WIN32
 
 Engine::Engine(int width, int height, const char* name, RenderTarget* renderTarget)
 {
-	m_Window = glfwCreateWindow(width, height, "Spin", NULL, NULL);
+	m_Window = glfwCreateWindow(width, height, name, NULL, NULL);
 
 	if (m_Window == NULL)
 	{
@@ -123,7 +121,7 @@ bool Engine::Init()
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
+				
 				int width, height, nrChannels;
 				stbi_set_flip_vertically_on_load(true);
 				unsigned char* data = stbi_load(meshComponent.texturePath, &width, &height, &nrChannels, 0);
@@ -356,7 +354,7 @@ bool Engine::Init()
 				input->mouseY = 0.0f;
 			}
 		);
-
+	
 	return true;
 }
 
