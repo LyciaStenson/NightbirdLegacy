@@ -160,7 +160,7 @@ void Engine::InitSystems()
 				glGenBuffers(1, &skyboxComponent.EBO);
 				glBindVertexArray(skyboxComponent.VAO);
 				glBindBuffer(GL_ARRAY_BUFFER, skyboxComponent.VBO);
-				glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxComponent.vertices), &skyboxComponent.vertices[0], GL_STATIC_DRAW);
+				glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxComponent.vertices), &skyboxComponent.vertices, GL_STATIC_DRAW);
 				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, skyboxComponent.EBO);
 				glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(skyboxComponent.indices), &skyboxComponent.indices, GL_STATIC_DRAW);
 

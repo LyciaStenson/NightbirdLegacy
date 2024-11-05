@@ -20,6 +20,21 @@ Game::Game()
 	
 	glfwSetInputMode(m_Engine->m_Window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
+	SkyboxComponent skyboxComponent;
+	skyboxComponent.vertexPath = "Skybox/Skybox.vert";
+	skyboxComponent.fragmentPath = "Skybox/Skybox.frag";
+	skyboxComponent.texturePaths = {
+		"Skybox/Right.hdr",
+		"Skybox/Left.hdr",
+		"Skybox/Top.hdr",
+		"Skybox/Bottom.hdr",
+		"Skybox/Front.hdr",
+		"Skybox/Back.hdr",
+	};
+
+	flecs::entity skybox = m_Engine->m_World.entity("Skybox")
+		.set<SkyboxComponent>(skyboxComponent);
+
 	MeshComponent meshComponent;
 	meshComponent.vertexPath = "Cube.vert";
 	meshComponent.fragmentPath = "Cube.frag";
