@@ -18,6 +18,9 @@ Game::Game()
 
 	m_Engine->Init();
 
+	// Define entities and systems here
+
+	m_Engine->InitSystems();
 	m_Engine->MainLoop();
 	m_Engine->Terminate();
 	delete renderTarget;

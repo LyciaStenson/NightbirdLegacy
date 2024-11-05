@@ -16,6 +16,8 @@ Game::Game()
 	GameRenderTarget* renderTarget = new GameRenderTarget(WIDTH, HEIGHT);
 	m_Engine = new Engine(WIDTH, HEIGHT, "Neurons", renderTarget);
 
+	m_Engine->Init();
+
 	//glfwSetInputMode(m_Engine->m_Window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	MeshComponent cubeMesh;
@@ -24,8 +26,8 @@ Game::Game()
 	cubeMesh.texturePath = "stevie-nicks.jpg";
 
 	NeuronsComponent neuronsComponent;
-	neuronsComponent.vertexPath = "Assets/RayMarching.vert";
-	neuronsComponent.fragmentPath = "Assets/RayMarching.frag";
+	neuronsComponent.vertexPath = "RayMarching.vert";
+	neuronsComponent.fragmentPath = "RayMarching.frag";
 
 	flecs::entity cube = m_Engine->m_World.entity("Cube")
 		.add<TransformComponent, Global>()
@@ -95,8 +97,7 @@ Game::Game()
 			}
 		);
 
-	m_Engine->Init();
-
+	m_Engine->InitSystems();
 	m_Engine->MainLoop();
 	m_Engine->Terminate();
 	delete renderTarget;

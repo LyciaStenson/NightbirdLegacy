@@ -17,8 +17,11 @@ Editor::Editor()
 	m_Engine = new Engine(WIDTH, HEIGHT, "Editor", renderTarget);
 
 	m_Engine->Init();
+
+	m_Engine->InitSystems();
 	m_Engine->MainLoop();
 	m_Engine->Terminate();
+	delete renderTarget;
 }
 
 Editor::~Editor()

@@ -74,6 +74,11 @@ bool Engine::Init()
 
 	glEnable(GL_DEPTH_TEST);
 
+	return true;
+}
+
+void Engine::InitSystems()
+{
 	m_World.add<InputComponent>();
 
 	flecs::system mainCameraInitSystem = m_World.system<CameraComponent>("MainCameraInitSystem")
@@ -121,7 +126,7 @@ bool Engine::Init()
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-				
+
 				int width, height, nrChannels;
 				stbi_set_flip_vertically_on_load(true);
 				unsigned char* data = stbi_load(meshComponent.texturePath, &width, &height, &nrChannels, 0);
@@ -198,7 +203,7 @@ bool Engine::Init()
 			}
 		);
 	skyboxRenderInitSystem.run();
-	
+
 	flecs::system meshRenderSystem = m_World.system<flecs::pair<TransformComponent, Global>, MeshComponent>("RenderSystem")
 		.kind(flecs::OnUpdate)
 		.each([&](flecs::iter& iter, size_t index, flecs::pair<TransformComponent, Global> transformComponent, MeshComponent& meshComponent)
@@ -214,7 +219,7 @@ bool Engine::Init()
 				meshComponent.shader.SetVec3("objectColor", glm::vec3(1.0f, 1.0f, 1.0f));
 				meshComponent.shader.SetVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
 				meshComponent.shader.SetVec3("lightPos", glm::vec3(10.0f, 10.0f, 10.0f));
-				
+
 				meshComponent.shader.SetVec3("viewPos", cameraTransform->Position);
 
 				int width;
@@ -229,15 +234,15 @@ bool Engine::Init()
 
 				glm::mat4 view = glm::lookAt(cameraTransform->Position, cameraTransform->Position + forward, up);
 				meshComponent.shader.SetMat4("view", view);
-				
+
 				glBindVertexArray(meshComponent.VAO);
-				
+
 				glm::mat4 model = glm::mat4(1.0f);
 				model = glm::translate(model, transformComponent->Position);
 				model *= glm::toMat4(transformComponent->Rotation);
 				model = glm::scale(model, transformComponent->Scale);
 				meshComponent.shader.SetMat4("model", model);
-				
+
 				glDrawArrays(GL_TRIANGLES, 0, 36);
 			}
 		);
@@ -247,7 +252,7 @@ bool Engine::Init()
 		.each([&](flecs::iter& iter, size_t index, SkyboxComponent& skyboxComponent)
 			{
 				const TransformComponent* cameraTransform = mainCamera.get<TransformComponent, Global>();
-				
+
 				glDepthFunc(GL_LEQUAL);
 
 				skyboxComponent.shader.Use();
@@ -261,10 +266,10 @@ bool Engine::Init()
 
 				glm::vec3 forward = cameraTransform->Rotation * glm::vec3(0.0f, 0.0f, -1.0f);
 				glm::vec3 up = cameraTransform->Rotation * glm::vec3(0.0f, 1.0f, 0.0f);
-				
+
 				glm::mat4 view = glm::mat4(glm::mat3(glm::lookAt(cameraTransform->Position, cameraTransform->Position + forward, up)));
 				skyboxComponent.shader.SetMat4("view", view);
-				
+
 				glBindVertexArray(skyboxComponent.VAO);
 				glActiveTexture(GL_TEXTURE0);
 				glBindTexture(GL_TEXTURE_CUBE_MAP, skyboxComponent.texture);
@@ -289,9 +294,9 @@ bool Engine::Init()
 		.term_at(1).second<Global>()
 		.term_at(2).second<Global>()
 		.term_at(1)
-			.parent().cascade()
+		.parent().cascade()
 		.build();
-	
+
 	flecs::system playerMovementSystem = m_World.system<PlayerMovementComponent, flecs::pair<TransformComponent, Local>>("PlayerMovementSystem")
 		.kind(flecs::OnUpdate)
 		.each([&](flecs::iter& iter, size_t index, PlayerMovementComponent& playerMovementComponent, flecs::pair<TransformComponent, Local> transformComponent)
@@ -303,7 +308,7 @@ bool Engine::Init()
 				glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
 
 				float movement = playerMovementComponent.speed * iter.delta_time();
-				
+
 				if (input->keyW)
 					transformComponent->Position += forward * movement;
 				if (input->keyS)
@@ -324,7 +329,7 @@ bool Engine::Init()
 		.each([&](flecs::iter& iter, size_t index, PlayerYawComponent& playerYawComponent, flecs::pair<TransformComponent, Local> transformComponent)
 			{
 				InputComponent* input = m_World.get_mut<InputComponent>();
-				
+
 				glm::quat yaw = glm::angleAxis(input->mouseX * 0.001f * playerYawComponent.sensitivity, glm::vec3(0.0f, 1.0f, 0.0f));
 				yaw = glm::normalize(yaw);
 
@@ -341,7 +346,7 @@ bool Engine::Init()
 				InputComponent* input = m_World.get_mut<InputComponent>();
 
 				glm::vec3 right = transformComponent->Rotation * glm::vec3(1.0f, 0.0f, 0.0f);
-				
+
 				glm::quat pitch = glm::angleAxis(input->mouseY * 0.001f * playerPitchComponent.sensitivity, right);
 				pitch = glm::normalize(pitch);
 
@@ -350,12 +355,10 @@ bool Engine::Init()
 				glm::vec3 eulerAngles = glm::eulerAngles(transformComponent->Rotation);
 				eulerAngles.x = glm::clamp(eulerAngles.x, glm::radians(-90.0f), glm::radians(90.0f));
 				transformComponent->Rotation = glm::quat(eulerAngles);
-				
+
 				input->mouseY = 0.0f;
 			}
 		);
-	
-	return true;
 }
 
 void Engine::Terminate()

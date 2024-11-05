@@ -51,6 +51,7 @@ public:
 	~Engine();
 
 	bool Init();
+	void InitSystems();
 	void Terminate();
 	void MainLoop();
 

@@ -16,7 +16,9 @@ Game::Game()
 	GameRenderTarget* renderTarget = new GameRenderTarget(WIDTH, HEIGHT);
 	m_Engine = new Engine(WIDTH, HEIGHT, "Spin", renderTarget);
 
-	//glfwSetInputMode(m_Engine->m_Window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	m_Engine->Init();
+	
+	glfwSetInputMode(m_Engine->m_Window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	MeshComponent meshComponent;
 	meshComponent.vertexPath = "Cube.vert";
@@ -41,8 +43,7 @@ Game::Game()
 		.add<CameraComponent>()
 		.set<PlayerPitchComponent>({1.0f});
 
-	m_Engine->Init();
-
+	m_Engine->InitSystems();
 	m_Engine->MainLoop();
 	m_Engine->Terminate();
 	delete renderTarget;
