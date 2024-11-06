@@ -18,37 +18,12 @@ Game::Game()
 
 	m_Engine->Init();
 	
-	glfwSetInputMode(m_Engine->m_Window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-	
-	MeshComponent cubeMesh;
-	cubeMesh.vertexPath = "Cube.vert";
-	cubeMesh.fragmentPath = "Cube.frag";
-	cubeMesh.texturePath = "stevie-nicks.jpg";
-
 	NeuronsComponent neuronsComponent;
 	neuronsComponent.vertexPath = "RayMarching.vert";
 	neuronsComponent.fragmentPath = "RayMarching.frag";
 
-	flecs::entity cube = m_Engine->m_World.entity("Cube")
-		.add<TransformComponent, Global>()
-		.set<TransformComponent, Local>({ glm::vec3(0.0f, 0.0f, -5.0f) })
-		.set<MeshComponent>(cubeMesh);
-
 	flecs::entity neurons = m_Engine->m_World.entity("Nuerons")
 		.set<NeuronsComponent>(neuronsComponent);
-
-	flecs::entity player = m_Engine->m_World.entity("Player")
-		.add<TransformComponent, Global>()
-		.set<TransformComponent, Local>({ glm::vec3(0.0f, 0.0f, 0.0f) })
-		.set<PlayerMovementComponent>({5.0f})
-		.set<PlayerYawComponent>({ 1.0f });
-
-	flecs::entity camera = m_Engine->m_World.entity("Camera")
-		.child_of(player)
-		.add<TransformComponent, Global>()
-		.set<TransformComponent, Local>({ glm::vec3(0.0f, 0.0f, 0.0f) })
-		.add<CameraComponent>()
-		.set<PlayerPitchComponent>({ 1.0f });
 
 	flecs::system neuronsInitSystem = m_Engine->m_World.system<NeuronsComponent>("NeuronsInitSystem")
 		.kind(0)
