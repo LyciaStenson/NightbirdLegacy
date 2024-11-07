@@ -25,7 +25,7 @@ Engine::Engine(int width, int height, const char* name, RenderTarget* renderTarg
 		glfwTerminate();
 	}
 	glfwMakeContextCurrent(m_Window);
-	//glfwSwapInterval(0);
+	glfwSwapInterval(0);
 
 	m_RenderTarget = renderTarget;
 }
