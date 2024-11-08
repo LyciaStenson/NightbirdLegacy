@@ -17,7 +17,7 @@ project "Spin"
 		"%{wks.location}/Engine/Source/Public",
 		"%{wks.location}/Engine/Source/Public/Components",
 		"%{wks.location}/Engine/Source/Public/Systems",
-		"%{wks.location}/Engine/Vendor/glfw/include",
+		"%{wks.location}/Engine/Vendor/rgfw",
 		"%{wks.location}/Engine/Vendor/glad/include",
 		"%{wks.location}/Engine/Vendor/flecs/include",
 		"%{wks.location}/Engine/Vendor/glm",
@@ -25,7 +25,7 @@ project "Spin"
 		"%{wks.location}/Engine/Vendor/cgltf"
 	}
 
-	links { "Engine", "glfw", "glad", "flecs" }
+	links { "Engine", "glad", "flecs" }
 
 	filter { "configurations:Debug" }
 		debugdir (outBinDir)

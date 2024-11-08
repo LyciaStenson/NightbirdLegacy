@@ -2,14 +2,6 @@
 
 Game::Game()
 {
-	glfwInit();
-
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
-	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
-
 	int WIDTH = 1280;
 	int HEIGHT = 720;
 
@@ -59,11 +51,11 @@ Game::Game()
 			{
 				neuronsComponent.shader.Use();
 
-				neuronsComponent.shader.SetFloat("uTime", glfwGetTime());
+				neuronsComponent.shader.SetFloat("uTime", RGFW_getTime());
 
 				int width;
 				int height;
-				glfwGetWindowSize(m_Engine->m_Window, &width, &height);
+				//glfwGetWindowSize(m_Engine->m_Window, &width, &height);
 
 				neuronsComponent.shader.SetVec2("uResolution", width, height);
 

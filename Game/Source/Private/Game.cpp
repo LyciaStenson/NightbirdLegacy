@@ -2,14 +2,6 @@
 
 Game::Game()
 {
-	glfwInit();
-
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
-	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
-
 	int WIDTH = 1280;
 	int HEIGHT = 720;
 
@@ -32,6 +24,10 @@ Game::Game()
 		.set<TransformComponent, Local>({ glm::vec3(0.0f, 0.0f, 0.0f) })
 		.add<CameraComponent>()
 		.set<PlayerPitchComponent>({ 1.0f });
+
+	//RGFW_getTime();
+
+	//RGFW_getMonitors();
 
 	m_Engine->InitSystems();
 	m_Engine->MainLoop();

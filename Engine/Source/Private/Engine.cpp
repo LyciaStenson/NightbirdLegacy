@@ -1,31 +1,35 @@
+//#define RGFW_IMPLEMENTATION
 #include <Engine.h>
 
-#ifdef _WIN32
-#define GLFW_EXPOSE_NATIVE_WIN32
-#include <GLFW/glfw3native.h>
-#include <winrt/Windows.UI.ViewManagement.h>
-#include <dwmapi.h>
-#pragma comment(lib, "dwmapi.lib")
-
-using namespace winrt::Windows::UI::ViewManagement;
-
-inline BOOL IsColorLight(winrt::Windows::UI::Color& clr)
-{
-	return (((5 * clr.G) + (2 * clr.R) + clr.B) > (8 * 128));
-}
-#endif // _WIN32
+//#ifdef _WIN32
+//#define GLFW_EXPOSE_NATIVE_WIN32
+//#include <GLFW/glfw3native.h>
+//#include <winrt/Windows.UI.ViewManagement.h>
+//#include <dwmapi.h>
+//#pragma comment(lib, "dwmapi.lib")
+//
+//using namespace winrt::Windows::UI::ViewManagement;
+//
+//inline BOOL IsColorLight(winrt::Windows::UI::Color& clr)
+//{
+//	return (((5 * clr.G) + (2 * clr.R) + clr.B) > (8 * 128));
+//}
+//#endif // _WIN32
 
 Engine::Engine(int width, int height, const char* name, RenderTarget* renderTarget)
 {
-	m_Window = glfwCreateWindow(width, height, name, NULL, NULL);
-
+	m_Window = RGFW_createWindow(name, RGFW_RECT(width, height, width, height), RGFW_ALLOW_DND | RGFW_CENTER | RGFW_SCALE_TO_MONITOR);
+	
 	if (m_Window == NULL)
 	{
-		std::cout << "Failed to create GFLW window" << std::endl;
-		glfwTerminate();
+		std::cout << "Failed to create RGFW window" << std::endl;
 	}
-	glfwMakeContextCurrent(m_Window);
-	glfwSwapInterval(0);
+
+	RGFW_window_makeCurrent(m_Window);
+
+	RGFW_getTime();
+
+	RGFW_getMonitors();
 
 	m_RenderTarget = renderTarget;
 }
@@ -39,24 +43,15 @@ bool Engine::Init()
 {
 	std::filesystem::current_path("Assets");
 
-	glfwSetWindowUserPointer(m_Window, this);
+//#ifdef _WIN32
+//	HWND hwnd = glfwGetWin32Window(m_Window);
+//	UISettings settings = UISettings();
+//	auto foreground = settings.GetColorValue(UIColorType::Foreground);
+//	BOOL isDarkMode = IsColorLight(foreground);
+//	DwmSetWindowAttribute(hwnd, DWMWA_USE_IMMERSIVE_DARK_MODE, &isDarkMode, sizeof(isDarkMode));
+//#endif // _WIN32
 
-	glfwSetFramebufferSizeCallback(m_Window, FramebufferSizeCallback);
-	glfwSetKeyCallback(m_Window, KeyCallback);
-	glfwSetCursorEnterCallback(m_Window, CursorEnterCallback);
-	glfwSetCursorPosCallback(m_Window, MouseMoveCallback);
-
-	glfwSetWindowSizeLimits(m_Window, 304, 190, GLFW_DONT_CARE, GLFW_DONT_CARE);
-
-#ifdef _WIN32
-	HWND hwnd = glfwGetWin32Window(m_Window);
-	UISettings settings = UISettings();
-	auto foreground = settings.GetColorValue(UIColorType::Foreground);
-	BOOL isDarkMode = IsColorLight(foreground);
-	DwmSetWindowAttribute(hwnd, DWMWA_USE_IMMERSIVE_DARK_MODE, &isDarkMode, sizeof(isDarkMode));
-#endif // _WIN32
-
-	int version = gladLoadGL(glfwGetProcAddress);
+	int version = gladLoadGL((GLADloadfunc)RGFW_getProcAddress);
 	if (version == 0)
 	{
 		std::cout << "Failed to initialize glad" << std::endl;
@@ -68,7 +63,7 @@ bool Engine::Init()
 	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
 	glDebugMessageCallback(DebugCallback, 0);
 
-	m_RenderTarget->Init(m_Window);
+	m_RenderTarget->Init();
 
 	glDisable(GL_CULL_FACE);
 
@@ -364,22 +359,21 @@ void Engine::InitSystems()
 void Engine::Terminate()
 {
 	m_RenderShutdownSystem.run();
-
-	glfwTerminate();
 }
 
 void Engine::MainLoop()
 {
-	lastFrameTime = glfwGetTime();
-	while (!glfwWindowShouldClose(m_Window))
+	bool running = true;
+	while (running)
 	{
-		double currentFrameTime = glfwGetTime();
-		deltaTime = currentFrameTime - lastFrameTime;
-		lastFrameTime = currentFrameTime;
-
-		fps = (int)(1.0f / deltaTime);
-		
-		//std::cout << "FPS: " << fps << std::endl;
+		while (RGFW_window_checkEvent(m_Window))
+		{
+			if (m_Window->event.type == RGFW_quit)
+			{
+				running = false;
+				break;
+			}
+		}
 
 		m_GlobalTransformQuery
 			.each([](const TransformComponent& transform, const TransformComponent* parentTransform, TransformComponent& transformOut)
@@ -416,103 +410,102 @@ void Engine::MainLoop()
 
 		m_RenderTarget->Render();
 
-		glfwSwapBuffers(m_Window);
-		glfwPollEvents();
+		RGFW_window_swapBuffers(m_Window);
 	}
 }
 
-void Engine::CursorEnterCallback(GLFWwindow* window, int entered)
-{
-	//if (entered)
-	//{
-		//firstMouse = true;
+//void Engine::CursorEnterCallback(GLFWwindow* window, int entered)
+//{
+//	if (entered)
+//	{
+//		firstMouse = true;
+//
+//		int width, height;
+//		glfwGetWindowSize(window, &width, &height);
+//		glfwSetCursorPos(window, width / 2.0f, height / 2.0f);
+//	}
+//}
+//
+//void Engine::FramebufferSizeCallback(GLFWwindow* window, int width, int height)
+//{
+//	Engine* engine = (Engine*)glfwGetWindowUserPointer(window);
+//	engine->HandleFramebuffer(width, height);
+//}
+//
+//void Engine::KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
+//{
+//	Engine* engine = (Engine*)glfwGetWindowUserPointer(window);
+//	engine->HandleKey(key, scancode, action, mods);
+//}
+//
+//void Engine::MouseMoveCallback(GLFWwindow* window, double xPosIn, double yPosIn)
+//{
+//	Engine* engine = (Engine*)glfwGetWindowUserPointer(window);
+//	engine->HandleMouseMove(window, xPosIn, yPosIn);
+//}
+//
+//void Engine::ScrollCallback(GLFWwindow* window, double xOffset, double yOffset)
+//{
+//	camera.ProcessMouseScroll((float)yOffset);
+//}
+//
+//void Engine::HandleFramebuffer(int width, int height)
+//{
+//	m_RenderTarget->WindowResize(width, height);
+//}
+//
+//void Engine::HandleKey(int key, int scancode, int action, int mods)
+//{
+//	if (action == GLFW_PRESS || action == GLFW_RELEASE)
+//	{
+//		bool isPressed = (action == GLFW_PRESS);
+//		InputComponent* input = m_World.get_mut<InputComponent>();
+//		switch (key)
+//		{
+//		case GLFW_KEY_W:
+//			input->keyW = isPressed;
+//			break;
+//		case GLFW_KEY_S:
+//			input->keyS = isPressed;
+//			break;
+//		case GLFW_KEY_D:
+//			input->keyD = isPressed;
+//			break;
+//		case GLFW_KEY_A:
+//			input->keyA = isPressed;
+//			break;
+//		case GLFW_KEY_E:
+//			input->keyE = isPressed;
+//			break;
+//		case GLFW_KEY_Q:
+//			input->keyQ = isPressed;
+//			break;
+//		}
+//	}
+//}
 
-		//int width, height;
-		//glfwGetWindowSize(window, &width, &height);
-		//glfwSetCursorPos(window, width / 2.0f, height / 2.0f);
-	//}
-}
-
-void Engine::FramebufferSizeCallback(GLFWwindow* window, int width, int height)
-{
-	Engine* engine = (Engine*)glfwGetWindowUserPointer(window);
-	engine->HandleFramebuffer(width, height);
-}
-
-void Engine::KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
-{
-	Engine* engine = (Engine*)glfwGetWindowUserPointer(window);
-	engine->HandleKey(key, scancode, action, mods);
-}
-
-void Engine::MouseMoveCallback(GLFWwindow* window, double xPosIn, double yPosIn)
-{
-	Engine* engine = (Engine*)glfwGetWindowUserPointer(window);
-	engine->HandleMouseMove(window, xPosIn, yPosIn);
-}
-
-void Engine::ScrollCallback(GLFWwindow* window, double xOffset, double yOffset)
-{
-	//camera.ProcessMouseScroll((float)yOffset);
-}
-
-void Engine::HandleFramebuffer(int width, int height)
-{
-	m_RenderTarget->WindowResize(width, height);
-}
-
-void Engine::HandleKey(int key, int scancode, int action, int mods)
-{
-	if (action == GLFW_PRESS || action == GLFW_RELEASE)
-	{
-		bool isPressed = (action == GLFW_PRESS);
-		InputComponent* input = m_World.get_mut<InputComponent>();
-		switch (key)
-		{
-		case GLFW_KEY_W:
-			input->keyW = isPressed;
-			break;
-		case GLFW_KEY_S:
-			input->keyS = isPressed;
-			break;
-		case GLFW_KEY_D:
-			input->keyD = isPressed;
-			break;
-		case GLFW_KEY_A:
-			input->keyA = isPressed;
-			break;
-		case GLFW_KEY_E:
-			input->keyE = isPressed;
-			break;
-		case GLFW_KEY_Q:
-			input->keyQ = isPressed;
-			break;
-		}
-	}
-}
-
-void Engine::HandleMouseMove(GLFWwindow* window, double xPos, double yPos)
-{
-	float xOffset = lastX - (float)xPos;
-	float yOffset = lastY - (float)yPos;
-
-	lastX = (float)xPos;
-	lastY = (float)yPos;
-
-	InputComponent* input = m_World.get_mut<InputComponent>();
-	input->mouseX = xOffset;
-	input->mouseY = yOffset;
-}
-
-void Engine::HandleCursorEnter()
-{
-
-}
-
-void Engine::HandleScroll()
-{
-
-}
+//void Engine::HandleMouseMove(GLFWwindow* window, double xPos, double yPos)
+//{
+//	float xOffset = lastX - (float)xPos;
+//	float yOffset = lastY - (float)yPos;
+//
+//	lastX = (float)xPos;
+//	lastY = (float)yPos;
+//
+//	InputComponent* input = m_World.get_mut<InputComponent>();
+//	input->mouseX = xOffset;
+//	input->mouseY = yOffset;
+//}
+//
+//void Engine::HandleCursorEnter()
+//{
+//
+//}
+//
+//void Engine::HandleScroll()
+//{
+//
+//}
 
 void DebugCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam)
 {

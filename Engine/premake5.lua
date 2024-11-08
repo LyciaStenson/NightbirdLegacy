@@ -21,10 +21,9 @@ project "Engine"
 		"Vendor/stb",
 		"Vendor/cgltf",
 		"Vendor/rgfw",
-		"Vendor/glfw/include",
 		"Vendor/glad/include",
 		"Vendor/flecs/include",
 		"Vendor/jolt",
 	}
 
-	links { "glfw", "glad", "flecs", "jolt" }
+	links { "glad", "flecs", "jolt" }

@@ -11,38 +11,26 @@ GameRenderTarget::~GameRenderTarget()
 
 }
 
-void GameRenderTarget::Init(GLFWwindow* window)
+void GameRenderTarget::Init()
 {
 	float screenVertices[] =
 	{
 		// Positions	// Texture Coords
-		-1.0f, -1.0f,	0.0f, 0.0f, // Bottom left
-		 1.0f, -1.0f,	1.0f, 0.0f, // Bottom right
-		-1.0f,  1.0f,	0.0f, 1.0f, // Top left
-		 1.0f,  1.0f,	1.0f, 1.0f  // Top right
-	};
-
-	unsigned int screenIndices[] =
-	{
-		0, 1, 2,
-		1, 3, 2
+		-1.0f,  1.0f,	0.0f, 0.0f, // Top left
+		-1.0f, -1.0f,	0.0f, 1.0f, // Bottom left
+		 1.0f, -1.0f,	1.0f, 1.0f, // Bottom right
+		-1.0f,  1.0f,	0.0f, 0.0f, // Top left
+		 1.0f, -1.0f,	1.0f, 1.0f, // Bottom right
+		 1.0f,  1.0f,	1.0f, 0.0f	// Top right
 	};
 
 	unsigned int screenVBO;
-	unsigned int screenEBO;
 
 	glGenVertexArrays(1, &screenVAO);
 	glGenBuffers(1, &screenVBO);
-	glGenBuffers(1, &screenEBO);
-
 	glBindVertexArray(screenVAO);
-
 	glBindBuffer(GL_ARRAY_BUFFER, screenVBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(screenVertices), &screenVertices, GL_STATIC_DRAW);
-
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, screenEBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(screenIndices), &screenIndices, GL_STATIC_DRAW);
-
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(1);
@@ -91,7 +79,7 @@ void GameRenderTarget::Render()
 	screenShader.Use();
 	glBindVertexArray(screenVAO);
 	glBindTexture(GL_TEXTURE_2D, framebufferTexture);
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+	glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
 void GameRenderTarget::GetWindowSize(int& width, int& height)

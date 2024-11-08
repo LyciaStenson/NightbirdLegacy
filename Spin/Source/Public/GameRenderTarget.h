@@ -12,7 +12,7 @@ public:
 	GameRenderTarget(int aWidth, int aHeight);
 	~GameRenderTarget();
 
-	void Init(GLFWwindow* window) override;
+	void Init() override;
 	void Bind() override;
 	void Unbind() override;
 	void Render() override;
