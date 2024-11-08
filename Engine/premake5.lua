@@ -12,27 +12,27 @@ project "Engine"
 		"Source/**.h",
 		"Source/**.cpp",
 		
-		"Vendor/jolt/**.h",
+		--"Vendor/jolt/**.h",
 		--"Vendor/jolt/**.cpp",
 
 		--"Vendor/glfw/**.h",
 		--"Vendor/glfw/**.c",
 		--"Vendor/glfw/**.cpp",
 
-		"Vendor/glad/**.h",
+		--"Vendor/glad/**.h",
 		--"Vendor/glad/**.c",
 
-		"Vendor/glm/**.h",
-		"Vendor/glm/**.hpp",
+		--"Vendor/glm/**.h",
+		--"Vendor/glm/**.hpp",
 		--"Vendor/glm/**.cpp",
-		"Vendor/glm/**.inl",
+		--"Vendor/glm/**.inl",
 
-		"Vendor/stb/stb_image.h",
+		--"Vendor/stb/stb_image.h",
 
-		"Vendor/cgltf/cgltf.h",
-		"Vendor/cgltf/cgltf_write.h",
+		--"Vendor/cgltf/cgltf.h",
+		--"Vendor/cgltf/cgltf_write.h",
 
-		"Vendor/flecs/**.h",
+		--"Vendor/flecs/**.h",
 		--"Vendor/flecs/**.c",
 	}
 
