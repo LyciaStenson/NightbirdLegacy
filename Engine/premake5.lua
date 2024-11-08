@@ -8,10 +8,10 @@ project "Engine"
 	
 	defines { "GLFW_INCLUDE_NONE" }
 
-	--files {
+	files {
 		"Source/**.h",
 		"Source/**.cpp",
-	--}
+	}
 
 	includedirs {
 		"Source/Public",
