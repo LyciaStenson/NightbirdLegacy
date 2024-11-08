@@ -20,6 +20,7 @@ project "Engine"
 		"Vendor/glm",
 		"Vendor/stb",
 		"Vendor/cgltf",
+		"Vendor/rgfw",
 		"Vendor/glfw/include",
 		"Vendor/glad/include",
 		"Vendor/flecs/include",
