@@ -9,5 +9,5 @@ project "rgfw"
 	files
 	{
 		"RGFW.h",
-		"RgfwLoader.cpp"
+		"RgfwLoader.c"
 	}
