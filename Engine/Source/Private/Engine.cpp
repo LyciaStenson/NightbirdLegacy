@@ -18,7 +18,7 @@
 
 Engine::Engine(int width, int height, const char* name, RenderTarget* renderTarget)
 {
-	m_Window = RGFW_createWindow(name, RGFW_RECT(width, height, width, height), RGFW_ALLOW_DND | RGFW_CENTER | RGFW_SCALE_TO_MONITOR);
+	m_Window = RGFW_createWindow(name, RGFW_RECT(0, 0, width, height), RGFW_ALLOW_DND | RGFW_CENTER | RGFW_SCALE_TO_MONITOR);
 	
 	if (m_Window == NULL)
 	{

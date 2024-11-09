@@ -37,8 +37,7 @@ class Engine
 {
 public:
 	RGFW_window* m_Window;
-	//GLFWwindow* m_Window;
-
+	
 	flecs::world m_World;
 
 	float lastX = 0.0f;
