@@ -25,7 +25,7 @@ project "Spin"
 		"%{wks.location}/Engine/Vendor/cgltf"
 	}
 
-	links { "Engine", "glad", "flecs" }
+	links { "Engine", "rgfw", "glad", "flecs" }
 
 	filter { "configurations:Debug" }
 		debugdir (outBinDir)

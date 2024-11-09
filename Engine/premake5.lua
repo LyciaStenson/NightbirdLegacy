@@ -5,7 +5,7 @@ project "Engine"
 
 	targetdir ("%{wks.location}/out/bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("%{wks.location}/out/obj/" .. outputdir .. "/%{prj.name}")
-	
+
 	defines { "GLFW_INCLUDE_NONE" }
 
 	files {
@@ -26,4 +26,4 @@ project "Engine"
 		"Vendor/jolt",
 	}
 
-	links { "glad", "flecs", "jolt" }
+	links { "rgfw", "glad", "flecs", "jolt" }
