@@ -68,7 +68,7 @@ bool Engine::Init()
 	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
 	glDebugMessageCallback(DebugCallback, 0);
 
-	m_RenderTarget->Init();
+	m_RenderTarget->Init(m_Window);
 
 	glDisable(GL_CULL_FACE);
 
