@@ -1,8 +1,7 @@
 #pragma once
 
 #include <glad/gl.h>
-#define RGFW_IMPORT
-#include <RGFW.h>
+#include <GLFW/glfw3.h>
 
 #include <stb_image.h>
 
@@ -36,7 +35,7 @@
 class Engine
 {
 public:
-	RGFW_window* m_Window;
+	GLFWwindow* m_Window;
 	
 	flecs::world m_World;
 
@@ -67,17 +66,17 @@ private:
 
 	unsigned int framebuffer = 0;
 
-	//static void FramebufferSizeCallback(GLFWwindow* window, int width, int height);
-	//static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
-	//static void CursorEnterCallback(GLFWwindow* window, int entered);
-	//static void MouseMoveCallback(GLFWwindow* window, double xPos, double yPos);
-	//static void ScrollCallback(GLFWwindow* window, double xOffset, double yOffset);
+	static void FramebufferSizeCallback(GLFWwindow* window, int width, int height);
+	static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
+	static void CursorEnterCallback(GLFWwindow* window, int entered);
+	static void MouseMoveCallback(GLFWwindow* window, double xPos, double yPos);
+	static void ScrollCallback(GLFWwindow* window, double xOffset, double yOffset);
 
-	//void HandleFramebuffer(int width, int height);
-	//void HandleKey(int key, int scancode, int action, int mods);
-	//void HandleCursorEnter();
-	//void HandleMouseMove(GLFWwindow* window, double xPos, double yPos);
-	//void HandleScroll();
+	void HandleFramebuffer(int width, int height);
+	void HandleKey(int key, int scancode, int action, int mods);
+	void HandleCursorEnter();
+	void HandleMouseMove(GLFWwindow* window, double xPos, double yPos);
+	void HandleScroll();
 };
 
 void GLAPIENTRY DebugCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam);

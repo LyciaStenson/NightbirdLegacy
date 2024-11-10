@@ -24,6 +24,7 @@ workspace "Nightbird"
 	outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
 group "Dependencies"
+	include "Engine/Vendor/glfw"
 	include "Engine/Vendor/glad"
 	include "Engine/Vendor/flecs"
 	include "Engine/Vendor/jolt"

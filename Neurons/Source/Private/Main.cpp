@@ -1,4 +1,3 @@
-#define RGFW_IMPLEMENTATION
 #include <Engine.h>
 #include <GameRenderTarget.h>
 
@@ -6,6 +5,14 @@
 
 int main()
 {
+	glfwInit();
+
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
+	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
+
 	int WIDTH = 1280;
 	int HEIGHT = 720;
 
@@ -47,8 +54,6 @@ int main()
 
 				glBindBuffer(GL_ARRAY_BUFFER, 0);
 				glBindVertexArray(0);
-
-				startTime = (float)RGFW_getTimeNS() * 0.000000001f;
 			}
 		);
 	neuronsInitSystem.run();
@@ -59,15 +64,12 @@ int main()
 			{
 				neuronsComponent.shader.Use();
 
-				//neuronsComponent.shader.SetFloat("uTime", RGFW_getTimeNS() - startTime / 1000000000.0f);
+				neuronsComponent.shader.SetFloat("uTime", glfwGetTime());
 
-				//std::cout << "Time: " << ((float)RGFW_getTimeNS() * 0.000000001f) << std::endl;
-				//std::cout << "Time: " << RGFW_getTimeNS() << std::endl;
 
 				int width = 1280;
 				int height = 720;
-				//glfwGetWindowSize(engine.m_Window, &width, &height);
-				//RGFW_getScreenSize(engine.m_Window, width, height);
+				glfwGetWindowSize(engine.m_Window, &width, &height);
 
 				neuronsComponent.shader.SetVec2("uResolution", width, height);
 

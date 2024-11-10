@@ -1,4 +1,3 @@
-#define RGFW_IMPLEMENTATION
 #include <Engine.h>
 #include <EditorRenderTarget.h>
 
