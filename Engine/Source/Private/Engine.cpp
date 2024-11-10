@@ -364,6 +364,8 @@ void Engine::InitSystems()
 void Engine::Terminate()
 {
 	m_RenderShutdownSystem.run();
+
+	glfwTerminate();
 }
 
 void Engine::MainLoop()
@@ -413,6 +415,9 @@ void Engine::MainLoop()
 		m_RenderTarget->Unbind();
 
 		m_RenderTarget->Render();
+
+		glfwSwapBuffers(m_Window);
+		glfwPollEvents();
 	}
 }
 
