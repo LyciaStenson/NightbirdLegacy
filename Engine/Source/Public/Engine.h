@@ -1,6 +1,7 @@
 #pragma once
 
 #include <glad/gl.h>
+#define RGFW_IMPORT
 #include <RGFW.h>
 //#include <GLFW/glfw3.h>
 

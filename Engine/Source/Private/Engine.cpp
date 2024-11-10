@@ -1,4 +1,3 @@
-#define RGFW_IMPLEMENTATION
 #include <Engine.h>
 
 //#ifdef _WIN32
@@ -26,8 +25,8 @@ Engine::Engine(int width, int height, const char* name, RenderTarget* renderTarg
 	}
 
 	RGFW_window_makeCurrent(m_Window);
-
-	//RGFW_getTime();
+	
+	RGFW_getTime();
 
 	m_RenderTarget = renderTarget;
 }

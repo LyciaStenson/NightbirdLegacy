@@ -25,7 +25,7 @@ int main()
 		.set<TransformComponent, Local>({glm::vec3(0.0f, 0.0f, 0.0f)})
 		.add<CameraComponent>()
 		.set<PlayerPitchComponent>({1.0f});
-
+	
 	engine.InitSystems();
 	engine.MainLoop();
 	engine.Terminate();

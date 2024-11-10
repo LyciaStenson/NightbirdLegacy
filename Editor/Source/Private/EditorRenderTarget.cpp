@@ -6,16 +6,16 @@ EditorRenderTarget::EditorRenderTarget()
 
 EditorRenderTarget::~EditorRenderTarget()
 {
-	ImGui_ImplOpenGL3_Shutdown();
-	ImGui_ImplGlfw_Shutdown();
-	ImGui::DestroyContext();
+	//ImGui_ImplOpenGL3_Shutdown();
+	//ImGui_ImplGlfw_Shutdown();
+	//ImGui::DestroyContext();
 }
 
-void EditorRenderTarget::Init(GLFWwindow* window)
+void EditorRenderTarget::Init()
 {
-	m_Window = window;
+	//m_Window = window;
 
-	glfwGetWindowSize(window, &m_Width, &m_Height);
+	//glfwGetWindowSize(window, &m_Width, &m_Height);
 
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
@@ -27,8 +27,8 @@ void EditorRenderTarget::Init(GLFWwindow* window)
 
 	io.Fonts->AddFontFromFileTTF("Fonts/RobotoFlex-Regular.ttf", 16.0f);
 
-	ImGui_ImplGlfw_InitForOpenGL(window, true);
-	ImGui_ImplOpenGL3_Init("#version 460");
+	//ImGui_ImplGlfw_InitForOpenGL(window, true);
+	//ImGui_ImplOpenGL3_Init("#version 460");
 
 	glDeleteFramebuffers(1, &m_Framebuffer);
 	glDeleteTextures(1, &m_FramebufferTexture);
@@ -71,7 +71,7 @@ void EditorRenderTarget::Unbind()
 void EditorRenderTarget::Render()
 {
 	ImGui_ImplOpenGL3_NewFrame();
-	ImGui_ImplGlfw_NewFrame();
+	//ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
 
 	ImGuiStyle& style = ImGui::GetStyle();
@@ -132,7 +132,7 @@ void EditorRenderTarget::Render()
 		}
 		if (ImGui::MenuItem("Exit", "Ctrl+Q"))
 		{
-			glfwSetWindowShouldClose(m_Window, true);
+			//glfwSetWindowShouldClose(m_Window, true);
 		}
 		ImGui::EndMenu();
 	}

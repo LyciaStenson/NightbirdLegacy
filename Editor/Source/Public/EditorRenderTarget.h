@@ -5,7 +5,7 @@
 #include <RenderTarget.h>
 
 #include <imgui.h>
-#include <imgui_impl_glfw.h>
+//#include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
 
 #include <iostream>
@@ -19,7 +19,7 @@ class EditorRenderTarget : public RenderTarget
 public:
 	EditorRenderTarget();
 	~EditorRenderTarget();
-	void Init(GLFWwindow* window) override;
+	void Init() override;
 	void Bind() override;
 	void Unbind() override;
 	void Render() override;
@@ -47,7 +47,7 @@ private:
 	bool m_ShowConsoleWindow = true;
 	bool m_ShowSceneWindow = true;
 
-	GLFWwindow* m_Window;
+	//GLFWwindow* m_Window;
 
 	void Log(const std::string& text);
 };
