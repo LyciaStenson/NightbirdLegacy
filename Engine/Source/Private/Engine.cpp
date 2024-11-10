@@ -25,8 +25,6 @@ Engine::Engine(int width, int height, const char* name, RenderTarget* renderTarg
 	}
 
 	RGFW_window_makeCurrent(m_Window);
-	
-	RGFW_getTime();
 
 	m_RenderTarget = renderTarget;
 }
@@ -360,6 +358,7 @@ void Engine::Terminate()
 
 void Engine::MainLoop()
 {
+	int startTime = RGFW_getTime();
 	bool running = true;
 	while (running)
 	{
@@ -407,6 +406,8 @@ void Engine::MainLoop()
 
 		m_RenderTarget->Render();
 
+		//std::cout << "Time: " << RGFW_getTime() << std::endl;
+		
 		RGFW_window_swapBuffers(m_Window);
 	}
 }

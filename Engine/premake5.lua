@@ -26,4 +26,4 @@ project "Engine"
 		"Vendor/jolt",
 	}
 
-	links { "rgfw", "glad", "flecs", "jolt" }
+	links { "glad", "flecs", "jolt" }

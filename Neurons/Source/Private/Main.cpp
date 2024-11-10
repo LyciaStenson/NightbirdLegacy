@@ -1,3 +1,4 @@
+#define RGFW_IMPLEMENTATION
 #include <Engine.h>
 #include <GameRenderTarget.h>
 
@@ -20,9 +21,11 @@ int main()
 	flecs::entity neurons = engine.m_World.entity("Nuerons")
 		.set<NeuronsComponent>(neuronsComponent);
 
+	float startTime;
+
 	flecs::system neuronsInitSystem = engine.m_World.system<NeuronsComponent>("NeuronsInitSystem")
 		.kind(0)
-		.each([](NeuronsComponent& neuronsComponent)
+		.each([&](NeuronsComponent& neuronsComponent)
 			{
 				neuronsComponent.shader.Load(neuronsComponent.vertexPath, neuronsComponent.fragmentPath);
 
@@ -44,6 +47,8 @@ int main()
 
 				glBindBuffer(GL_ARRAY_BUFFER, 0);
 				glBindVertexArray(0);
+
+				startTime = (float)RGFW_getTimeNS() * 0.000000001f;
 			}
 		);
 	neuronsInitSystem.run();
@@ -54,11 +59,15 @@ int main()
 			{
 				neuronsComponent.shader.Use();
 
-				//neuronsComponent.shader.SetFloat("uTime", RGFW_getTime());
+				//neuronsComponent.shader.SetFloat("uTime", RGFW_getTimeNS() - startTime / 1000000000.0f);
+
+				//std::cout << "Time: " << ((float)RGFW_getTimeNS() * 0.000000001f) << std::endl;
+				//std::cout << "Time: " << RGFW_getTimeNS() << std::endl;
 
 				int width = 1280;
 				int height = 720;
 				//glfwGetWindowSize(engine.m_Window, &width, &height);
+				//RGFW_getScreenSize(engine.m_Window, width, height);
 
 				neuronsComponent.shader.SetVec2("uResolution", width, height);
 

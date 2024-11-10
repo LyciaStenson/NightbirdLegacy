@@ -25,7 +25,7 @@ project "Neurons"
 		"%{wks.location}/Engine/Vendor/cgltf"
 	}
 
-	links { "Engine", "rgfw", "glad", "flecs" }
+	links { "Engine", "glad", "flecs" }
 
 	filter { "configurations:Debug" }
 		debugdir (outBinDir)
