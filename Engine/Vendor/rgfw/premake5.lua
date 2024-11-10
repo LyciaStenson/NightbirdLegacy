@@ -11,3 +11,8 @@ project "rgfw"
 		"RGFW.h",
 		"RgfwLoader.c"
 	}
+
+	includedirs
+	{
+		""
+	}

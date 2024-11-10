@@ -1,3 +1,4 @@
+#define RGFW_IMPLEMENTATION
 #include <Engine.h>
 #include <GameRenderTarget.h>
 
