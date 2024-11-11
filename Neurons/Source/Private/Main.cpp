@@ -28,8 +28,6 @@ int main()
 	flecs::entity neurons = engine.m_World.entity("Nuerons")
 		.set<NeuronsComponent>(neuronsComponent);
 
-	float startTime;
-
 	flecs::system neuronsInitSystem = engine.m_World.system<NeuronsComponent>("NeuronsInitSystem")
 		.kind(0)
 		.each([&](NeuronsComponent& neuronsComponent)
@@ -65,7 +63,6 @@ int main()
 				neuronsComponent.shader.Use();
 
 				neuronsComponent.shader.SetFloat("uTime", glfwGetTime());
-
 
 				int width = 1280;
 				int height = 720;

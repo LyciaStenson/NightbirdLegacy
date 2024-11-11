@@ -21,6 +21,8 @@ int main()
 
 	engine.Init();
 
+	glfwSetInputMode(engine.m_Window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
 	SkyboxComponent skyboxComponent;
 	skyboxComponent.vertexPath = "Skybox/Skybox.vert";
 	skyboxComponent.fragmentPath = "Skybox/Skybox.frag";
@@ -43,22 +45,22 @@ int main()
 
 	flecs::entity cubes = engine.m_World.entity("Cubes")
 		.add<TransformComponent, Global>()
-		.set<TransformComponent, Local>({glm::vec3(0.0f, 0.0f, -3.0f)})
-		.set<SpinComponent>({10.0f, glm::vec3(0.0f, 0.0f, 1.0f)});
+		.set<TransformComponent, Local>({glm::vec3(0.0f, 0.0f, -3.0f)});
+		//.set<SpinComponent>({10.0f, glm::vec3(0.0f, 0.0f, 1.0f)});
 
 	flecs::entity stevieNicksCube = engine.m_World.entity("StevieNicksCube")
 		.child_of(cubes)
 		.add<TransformComponent, Global>()
 		.set<TransformComponent, Local>({glm::vec3(1.0f, 0.0f, 0.0f)})
-		.set<MeshComponent>(meshComponent)
-		.set<SpinComponent>({1.23f, glm::vec3(0.0f, 1.0f, 0.0f)});
+		.set<MeshComponent>(meshComponent);
+		//.set<SpinComponent>({1.23f, glm::vec3(0.0f, 1.0f, 0.0f)});
 
 	flecs::entity stevieNicksCube2 = engine.m_World.entity("StevieNicksCube2")
 		.child_of(cubes)
 		.add<TransformComponent, Global>()
 		.set<TransformComponent, Local>({glm::vec3(-1.0f, 0.0f, 0.0f)})
-		.set<MeshComponent>(meshComponent)
-		.set<SpinComponent>({-1.35f, glm::vec3(0.0f, 0.0f, 1.0f)});
+		.set<MeshComponent>(meshComponent);
+		//.set<SpinComponent>({-1.35f, glm::vec3(0.0f, 0.0f, 1.0f)});
 
 	flecs::entity player = engine.m_World.entity("Player")
 		.add<TransformComponent, Global>()

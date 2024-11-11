@@ -321,6 +321,8 @@ void Engine::InitSystems()
 					transformComponent->Position += up * movement;
 				if (input->keyQ)
 					transformComponent->Position -= up * movement;
+
+				std::cout << "Player Position: " << transformComponent->Position.x << ", " << transformComponent->Position.y << ", " << transformComponent->Position.z << std::endl;
 			}
 		);
 

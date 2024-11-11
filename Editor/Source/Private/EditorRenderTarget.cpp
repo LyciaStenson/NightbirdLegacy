@@ -238,7 +238,7 @@ void EditorRenderTarget::Render()
 			m_SceneWidth = newSize.x;
 			m_SceneHeight = newSize.y;
 		}
-		ImGui::Image((void*)(intptr_t)m_FramebufferTexture, newSize);
+		ImGui::Image((void*)(intptr_t)m_FramebufferTexture, newSize, {0, 1}, {1, 0});
 		ImGui::End();
 	}
 	ImGui::PopStyleVar();
