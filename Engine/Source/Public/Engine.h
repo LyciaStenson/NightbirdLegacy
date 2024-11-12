@@ -17,9 +17,10 @@
 #include <Shader.h>
 
 #include <TransformComponent.h>
-#include <SkyboxComponent.h>
 #include <MeshComponent.h>
 #include <TextureLoadComponent.h>
+#include <SkyboxComponent.h>
+#include <CubemapLoadComponent.h>
 #include <CameraComponent.h>
 #include <InputComponent.h>
 #include <PlayerMovementComponent.h>

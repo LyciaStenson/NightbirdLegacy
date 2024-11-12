@@ -11,6 +11,6 @@ struct TextureData
 
 struct TextureLoadComponent
 {
-	TextureData textureData;
-	//std::future<TextureData> future;
+	//TextureData textureData;
+	std::future<TextureData> future;
 };
