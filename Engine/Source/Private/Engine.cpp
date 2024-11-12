@@ -118,11 +118,9 @@ void Engine::InitSystems()
 				glBindVertexArray(0);
 				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-				int width, height;
-
 				//std::cout << "Begin LoadTexture" << std::endl;
 				//std::future<TextureData> testFuture = std::async(std::launch::async, LoadTexture);
-				entity.set<TextureLoadComponent>({ LoadTexture(meshComponent.texturePath, &width, &height, false), width, height });
+				entity.set<TextureLoadComponent>({ LoadTexture(meshComponent.texturePath, false) });
 				//std::cout << "Complete LoadTexture" << std::endl;
 			}
 		);
@@ -429,12 +427,12 @@ void Engine::MainLoop()
 	}
 }
 
-unsigned char* Engine::LoadTexture(const char* path, int* width, int* height, bool flip)
+TextureData Engine::LoadTexture(const char* path, bool flip)
 {
-	int nrChannels;
+	int width, height, nrChannels;
 	stbi_set_flip_vertically_on_load(flip);
-	unsigned char* data = stbi_load(path, width, height, &nrChannels, 0);
-	return data;
+	unsigned char* data = stbi_load(path, &width, &height, &nrChannels, 0);
+	return TextureData({ data, width, height });
 }
 
 void Engine::CursorEnterCallback(GLFWwindow* window, int entered)

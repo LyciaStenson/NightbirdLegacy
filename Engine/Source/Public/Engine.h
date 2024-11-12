@@ -70,7 +70,7 @@ private:
 
 	unsigned int framebuffer = 0;
 
-	static unsigned char* LoadTexture(const char* path, int* width, int* height, bool flip);
+	static TextureData LoadTexture(const char* path, bool flip);
 
 	static void FramebufferSizeCallback(GLFWwindow* window, int width, int height);
 	static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
