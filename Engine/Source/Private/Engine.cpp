@@ -138,13 +138,13 @@ void Engine::InitSystems()
 					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-					TextureData* textureData = &textureLoadComponent.future.get();
+					TextureData textureData = textureLoadComponent.future.get();
 
-					if (textureData->data)
+					if (textureData.data)
 					{
-						glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, textureData->width, textureData->height, 0, GL_RGB, GL_UNSIGNED_BYTE, textureData->data);
+						glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, textureData.width, textureData.height, 0, GL_RGB, GL_UNSIGNED_BYTE, textureData.data);
 						glGenerateMipmap(GL_TEXTURE_2D);
-						stbi_image_free(textureData->data);
+						stbi_image_free(textureData.data);
 						entity.remove<TextureLoadComponent>();
 					}
 					else

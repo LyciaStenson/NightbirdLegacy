@@ -26,7 +26,7 @@ project "Editor"
 		"%{wks.location}/Editor/Vendor/imgui"
 	}
 
-	links { "Engine", "ImGui" }
+	links { "Engine", "glfw", "glad", "flecs", "ImGui" }
 
 	filter { "configurations:Debug" }
 		debugdir (outBinDir)
