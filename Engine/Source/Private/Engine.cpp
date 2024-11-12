@@ -184,7 +184,8 @@ void Engine::InitSystems()
 				CubemapLoadComponent cubemapLoadComponent;
 				for (unsigned int i = 0; i < skyboxComponent.texturePaths.size(); i++)
 				{
-					cubemapLoadComponent.textureData.push_back(LoadTexture(skyboxComponent.texturePaths[i], false));
+					cubemapLoadComponent.futures.push_back(std::async(LoadTexture, skyboxComponent.texturePaths[i], false));
+					//cubemapLoadComponent.textureData.push_back(LoadTexture(skyboxComponent.texturePaths[i], false));
 				}
 				entity.set<CubemapLoadComponent>(cubemapLoadComponent);
 			}
@@ -204,19 +205,17 @@ void Engine::InitSystems()
 				glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 				glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 
-				//int width, height, nrChannels;
-				//stbi_set_flip_vertically_on_load(false);
-				for (unsigned int i = 0; i < cubemapLoadComponent.textureData.size(); i++)
+				for (unsigned int i = 0; i < cubemapLoadComponent.futures.size(); i++)
 				{
-					//unsigned char* data = stbi_load(skyboxComponent.texturePaths[i], &width, &height, &nrChannels, 0);
-					if (cubemapLoadComponent.textureData[i].data)
+					TextureData textureData = cubemapLoadComponent.futures[i].get();
+					if (textureData.data)
 					{
-						glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, cubemapLoadComponent.textureData[i].width, cubemapLoadComponent.textureData[i].height, 0, GL_RGB, GL_UNSIGNED_BYTE, cubemapLoadComponent.textureData[i].data);
-						stbi_image_free(cubemapLoadComponent.textureData[i].data);
-
+						glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, textureData.width, textureData.height, 0, GL_RGB, GL_UNSIGNED_BYTE, textureData.data);
+						stbi_image_free(textureData.data);
+						
 						skyboxComponent.shader.Use();
 						skyboxComponent.shader.SetInt("skybox", 0);
-
+						
 						entity.remove<CubemapLoadComponent>();
 					}
 					else

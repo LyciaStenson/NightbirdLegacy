@@ -6,6 +6,6 @@
 
 struct CubemapLoadComponent
 {
-	std::vector<TextureData> textureData;
-	//std::future<TextureData> future;
+	//std::vector<TextureData> textureData;
+	std::vector<std::shared_future<TextureData>> futures;
 };

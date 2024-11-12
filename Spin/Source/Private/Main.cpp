@@ -21,7 +21,7 @@ int main()
 
 	engine.Init();
 
-	glfwSetInputMode(engine.m_Window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	//glfwSetInputMode(engine.m_Window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	SkyboxComponent skyboxComponent;
 	skyboxComponent.vertexPath = "Skybox/Skybox.vert";
