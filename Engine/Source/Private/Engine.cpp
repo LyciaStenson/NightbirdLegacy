@@ -90,7 +90,7 @@ void Engine::InitSystems()
 		);
 	mainCameraInitSystem.run();
 
-	flecs::system meshRenderInitSystem = m_World.system<MeshComponent>("RenderInitSystem")
+	flecs::system meshInitSystem = m_World.system<MeshComponent>("MeshInitSystem")
 		.kind(0)
 		.each([](MeshComponent& meshComponent)
 			{
@@ -147,9 +147,9 @@ void Engine::InitSystems()
 				meshComponent.shader.SetInt("ourTexture", 0);
 			}
 		);
-	meshRenderInitSystem.run();
+	meshInitSystem.run();
 
-	flecs::system skyboxRenderInitSystem = m_World.system<SkyboxComponent>("SkyboxRenderInitSystem")
+	flecs::system skyboxInitSystem = m_World.system<SkyboxComponent>("SkyboxInitSystem")
 		.kind(0)
 		.each([](SkyboxComponent& skyboxComponent)
 			{
@@ -202,9 +202,9 @@ void Engine::InitSystems()
 				skyboxComponent.shader.SetInt("skybox", 0);
 			}
 		);
-	skyboxRenderInitSystem.run();
+	skyboxInitSystem.run();
 
-	flecs::system meshRenderSystem = m_World.system<flecs::pair<TransformComponent, Global>, MeshComponent>("RenderSystem")
+	flecs::system meshRenderSystem = m_World.system<flecs::pair<TransformComponent, Global>, MeshComponent>("MeshRenderSystem")
 		.kind(flecs::OnUpdate)
 		.each([&](flecs::iter& iter, size_t index, flecs::pair<TransformComponent, Global> transformComponent, MeshComponent& meshComponent)
 			{
