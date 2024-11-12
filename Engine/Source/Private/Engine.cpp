@@ -129,7 +129,6 @@ void Engine::InitSystems()
 			{
 				if (textureLoadComponent.future.wait_for(std::chrono::seconds(0)) == std::future_status::ready)
 				{
-					// TEXTURE
 					glGenTextures(1, &meshComponent.texture);
 					glBindTexture(GL_TEXTURE_2D, meshComponent.texture);
 
@@ -185,7 +184,6 @@ void Engine::InitSystems()
 				for (unsigned int i = 0; i < skyboxComponent.texturePaths.size(); i++)
 				{
 					cubemapLoadComponent.futures.push_back(std::async(LoadTexture, skyboxComponent.texturePaths[i], false));
-					//cubemapLoadComponent.textureData.push_back(LoadTexture(skyboxComponent.texturePaths[i], false));
 				}
 				entity.set<CubemapLoadComponent>(cubemapLoadComponent);
 
@@ -208,11 +206,8 @@ void Engine::InitSystems()
 				glBindTexture(GL_TEXTURE_CUBE_MAP, skyboxComponent.texture);
 				for (unsigned int i = 0; i < 6; i++)
 				{
-					//std::cout << "Trying " << i << std::endl;
-					//std::cout << i << ", " << cubemapLoadComponent.loadedChecks[i] << std::endl;
 					if (!cubemapLoadComponent.loadedChecks[i] && cubemapLoadComponent.futures[i].wait_for(std::chrono::seconds(0)) == std::future_status::ready)
 					{
-						std::cout << "Completed " << i << std::endl;
 						TextureData textureData = cubemapLoadComponent.futures[i].get();
 						if (textureData.data)
 						{
@@ -234,7 +229,6 @@ void Engine::InitSystems()
 							}
 							if (fullyCompleted)
 							{
-								std::cout << "Fully Completed" << std::endl;
 								entity.remove<CubemapLoadComponent>();
 							}
 						}
