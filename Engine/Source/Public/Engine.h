@@ -19,6 +19,7 @@
 #include <TransformComponent.h>
 #include <SkyboxComponent.h>
 #include <MeshComponent.h>
+#include <TextureLoadComponent.h>
 #include <CameraComponent.h>
 #include <InputComponent.h>
 #include <PlayerMovementComponent.h>
@@ -31,6 +32,9 @@
 
 #include <vector>
 #include <filesystem>
+
+#include <thread>
+#include <future>
 
 class Engine
 {
@@ -65,6 +69,8 @@ private:
 	RenderTarget* m_RenderTarget;
 
 	unsigned int framebuffer = 0;
+
+	static unsigned char* LoadTexture(const char* path, int* width, int* height, bool flip);
 
 	static void FramebufferSizeCallback(GLFWwindow* window, int width, int height);
 	static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
