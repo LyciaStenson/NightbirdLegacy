@@ -25,7 +25,7 @@ project "Game"
 		"%{wks.location}/Engine/Vendor/cgltf"
 	}
 
-	links { "Engine" }
+	links { "Engine", "glfw", "glad", "flecs" }
 
 	filter { "configurations:Debug" }
 		debugdir (outBinDir)
