@@ -62,8 +62,6 @@ public:
 	void Terminate();
 	void MainLoop();
 
-	//const TransformComponent* GetCameraTransform();
-
 private:
 	flecs::system m_RenderShutdownSystem;
 
@@ -81,7 +79,7 @@ private:
 	static void MouseMoveCallback(GLFWwindow* window, double xPos, double yPos);
 	static void ScrollCallback(GLFWwindow* window, double xOffset, double yOffset);
 
-	void HandleFramebuffer(int width, int height);
+	void HandleFramebufferSize(int width, int height);
 	void HandleKey(int key, int scancode, int action, int mods);
 	void HandleCursorEnter();
 	void HandleMouseMove(GLFWwindow* window, double xPos, double yPos);

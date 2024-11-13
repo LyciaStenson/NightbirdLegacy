@@ -458,14 +458,6 @@ void Engine::MainLoop()
 	}
 }
 
-//const TransformComponent* Engine::GetCameraTransform()
-//{
-//	if (mainCamera.is_valid())
-//	{
-//		return mainCamera.get<TransformComponent, Global>();
-//	}
-//}
-
 TextureData Engine::LoadTexture(const char* path, bool flip)
 {
 	int width, height, nrChannels;
@@ -489,7 +481,7 @@ void Engine::CursorEnterCallback(GLFWwindow* window, int entered)
 void Engine::FramebufferSizeCallback(GLFWwindow* window, int width, int height)
 {
 	Engine* engine = (Engine*)glfwGetWindowUserPointer(window);
-	engine->HandleFramebuffer(width, height);
+	engine->HandleFramebufferSize(width, height);
 }
 
 void Engine::KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
@@ -509,7 +501,7 @@ void Engine::ScrollCallback(GLFWwindow* window, double xOffset, double yOffset)
 	//camera.ProcessMouseScroll((float)yOffset);
 }
 
-void Engine::HandleFramebuffer(int width, int height)
+void Engine::HandleFramebufferSize(int width, int height)
 {
 	m_RenderTarget->WindowResize(width, height);
 }

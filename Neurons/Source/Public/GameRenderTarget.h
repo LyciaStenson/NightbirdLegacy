@@ -24,8 +24,8 @@ public:
 	bool ShouldRun() override;
 
 private:
-	unsigned int framebuffer = 0;
-	unsigned int framebufferTexture = 0;
-	unsigned int screenVAO = 0;
-	Shader screenShader;
+	unsigned int m_Framebuffer = 0;
+	unsigned int m_FramebufferTexture = 0;
+	unsigned int m_ScreenVAO = 0;
+	Shader m_ScreenShader;
 };
