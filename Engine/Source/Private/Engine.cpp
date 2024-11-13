@@ -92,7 +92,7 @@ void Engine::InitSystems()
 
 	flecs::system meshInitSystem = m_World.system<MeshComponent>("MeshInitSystem")
 		.kind(0)
-		.each([](MeshComponent& meshComponent)
+		.each([](flecs::entity entity, MeshComponent& meshComponent)
 			{
 				meshComponent.shader = Shader(meshComponent.vertexPath, meshComponent.fragmentPath);
 
@@ -117,41 +117,49 @@ void Engine::InitSystems()
 				glBindBuffer(GL_ARRAY_BUFFER, 0);
 				glBindVertexArray(0);
 				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-				// TEXTURE
-				glGenTextures(1, &meshComponent.texture);
-				glBindTexture(GL_TEXTURE_2D, meshComponent.texture);
-
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-				int width, height, nrChannels;
-				stbi_set_flip_vertically_on_load(false);
-				unsigned char* data = stbi_load(meshComponent.texturePath, &width, &height, &nrChannels, 0);
-
-				if (data)
-				{
-					glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-					glGenerateMipmap(GL_TEXTURE_2D);
-				}
-				else
-				{
-					std::cout << "Failed to load texture" << std::endl;
-				}
-
-				stbi_image_free(data);
-
-				meshComponent.shader.Use();
-				meshComponent.shader.SetInt("ourTexture", 0);
+				
+				entity.set<TextureLoadComponent>({ std::async(LoadTexture, meshComponent.texturePath, false) });
 			}
 		);
 	meshInitSystem.run();
 
+	flecs::system meshLateInitSystem = m_World.system<MeshComponent, TextureLoadComponent>("MeshLateInitSystem")
+		.kind(flecs::OnUpdate)
+		.each([](flecs::entity entity, MeshComponent& meshComponent, TextureLoadComponent& textureLoadComponent)
+			{
+				if (textureLoadComponent.future.wait_for(std::chrono::seconds(0)) == std::future_status::ready)
+				{
+					glGenTextures(1, &meshComponent.texture);
+					glBindTexture(GL_TEXTURE_2D, meshComponent.texture);
+
+					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+					TextureData textureData = textureLoadComponent.future.get();
+
+					if (textureData.data)
+					{
+						glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, textureData.width, textureData.height, 0, GL_RGB, GL_UNSIGNED_BYTE, textureData.data);
+						glGenerateMipmap(GL_TEXTURE_2D);
+						stbi_image_free(textureData.data);
+						entity.remove<TextureLoadComponent>();
+					}
+					else
+					{
+						std::cout << "Failed to load texture" << std::endl;
+					}
+
+					meshComponent.shader.Use();
+					meshComponent.shader.SetInt("ourTexture", 0);
+				}
+			}
+		);
+
 	flecs::system skyboxInitSystem = m_World.system<SkyboxComponent>("SkyboxInitSystem")
 		.kind(0)
-		.each([](SkyboxComponent& skyboxComponent)
+		.each([](flecs::entity entity, SkyboxComponent& skyboxComponent)
 			{
 				skyboxComponent.shader = Shader(skyboxComponent.vertexPath, skyboxComponent.fragmentPath);
 
@@ -172,6 +180,13 @@ void Engine::InitSystems()
 				glBindVertexArray(0);
 				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
+				CubemapLoadComponent cubemapLoadComponent;
+				for (unsigned int i = 0; i < skyboxComponent.texturePaths.size(); i++)
+				{
+					cubemapLoadComponent.futures.push_back(std::async(LoadTexture, skyboxComponent.texturePaths[i], false));
+				}
+				entity.set<CubemapLoadComponent>(cubemapLoadComponent);
+
 				glGenTextures(1, &skyboxComponent.texture);
 				glBindTexture(GL_TEXTURE_CUBE_MAP, skyboxComponent.texture);
 
@@ -180,29 +195,51 @@ void Engine::InitSystems()
 				glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 				glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 				glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-
-				int width, height, nrChannels;
-				stbi_set_flip_vertically_on_load(false);
-				for (unsigned int i = 0; i < skyboxComponent.texturePaths.size(); i++)
-				{
-					unsigned char* data = stbi_load(skyboxComponent.texturePaths[i], &width, &height, &nrChannels, 0);
-					if (data)
-					{
-						glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-						stbi_image_free(data);
-					}
-					else
-					{
-						std::cout << "Cubemap texture failed to load: " << skyboxComponent.texturePaths[i] << std::endl;
-						stbi_image_free(data);
-					}
-				}
-
-				skyboxComponent.shader.Use();
-				skyboxComponent.shader.SetInt("skybox", 0);
 			}
 		);
 	skyboxInitSystem.run();
+
+	flecs::system skyboxLateInitSystem = m_World.system<CubemapLoadComponent, SkyboxComponent>("SkyboxLateInitSystem")
+		.kind(flecs::OnUpdate)
+		.each([&](flecs::entity entity, CubemapLoadComponent& cubemapLoadComponent, SkyboxComponent& skyboxComponent)
+			{
+				glBindTexture(GL_TEXTURE_CUBE_MAP, skyboxComponent.texture);
+				for (unsigned int i = 0; i < 6; i++)
+				{
+					if (!cubemapLoadComponent.loadedChecks[i] && cubemapLoadComponent.futures[i].wait_for(std::chrono::seconds(0)) == std::future_status::ready)
+					{
+						TextureData textureData = cubemapLoadComponent.futures[i].get();
+						if (textureData.data)
+						{
+							glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, textureData.width, textureData.height, 0, GL_RGB, GL_UNSIGNED_BYTE, textureData.data);
+							stbi_image_free(textureData.data);
+
+							cubemapLoadComponent.loadedChecks[i] = true;
+
+							skyboxComponent.shader.Use();
+							skyboxComponent.shader.SetInt("skybox", 0);
+							
+							bool fullyCompleted = true;
+							for (bool check : cubemapLoadComponent.loadedChecks)
+							{
+								if (!check)
+								{
+									fullyCompleted = false;
+								}
+							}
+							if (fullyCompleted)
+							{
+								entity.remove<CubemapLoadComponent>();
+							}
+						}
+						else
+						{
+							std::cout << "Cubemap texture failed to load: " << skyboxComponent.texturePaths[i] << std::endl;
+						}
+					}
+				}
+			}
+		);
 
 	flecs::system meshRenderSystem = m_World.system<flecs::pair<TransformComponent, Global>, MeshComponent>("MeshRenderSystem")
 		.kind(flecs::OnUpdate)
@@ -321,8 +358,6 @@ void Engine::InitSystems()
 					transformComponent->Position += up * movement;
 				if (input->keyQ)
 					transformComponent->Position -= up * movement;
-
-				std::cout << "Player Position: " << transformComponent->Position.x << ", " << transformComponent->Position.y << ", " << transformComponent->Position.z << std::endl;
 			}
 		);
 
@@ -421,6 +456,14 @@ void Engine::MainLoop()
 		glfwSwapBuffers(m_Window);
 		glfwPollEvents();
 	}
+}
+
+TextureData Engine::LoadTexture(const char* path, bool flip)
+{
+	int width, height, nrChannels;
+	stbi_set_flip_vertically_on_load(flip);
+	unsigned char* data = stbi_load(path, &width, &height, &nrChannels, 0);
+	return TextureData({ data, width, height });
 }
 
 void Engine::CursorEnterCallback(GLFWwindow* window, int entered)

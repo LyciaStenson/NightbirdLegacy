@@ -27,6 +27,6 @@ project "Game"
 
 	links { "Engine", "glfw", "glad", "flecs" }
 
-	filter { "configurations:Debug" }
+	filter { "configurations:debug" }
 		debugdir (outBinDir)
 	filter { }

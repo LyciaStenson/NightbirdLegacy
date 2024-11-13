@@ -7,24 +7,24 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-make
+make config=$1
 
 if [ $? -ne 0 ]; then
     echo "make failed"
     exit 1
 fi
 
-cp -r Neurons/Assets out/bin/Debug-linux-x86_64/Neurons
+cp -r Neurons/Assets out/bin/$1-linux-x86_64/Neurons
 
 if [ $? -ne 0 ]; then
-    echo "Failed to copy Assets directory to out/bin/Debug-linux-x86_64/Neurons"
+    echo Failed to copy Assets directory to out/bin/$1-linux-x86_64/Neurons
     exit 1
 fi
 
-cd out/bin/Debug-linux-x86_64/Neurons
+cd out/bin/$1-linux-x86_64/Neurons
 
 if [ $? -ne 0 ]; then
-    echo "Failed to navigate to out/bin/Debug-linux-x86_64/Neurons"
+    echo Failed to navigate to out/bin/$1-linux-x86_64/Neurons
     exit 1
 fi
 

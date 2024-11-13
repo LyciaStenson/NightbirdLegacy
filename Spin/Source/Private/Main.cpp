@@ -20,7 +20,7 @@ int main()
 	Engine engine = Engine(WIDTH, HEIGHT, "Spin", renderTarget);
 
 	engine.Init();
-
+	
 	glfwSetInputMode(engine.m_Window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	SkyboxComponent skyboxComponent;
@@ -50,33 +50,33 @@ int main()
 
 	flecs::entity cubes = engine.m_World.entity("Cubes")
 		.add<TransformComponent, Global>()
-		.set<TransformComponent, Local>({glm::vec3(0.0f, 0.0f, -3.0f)});
-		//.set<SpinComponent>({10.0f, glm::vec3(0.0f, 0.0f, 1.0f)});
+		.set<TransformComponent, Local>({ glm::vec3(0.0f, 0.0f, -3.0f) })
+		.set<SpinComponent>({1.0f, glm::vec3(0.0f, 0.0f, 1.0f)});
 
 	flecs::entity stevieNicksCube = engine.m_World.entity("StevieNicksCube")
 		.child_of(cubes)
 		.add<TransformComponent, Global>()
-		.set<TransformComponent, Local>({glm::vec3(1.0f, 0.0f, 0.0f)})
-		.set<MeshComponent>(meshComponent1);
-		//.set<SpinComponent>({1.23f, glm::vec3(0.0f, 1.0f, 0.0f)});
+		.set<TransformComponent, Local>({ glm::vec3(1.0f, 0.0f, 0.0f) })
+		.set<MeshComponent>(meshComponent1)
+		.set<SpinComponent>({ 1.23f, glm::vec3(0.0f, 1.0f, 0.0f) });
 
 	flecs::entity stevieNicksCube2 = engine.m_World.entity("StevieNicksCube2")
 		.child_of(cubes)
 		.add<TransformComponent, Global>()
-		.set<TransformComponent, Local>({glm::vec3(-1.0f, 0.0f, 0.0f)})
-		.set<MeshComponent>(meshComponent2);
-		//.set<SpinComponent>({-1.35f, glm::vec3(0.0f, 0.0f, 1.0f)});
+		.set<TransformComponent, Local>({ glm::vec3(-1.0f, 0.0f, 0.0f) })
+		.set<MeshComponent>(meshComponent2)
+		.set<SpinComponent>({ -1.35f, glm::vec3(0.0f, 0.0f, 1.0f) });
 
 	flecs::entity player = engine.m_World.entity("Player")
 		.add<TransformComponent, Global>()
-		.set<TransformComponent, Local>({glm::vec3(0.0f, 0.0f, 0.0f)})
+		.set<TransformComponent, Local>({ glm::vec3(0.0f, 0.0f, 0.0f) })
 		.set<PlayerMovementComponent>({5.0f})
 		.set<PlayerYawComponent>({1.0f});
 
 	flecs::entity camera = engine.m_World.entity("Camera")
 		.child_of(player)
 		.add<TransformComponent, Global>()
-		.set<TransformComponent, Local>({glm::vec3(0.0f, 0.0f, 0.0f)})
+		.set<TransformComponent, Local>({ glm::vec3(0.0f, 0.0f, 0.0f) })
 		.add<CameraComponent>()
 		.set<PlayerPitchComponent>({1.0f});
 

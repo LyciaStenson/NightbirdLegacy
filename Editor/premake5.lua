@@ -28,6 +28,6 @@ project "Editor"
 
 	links { "Engine", "glfw", "glad", "flecs", "ImGui" }
 
-	filter { "configurations:Debug" }
+	filter { "configurations:debug" }
 		debugdir (outBinDir)
 	filter { }
