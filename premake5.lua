@@ -2,19 +2,19 @@ workspace "Nightbird"
 	architecture "x86_64"
 	startproject "Editor"
 
-	configurations { "Debug", "Release", "Dist" }
+	configurations { "debug", "release", "dist" }
 
-	filter { "configurations:Debug"}
+	filter { "configurations:debug"}
 		defines { "DEBUG" }
 		symbols "On"
 		runtime "Debug"
 
-	filter { "configurations:Release" }
+	filter { "configurations:release" }
 		defines { "RELEASE" }
 		optimize "On"
 		runtime "Release"
 
-	filter { "configurations:Dist" }
+	filter { "configurations:dist" }
 		defines { "DIST" }
 		optimize "On"
 		runtime "Release"

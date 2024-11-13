@@ -7,24 +7,24 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-make
+make config=$1
 
 if [ $? -ne 0 ]; then
     echo "make failed"
     exit 1
 fi
 
-cp -r Game/Assets out/bin/Debug-linux-x86_64/Game
+cp -r Game/Assets out/bin/$1-linux-x86_64/Game
 
 if [ $? -ne 0 ]; then
-    echo "Failed to copy Assets directory to out/bin/Debug-linux-x86_64/Game"
+    echo Failed to copy Assets directory to out/bin/$1-linux-x86_64/Game
     exit 1
 fi
 
-cd out/bin/Debug-linux-x86_64/Game
+cd out/bin/$1-linux-x86_64/Game
 
 if [ $? -ne 0 ]; then
-    echo "Failed to navigate to out/bin/Debug-linux-x86_64/Game"
+    echo Failed to navigate to out/bin/$1-linux-x86_64/Game
     exit 1
 fi
 

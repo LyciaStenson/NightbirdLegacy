@@ -7,24 +7,24 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-make
+make config=$1
 
 if [ $? -ne 0 ]; then
     echo "make failed"
     exit 1
 fi
 
-cp -r Editor/Assets out/bin/Debug-linux-x86_64/Editor
+cp -r Editor/Assets out/bin/$1-linux-x86_64/Editor
 
 if [ $? -ne 0 ]; then
-    echo "Failed to copy Assets directory to out/bin/Debug-linux-x86_64/Editor"
+    echo Failed to copy Assets directory to out/bin/$1-linux-x86_64/Editor
     exit 1
 fi
 
-cd out/bin/Debug-linux-x86_64/Editor
+cd out/bin/$1-linux-x86_64/Editor
 
 if [ $? -ne 0 ]; then
-    echo "Failed to navigate to out/bin/Debug-linux-x86_64/Editor"
+    echo Failed to navigate to out/bin/$1-linux-x86_64/Editor
     exit 1
 fi
 
