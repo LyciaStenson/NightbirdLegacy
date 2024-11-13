@@ -83,9 +83,9 @@ void Engine::InitSystems()
 
 	flecs::system mainCameraInitSystem = m_World.system<CameraComponent>("MainCameraInitSystem")
 		.kind(0)
-		.each([&](flecs::iter& iter, size_t index, CameraComponent& cameraComponent)
+		.each([&](flecs::entity entity, CameraComponent& cameraComponent)
 			{
-				mainCamera = iter.entity(index);
+				mainCamera = entity;
 			}
 		);
 	mainCameraInitSystem.run();
@@ -457,6 +457,14 @@ void Engine::MainLoop()
 		glfwPollEvents();
 	}
 }
+
+//const TransformComponent* Engine::GetCameraTransform()
+//{
+//	if (mainCamera.is_valid())
+//	{
+//		return mainCamera.get<TransformComponent, Global>();
+//	}
+//}
 
 TextureData Engine::LoadTexture(const char* path, bool flip)
 {

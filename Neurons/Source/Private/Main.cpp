@@ -28,6 +28,19 @@ int main()
 	flecs::entity neurons = engine.m_World.entity("Nuerons")
 		.set<NeuronsComponent>(neuronsComponent);
 
+	flecs::entity player = engine.m_World.entity("Player")
+		.add<TransformComponent, Global>()
+		.set<TransformComponent, Local>({ glm::vec3(0.0f, 0.0f, 5.0f) })
+		.set<PlayerMovementComponent>({ 5.0f })
+		.set<PlayerYawComponent>({ 1.0f });
+
+	flecs::entity camera = engine.m_World.entity("Camera")
+		.child_of(player)
+		.add<TransformComponent, Global>()
+		.set<TransformComponent, Local>({ glm::vec3(0.0f, 0.0f, 0.0f) })
+		.add<CameraComponent>()
+		.set<PlayerPitchComponent>({ 1.0f });
+
 	flecs::system neuronsInitSystem = engine.m_World.system<NeuronsComponent>("NeuronsInitSystem")
 		.kind(0)
 		.each([&](NeuronsComponent& neuronsComponent)
@@ -64,6 +77,9 @@ int main()
 
 				neuronsComponent.shader.SetFloat("uTime", glfwGetTime());
 
+				const TransformComponent* cameraTransform = engine.mainCamera.get<TransformComponent, Global>();
+				neuronsComponent.shader.SetVec3("uCameraPosition", cameraTransform->Position);
+
 				int width = 1280;
 				int height = 720;
 				glfwGetWindowSize(engine.m_Window, &width, &height);
@@ -76,6 +92,7 @@ int main()
 		);
 
 	engine.InitSystems();
+
 	engine.MainLoop();
 	engine.Terminate();
 	delete renderTarget;

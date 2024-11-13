@@ -44,6 +44,8 @@ public:
 	
 	flecs::world m_World;
 
+	flecs::entity mainCamera;
+
 	float lastX = 0.0f;
 	float lastY = 0.0f;
 	bool mouseDown = false;
@@ -60,9 +62,9 @@ public:
 	void Terminate();
 	void MainLoop();
 
+	//const TransformComponent* GetCameraTransform();
+
 private:
-	flecs::entity mainCamera;
-	
 	flecs::system m_RenderShutdownSystem;
 
 	flecs::query<const TransformComponent, const TransformComponent*, TransformComponent> m_GlobalTransformQuery;
