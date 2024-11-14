@@ -4,10 +4,5 @@
 
 struct CameraComponent
 {
-	float Yaw;
-	float Pitch;
-
-	float MovementSpeed;
-	float Sensitivity;
 	float Fov;
 };

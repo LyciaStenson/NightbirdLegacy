@@ -4,6 +4,9 @@
 uniform float uTime;              // Time in seconds
 uniform vec2 uResolution;         // Screen resolution
 uniform vec3 uCameraPosition;     // Camera position in world space
+uniform vec3 uCameraForward;      // Camera forward direction (normalized)
+uniform vec3 uCameraRight;        // Camera right direction (normalized)
+uniform vec3 uCameraUp;           // Camera up direction (normalized)
 
 // Function to create a sphere's signed distance field (SDF)
 float sphereSDF(vec3 p, float radius) {
@@ -43,33 +46,30 @@ vec3 getNormal(vec3 p) {
     ));
 }
 
-vec3 getLighting(vec3 p, vec3 lightPos) {
-    vec3 normal = getNormal(p);
-    vec3 lightDir = normalize(lightPos - p);
-    float diff = max(dot(normal, lightDir), 0.0);
-    return vec3(1.0, 0.8, 0.6) * diff; // Color and intensity of the light
-}
-
 // Main fragment shader
 out vec4 FragColor;
 
 void main() {
-    // Normalized pixel coordinates (centered and scaled for aspect ratio)
-    vec2 uv = (gl_FragCoord.xy - uResolution.xy * 0.5) / uResolution.y;
+    // Normalize pixel coordinates based on OpenGL screen space (origin at bottom-left)
+    vec2 uv = (gl_FragCoord.xy) / uResolution.xy;
+    uv = uv * 2.0 - 1.0;  // Mapping to range [-1, 1]
+    uv.x *= uResolution.x / uResolution.y;  // Correct aspect ratio
 
-    // Use the uniform camera position and set up the ray direction
-    vec3 ro = uCameraPosition;       // Camera position from uniform
-    vec3 rd = normalize(vec3(uv, -1.0)); // Camera direction (along -z, can be adjusted for other directions)
+    // Camera ray origin and direction
+    vec3 ro = uCameraPosition;  // Camera position
+    vec3 rd = normalize(
+        uv.x * uCameraRight +  // Right direction (camera's horizontal orientation)
+        uv.y * uCameraUp +     // Up direction (camera's vertical orientation)
+        uCameraForward         // Forward direction (viewing direction)
+    );
 
     // Ray march to find the intersection distance
     float dist = rayMarch(ro, rd);
     
     // Calculate color based on distance
     if (dist < 100.0) {
-        vec3 p = ro + rd * dist;          // Point on the surface
-        vec3 color = getLighting(p, vec3(3.0 * sin(uTime), 3.0, 3.0 * cos(uTime))); // Moving light position
-        FragColor = vec4(color, 1.0);      // Render the color with alpha 1.0
+        FragColor = vec4(1.0);  // Render white color (surface color)
     } else {
-        FragColor = vec4(0.0);             // Background color (black)
+        FragColor = vec4(0.0);  // Render black (background color)
     }
 }

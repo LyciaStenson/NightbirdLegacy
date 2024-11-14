@@ -245,6 +245,7 @@ void Engine::InitSystems()
 		.kind(flecs::OnUpdate)
 		.each([&](flecs::iter& iter, size_t index, flecs::pair<TransformComponent, Global> transformComponent, MeshComponent& meshComponent)
 			{
+				const CameraComponent* camera = mainCamera.get<CameraComponent>();
 				const TransformComponent* cameraTransform = mainCamera.get<TransformComponent, Global>();
 
 				glActiveTexture(GL_TEXTURE0);
@@ -263,7 +264,7 @@ void Engine::InitSystems()
 				int height;
 				m_RenderTarget->GetWindowSize(width, height);
 
-				glm::mat4 projection = glm::perspective(glm::radians(70.0f), (float)width / (float)height, 0.1f, 1000.0f);
+				glm::mat4 projection = glm::perspective(glm::radians(camera->Fov), (float)width / (float)height, 0.1f, 1000.0f);
 				meshComponent.shader.SetMat4("projection", projection);
 
 				glm::vec3 forward = cameraTransform->Rotation * glm::vec3(0.0f, 0.0f, -1.0f);
@@ -288,6 +289,7 @@ void Engine::InitSystems()
 		.kind(flecs::OnUpdate)
 		.each([&](flecs::iter& iter, size_t index, SkyboxComponent& skyboxComponent)
 			{
+				const CameraComponent* camera = mainCamera.get<CameraComponent>();
 				const TransformComponent* cameraTransform = mainCamera.get<TransformComponent, Global>();
 
 				glDepthFunc(GL_LEQUAL);
@@ -298,7 +300,7 @@ void Engine::InitSystems()
 				int height;
 				m_RenderTarget->GetWindowSize(width, height);
 
-				glm::mat4 projection = glm::perspective(glm::radians(70.0f), (float)width / (float)height, 0.1f, 1000.0f);
+				glm::mat4 projection = glm::perspective(glm::radians(camera->Fov), (float)width / (float)height, 0.1f, 1000.0f);
 				skyboxComponent.shader.SetMat4("projection", projection);
 
 				glm::vec3 forward = cameraTransform->Rotation * glm::vec3(0.0f, 0.0f, -1.0f);

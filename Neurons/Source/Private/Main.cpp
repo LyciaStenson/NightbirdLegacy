@@ -21,6 +21,8 @@ int main()
 
 	engine.Init();
 
+	glfwSetInputMode(engine.m_Window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
 	NeuronsComponent neuronsComponent;
 	neuronsComponent.vertexPath = "RayMarching.vert";
 	neuronsComponent.fragmentPath = "RayMarching.frag";
@@ -78,8 +80,16 @@ int main()
 				neuronsComponent.shader.SetFloat("uTime", glfwGetTime());
 
 				const TransformComponent* cameraTransform = engine.mainCamera.get<TransformComponent, Global>();
-				neuronsComponent.shader.SetVec3("uCameraPosition", cameraTransform->Position);
 
+				glm::vec3 forward = cameraTransform->Rotation * glm::vec3(0.0f, 0.0f, -1.0f);
+				glm::vec3 right = cameraTransform->Rotation * glm::vec3(1.0f, 0.0f, 0.0f);
+				glm::vec3 up = glm::rotate(cameraTransform->Rotation, glm::vec3(0.0f, 1.0f, 0.0f));
+
+				neuronsComponent.shader.SetVec3("uCameraPosition", cameraTransform->Position);
+				neuronsComponent.shader.SetVec3("uCameraForward", forward);
+				neuronsComponent.shader.SetVec3("uCameraRight", right);
+				neuronsComponent.shader.SetVec3("uCameraUp", up);
+				
 				int width = 1280;
 				int height = 720;
 				glfwGetWindowSize(engine.m_Window, &width, &height);
