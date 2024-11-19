@@ -14,38 +14,41 @@ struct Sphere {
 	float radius;
 };
 
+struct Box {
+	vec3 position;
+	vec3 size;
+};
+
 Sphere spheres[2] = Sphere[](
-	Sphere(vec3(0.0, 0.0, 0.0), 1.0),
-	Sphere(vec3(5.0, 0.0, 0.0), 1.0)
+	Sphere(vec3(-3.0, 0.0, 0.0), 1.0),
+	Sphere(vec3(3.0, 0.0, 0.0), 1.0)
 );
 
-// Function to define the scene's geometry as signed distance fields (SDF)
-//float sdfSphere(vec3 p, vec3 center, float radius) {
-	//return length(p - center) - radius;
-//}
+Box boxes[1] = Box[](
+	Box(vec3(0.0, 5.0, 0.0), vec3(1.0))
+);
 
 float sdfSphere(vec3 p, Sphere sphere) {
 	return length(p - sphere.position) - sphere.radius;
+}
+
+float sdfBox(vec3 p, Box box) {
+	vec3 q = abs(p) - box.size;
+	return length(max(q, vec3(0.0))) + min(max(q.x, max(q.y, q.z)), 0.0);
 }
 
 float sdfPlane(vec3 p, vec3 normal, float d) {
 	return dot(p, normal) + d;
 }
 
-// Scene SDF
 float sceneSDF(vec3 p) {
-	// Sphere at the origin with radius 1.0
-	//float sphere = sdfSphere(p, vec3(0.0, 0.0, 0.0), 1.0);
-
-	//float sphere2 = sdfSphere(p, vec3(3.0, 0.0, 0.0), 1.0);
-
-	// Infinite plane below the sphere
-	//float plane = sdfPlane(p, vec3(0.0, 1.0, 0.0), 0.5);
-
 	// Return the minimum distance to the scene objects
 	float minDist = sdfSphere(p, spheres[0]);
 	for (int i = 0; i < spheres.length(); i++) {
 		minDist = min(minDist, sdfSphere(p, spheres[i]));
+	}
+	for (int i = 0; i < boxes.length(); i++) {
+		minDist = min(minDist, sdfBox(p, boxes[i]));
 	}
 	return minDist;
 }
@@ -85,12 +88,12 @@ void main() {
 	// Compute ray direction
 	vec2 uv = (gl_FragCoord.xy / uResolution - 0.5) * 2.0;
 	uv.x *= uResolution.x / uResolution.y; // Adjust for aspect ratio
-	vec3 rayDir = normalize(uCameraForward + uv.x * uCameraRight + uv.y * uCameraUp);
+	vec3 rayDir = normalize(uCameraForward + uv.x * 0.6 * uCameraRight + uv.y * 0.6 * uCameraUp);
 	
 	// Perform ray marching
 	float maxDist = 1000.0;
 	float epsilon = 0.001;
-	int maxSteps = 256;
+	int maxSteps = 512;
 	float dist = rayMarch(uCameraPosition, rayDir, maxSteps, maxDist, epsilon);
 	
 	// Determine color
@@ -100,7 +103,7 @@ void main() {
 		vec3 normal = calcNormal(hitPoint);
 		
 		// Simple lighting
-		vec3 lightDir = normalize(vec3(-0.5, 1.0, -0.5));
+		vec3 lightDir = normalize(vec3(0.5, 1.0, 0.5));
 		float diff = max(dot(normal, lightDir), 0.0);
 		color = vec3(0.3, 0.6, 1.0) * diff; // Blue-tinted diffuse color
 	}
