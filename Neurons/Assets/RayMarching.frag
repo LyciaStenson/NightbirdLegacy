@@ -20,12 +20,14 @@ struct Box {
 };
 
 Sphere spheres[2] = Sphere[](
-	Sphere(vec3(5.0, 0.0, 0.0), 1.0),
-	Sphere(vec3(-5.0, 0.0, 0.0), 1.0)
+	Sphere(vec3(10.0, 0.0, 0.0), 1.0),
+	Sphere(vec3(-10.0, 0.0, 0.0), 1.0)
 );
 
-Box boxes[1] = Box[](
-	Box(vec3(0.0, 0.0, 0.0), vec3(1.0))
+Box boxes[3] = Box[](
+	Box(vec3(5.0, 0.0, 0.0), vec3(1.0, 3.0, 1.0)),
+	Box(vec3(0.0, 0.0, 0.0), vec3(1.0, 3.0, 1.0)),
+	Box(vec3(-5.0, 0.0, 0.0), vec3(1.0, 3.0, 1.0))
 );
 
 float sdfSphere(vec3 p, Sphere sphere) {
@@ -33,7 +35,7 @@ float sdfSphere(vec3 p, Sphere sphere) {
 }
 
 float sdfBox(vec3 p, Box box) {
-	vec3 q = abs(p) - box.size;
+	vec3 q = abs(p - box.position) - box.size;
 	return length(max(q, vec3(0.0))) + min(max(q.x, max(q.y, q.z)), 0.0);
 }
 
@@ -41,11 +43,6 @@ float smoothMin(float a, float b, float k) {
 	float h = max(k - abs(a - b), 0.0) / k;
 	return min(a, b) - h * h * h * k * (1.0 / 6.0);
 }
-
-//float smoothMin(float d1, float d2, float k) {
-    //float h = clamp(0.5 + 0.5 * (d2 - d1) / k, 0.0, 1.0);
-    //return mix(d2, d1, h) - k * h * (1.0 - h);
-//}
 
 float sdfPlane(vec3 p, vec3 normal, float d) {
 	return dot(p, normal) + d;
