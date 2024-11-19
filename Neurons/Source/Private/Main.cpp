@@ -24,15 +24,15 @@ int main()
 	glfwSetInputMode(engine.m_Window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	NeuronsComponent neuronsComponent;
-	neuronsComponent.vertexPath = "RayMarching.vert";
-	neuronsComponent.fragmentPath = "RayMarching.frag";
+	neuronsComponent.vertexPath = "Neurons.vert";
+	neuronsComponent.fragmentPath = "Neurons.frag";
 
 	flecs::entity neurons = engine.m_World.entity("Nuerons")
 		.set<NeuronsComponent>(neuronsComponent);
 
 	flecs::entity player = engine.m_World.entity("Player")
 		.add<TransformComponent, Global>()
-		.set<TransformComponent, Local>({ glm::vec3(0.0f, 0.0f, 5.0f) })
+		.set<TransformComponent, Local>({ glm::vec3(0.0f, 0.0f, 10.0f) })
 		.set<PlayerMovementComponent>({ 5.0f })
 		.set<PlayerYawComponent>({ 1.0f });
 
