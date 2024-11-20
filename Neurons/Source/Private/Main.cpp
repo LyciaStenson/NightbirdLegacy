@@ -20,12 +20,19 @@ int main()
 	Engine engine = Engine(WIDTH, HEIGHT, "Neurons", renderTarget);
 
 	engine.Init();
-
+	
 	glfwSetInputMode(engine.m_Window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	NeuronsComponent neuronsComponent;
 	neuronsComponent.vertexPath = "Neurons.vert";
 	neuronsComponent.fragmentPath = "Neurons.frag";
+	neuronsComponent.neuronPositions =
+	{
+		 0.0f,  3.0f,  0.0f,
+		 0.0f, -3.0f,  0.0f,
+		 3.0f,  0.0f,  0.0f,
+		-3.0f,  0.0f,  0.0f
+	};
 
 	flecs::entity neurons = engine.m_World.entity("Nuerons")
 		.set<NeuronsComponent>(neuronsComponent);
@@ -48,7 +55,11 @@ int main()
 		.each([&](NeuronsComponent& neuronsComponent)
 			{
 				neuronsComponent.shader.Load(neuronsComponent.vertexPath, neuronsComponent.fragmentPath);
+				neuronsComponent.shader.Use();
 
+				neuronsComponent.shader.SetFloatArray("uNeuronPositions", neuronsComponent.neuronPositions);
+				neuronsComponent.shader.SetInt("uNeuronPositionsSize", neuronsComponent.neuronPositions.size());
+				
 				glGenVertexArrays(1, &neuronsComponent.VAO);
 				glGenBuffers(1, &neuronsComponent.VBO);
 				glGenBuffers(1, &neuronsComponent.EBO);

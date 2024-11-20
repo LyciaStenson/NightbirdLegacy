@@ -1,24 +1,17 @@
 #pragma once
 
+#include <Shader.h>
+
 struct NeuronsComponent
 {
+	std::vector<float> neuronPositions;
+
 	float vertices[8] = {
 	-1.0f, -1.0f, // Bottom left
 	 1.0f, -1.0f, // Bottom right
 	 1.0f,  1.0f, // Top right
 	-1.0f,  1.0f  // Top left
 	};
-	
-	//float vertices[24] =
-	//{
-	//	// Positions	// Texture Coords
-	//	-1.0f,  1.0f,	0.0f, 0.0f, // Top left
-	//	-1.0f, -1.0f,	0.0f, 1.0f, // Bottom left
-	//	 1.0f, -1.0f,	1.0f, 1.0f, // Bottom right
-	//	-1.0f,  1.0f,	0.0f, 0.0f, // Top left
-	//	 1.0f, -1.0f,	1.0f, 1.0f, // Bottom right
-	//	 1.0f,  1.0f,	1.0f, 0.0f	// Top right
-	//};
 	
 	unsigned int indices[6] = {
 		0, 1, 2,

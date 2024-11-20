@@ -1,43 +1,25 @@
-#version 450
+#version 460
 
-uniform float uTime;              // Time in seconds
-uniform vec2 uResolution;         // Screen resolution
-uniform vec3 uCameraPosition;     // Camera position in world space
-uniform vec3 uCameraForward;      // Camera forward direction (normalized)
-uniform vec3 uCameraRight;        // Camera right direction (normalized)
-uniform vec3 uCameraUp;           // Camera up direction (normalized)
+uniform float uTime;			// Time in seconds
+uniform vec2 uResolution;		// Screen resolution
+uniform vec3 uCameraPosition;	// Camera position in world space
+uniform vec3 uCameraForward;	// Camera forward direction (normalized)
+uniform vec3 uCameraRight;		// Camera right direction (normalized)
+uniform vec3 uCameraUp;			// Camera up direction (normalized)
+
+uniform float uNeuronPositions[99];
+uniform int uNeuronPositionsSize;
 
 out vec4 FragColor;
 
-struct Sphere {
-	vec3 position;
-	float radius;
-};
-
-struct Capsule {
-	vec3 top;
-	vec3 bottom;
-	float radius;
-};
-
-Sphere spheres[2] = Sphere[](
-	Sphere(vec3(3.0, 0.0, 0.0), 1.0),
-	Sphere(vec3(-3.0, 0.0, 0.0), 1.0)
-);
-
-Capsule capsules[1] = Capsule[](
-	Capsule(vec3(3.0, 0.0, 0.0), vec3(-3.0, 0.0, 0.0), 0.3)
-);
-
-float sdSphere(vec3 p, Sphere sphere) {
-	return length(p - sphere.position) - sphere.radius;
+float sdSphere(vec3 p, vec3 position, float radius) {
+	return length(p - position) - radius;
 }
 
-float sdCapsule( vec3 p, Capsule capsule ) {
-	vec3 pa = p - capsule.top;
-	vec3 ba = capsule.bottom - capsule.top;
-	float h = clamp(dot(pa, ba) / dot(ba, ba), 0.0, 1.0);
-	return length(pa - ba * h) - capsule.radius;
+float sdCapsule( vec3 p, vec3 a, vec3 b, float r ) {
+	vec3 pa = p - a, ba = b - a;
+	float h = clamp( dot(pa,ba)/dot(ba,ba), 0.0, 1.0 );
+	return length( pa - ba*h ) - r;
 }
 
 float smoothMin(float a, float b, float k) {
@@ -46,12 +28,11 @@ float smoothMin(float a, float b, float k) {
 }
 
 float sceneSDF(vec3 p) {
-	float minDist = sdSphere(p, spheres[0]);
-	for (int i = 1; i < spheres.length(); i++) {
-		minDist = smoothMin(minDist, sdSphere(p, spheres[i]), 1.0);
-	}
-	for (int i = 0; i < capsules.length(); i++) {
-		minDist = smoothMin(minDist, sdCapsule(p, capsules[i]), 1.0);
+	vec3 pos = vec3(uNeuronPositions[0], uNeuronPositions[1], uNeuronPositions[2]);
+	float minDist = sdSphere(p, pos, 1.0);
+	for (int i = 3; i < uNeuronPositionsSize; i += 3) {
+		pos = vec3(uNeuronPositions[i], uNeuronPositions[i+1], uNeuronPositions[i+2]);
+		minDist = smoothMin(minDist, sdSphere(p, pos, 1.0), 1.0);
 	}
 	return minDist;
 }
