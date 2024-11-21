@@ -20,7 +20,7 @@ int main()
 	Engine engine = Engine(WIDTH, HEIGHT, "Neurons", renderTarget);
 
 	engine.Init();
-
+	
 	glfwSetInputMode(engine.m_Window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	NeuronsComponent neuronsComponent;
@@ -59,6 +59,15 @@ int main()
 
 				neuronsComponent.shader.SetFloatArray("uNeuronPositions", neuronsComponent.neuronPositions);
 				neuronsComponent.shader.SetInt("uNeuronPositionsSize", neuronsComponent.neuronPositions.size());
+				
+				std::vector<int> connections = { 0, 1, 1, 2, 2, 3};
+
+				neuronsComponent.shader.SetIntArray("uConnections", connections);
+				neuronsComponent.shader.SetInt("uConnectionsSize", connections.size());
+
+				std::cout << "uConnectionsSize: " << connections.size() << std::endl;
+
+				std::cout << "i = 0; i < uConnectionsSize - 2: " << (0 <= connections.size() - 2) << std::endl;
 
 				glGenVertexArrays(1, &neuronsComponent.VAO);
 				glGenBuffers(1, &neuronsComponent.VBO);

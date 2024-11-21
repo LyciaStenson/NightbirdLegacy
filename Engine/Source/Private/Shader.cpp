@@ -135,6 +135,11 @@ void Shader::SetMat4(const std::string &name, const glm::mat4 &mat) const
 	glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, &mat[0][0]);
 }
 
+void Shader::SetIntArray(const std::string& name, const std::vector<int>& value) const
+{
+	glUniform1iv(glGetUniformLocation(ID, name.c_str()), value.size(), value.data());
+}
+
 void Shader::SetFloatArray(const std::string& name, const std::vector<float>& value) const
 {
 	glUniform1fv(glGetUniformLocation(ID, name.c_str()), value.size(), value.data());

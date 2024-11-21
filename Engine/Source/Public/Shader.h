@@ -35,6 +35,7 @@ public:
 	void SetMat3(const std::string& name, const glm::mat3 &mat) const;
 	void SetMat4(const std::string& name, const glm::mat4 &mat) const;
 
+	void SetIntArray(const std::string& name, const std::vector<int>& value) const;
 	void SetFloatArray(const std::string& name, const std::vector<float>& value) const;
 
 private:

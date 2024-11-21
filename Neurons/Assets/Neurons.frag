@@ -10,6 +10,9 @@ uniform vec3 uCameraUp;			// Camera up direction (normalized)
 uniform float uNeuronPositions[99];
 uniform int uNeuronPositionsSize;
 
+uniform int uConnections[99];
+uniform int uConnectionsSize;
+
 out vec4 FragColor;
 
 float sdSphere(vec3 p, vec3 position, float radius) {
@@ -28,11 +31,18 @@ float smoothMin(float a, float b, float k) {
 }
 
 float sceneSDF(vec3 p) {
-	vec3 pos = vec3(uNeuronPositions[0], uNeuronPositions[1], uNeuronPositions[2]);
-	float minDist = sdSphere(p, pos, 1.0);
+	vec3 neuronPos = vec3(uNeuronPositions[0], uNeuronPositions[1], uNeuronPositions[2]);
+	float minDist = sdSphere(p, neuronPos, 1.0);
 	for (int i = 3; i < uNeuronPositionsSize; i += 3) {
-		pos = vec3(uNeuronPositions[i], uNeuronPositions[i+1], uNeuronPositions[i+2]);
-		minDist = smoothMin(minDist, sdSphere(p, pos, 1.0), 1.0);
+		neuronPos = vec3(uNeuronPositions[i], uNeuronPositions[i+1], uNeuronPositions[i+2]);
+		minDist = smoothMin(minDist, sdSphere(p, neuronPos, 1.0), 1.0);
+	}
+	for (int i = 0; i <= uConnectionsSize - 2; i += 2) {
+		int topIndex = uConnections[i] * 3;
+		int bottomIndex = uConnections[i+1] * 3;
+		vec3 top = vec3(uNeuronPositions[topIndex], uNeuronPositions[topIndex+1], uNeuronPositions[topIndex+2]);
+		vec3 bottom = vec3(uNeuronPositions[bottomIndex], uNeuronPositions[bottomIndex+1], uNeuronPositions[bottomIndex+2]);
+		minDist = smoothMin(minDist, sdCapsule(p, top, bottom, 0.3), 1.0);
 	}
 	return minDist;
 }
