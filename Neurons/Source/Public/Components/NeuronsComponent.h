@@ -12,7 +12,7 @@ struct NeuronsComponent
 	 1.0f,  1.0f, // Top right
 	-1.0f,  1.0f  // Top left
 	};
-	
+
 	unsigned int indices[6] = {
 		0, 1, 2,
 		0, 2, 3

@@ -43,11 +43,11 @@ vec3 calcNormal(vec3 p) {
 	vec3 dx = vec3(epsilon, 0.0, 0.0);
 	vec3 dy = vec3(0.0, epsilon, 0.0);
 	vec3 dz = vec3(0.0, 0.0, epsilon);
-	
+
 	float nx = sceneSDF(p + dx) - sceneSDF(p - dx);
 	float ny = sceneSDF(p + dy) - sceneSDF(p - dy);
 	float nz = sceneSDF(p + dz) - sceneSDF(p - dz);
-	
+
 	return normalize(vec3(nx, ny, nz));
 }
 
@@ -73,24 +73,24 @@ void main() {
 	vec2 uv = (gl_FragCoord.xy / uResolution - 0.5) * 2.0;
 	uv.x *= uResolution.x / uResolution.y; // Adjust for aspect ratio
 	vec3 rayDir = normalize(uCameraForward + uv.x * 0.6 * uCameraRight + uv.y * 0.6 * uCameraUp);
-	
+
 	// Perform ray marching
 	float maxDist = 1000.0;
 	float epsilon = 0.001;
 	int maxSteps = 512;
 	float dist = rayMarch(uCameraPosition, rayDir, maxSteps, maxDist, epsilon);
-	
+
 	// Determine color
 	vec3 color = vec3(0.0); // Default to black
 	if (dist > 0.0) {
 		vec3 hitPoint = uCameraPosition + rayDir * dist;
 		vec3 normal = calcNormal(hitPoint);
-		
+
 		// Simple lighting
 		vec3 lightDir = normalize(vec3(0.5, 1.0, 0.5));
 		float diff = max(dot(normal, lightDir), 0.0);
 		color = vec3(0.6, 0.2, 0.5) * diff;
 	}
-	
+
 	FragColor = vec4(color, 1.0);
 }

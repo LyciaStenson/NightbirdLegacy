@@ -20,7 +20,7 @@ int main()
 	Engine engine = Engine(WIDTH, HEIGHT, "Neurons", renderTarget);
 
 	engine.Init();
-	
+
 	glfwSetInputMode(engine.m_Window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	NeuronsComponent neuronsComponent;
@@ -59,7 +59,7 @@ int main()
 
 				neuronsComponent.shader.SetFloatArray("uNeuronPositions", neuronsComponent.neuronPositions);
 				neuronsComponent.shader.SetInt("uNeuronPositionsSize", neuronsComponent.neuronPositions.size());
-				
+
 				glGenVertexArrays(1, &neuronsComponent.VAO);
 				glGenBuffers(1, &neuronsComponent.VBO);
 				glGenBuffers(1, &neuronsComponent.EBO);
@@ -100,7 +100,7 @@ int main()
 				neuronsComponent.shader.SetVec3("uCameraForward", forward);
 				neuronsComponent.shader.SetVec3("uCameraRight", right);
 				neuronsComponent.shader.SetVec3("uCameraUp", up);
-				
+
 				int width = 1280;
 				int height = 720;
 				glfwGetWindowSize(engine.m_Window, &width, &height);
