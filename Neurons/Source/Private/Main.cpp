@@ -28,15 +28,15 @@ int main()
 	neuronsComponent.fragmentPath = "Neurons.frag";
 	neuronsComponent.neuronPositions =
 	{
-		15.0f, 11.0f,  7.0f,	// 0
+		15.0f,  4.0f,  7.0f,	// 0
 		11.0f,  7.0f,  2.0f,	// 1
-		-5.0f, 11.0f,  7.0f,	// 2
+		-5.0f,  8.0f,  7.0f,	// 2
 		11.0f,  2.0f, -6.0f,	// 3
 		 0.0f,  0.0f,  5.0f,	// 4
 		-5.0f, -3.0f,  7.0f,	// 5
-		-6.0f,  7.0f,  2.0f,	// 6
+		-3.0f,  7.0f,  2.0f,	// 6
 		 5.0f, -5.0f, -3.0f,	// 7
-	   -15.0f,-11.0f, -7.0f		// 8
+	   -15.0f, -9.0f, -7.0f		// 8
 	};
 
 	flecs::entity neurons = engine.m_World.entity("Nuerons")
