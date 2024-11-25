@@ -28,10 +28,15 @@ int main()
 	neuronsComponent.fragmentPath = "Neurons.frag";
 	neuronsComponent.neuronPositions =
 	{
-		 0.0f,  3.0f,  0.0f,
-		 0.0f, -3.0f,  0.0f,
-		 3.0f,  0.0f,  0.0f,
-		-3.0f,  0.0f,  0.0f
+		15.0f, 11.0f,  7.0f,	// 0
+		11.0f,  7.0f,  2.0f,	// 1
+		-5.0f, 11.0f,  7.0f,	// 2
+		11.0f,  2.0f, -6.0f,	// 3
+		 0.0f,  0.0f,  5.0f,	// 4
+		-5.0f, -3.0f,  7.0f,	// 5
+		-6.0f,  7.0f,  2.0f,	// 6
+		 5.0f, -5.0f, -3.0f,	// 7
+	   -15.0f,-11.0f, -7.0f		// 8
 	};
 
 	flecs::entity neurons = engine.m_World.entity("Nuerons")
@@ -39,7 +44,7 @@ int main()
 
 	flecs::entity player = engine.m_World.entity("Player")
 		.add<TransformComponent, Global>()
-		.set<TransformComponent, Local>({ glm::vec3(0.0f, 0.0f, 10.0f) })
+		.set<TransformComponent, Local>({ glm::vec3(0.0f, 0.0f, 25.0f) })
 		.set<PlayerMovementComponent>({ 5.0f })
 		.set<PlayerYawComponent>({ 1.0f });
 
@@ -60,14 +65,34 @@ int main()
 				neuronsComponent.shader.SetFloatArray("uNeuronPositions", neuronsComponent.neuronPositions);
 				neuronsComponent.shader.SetInt("uNeuronPositionsSize", neuronsComponent.neuronPositions.size());
 				
-				std::vector<int> connections = { 0, 1, 1, 2, 2, 3};
+				std::vector<int> connections =
+				{
+					0, 1,
+					0, 3,
+					0, 4,
+					1, 2,
+					1, 3,
+					1, 4,
+					2, 3,
+					2, 4,
+					3, 4,
+					3, 5,
+					3, 6,
+					4, 5,
+					4, 6,
+					4, 7,
+					5, 6,
+					6, 7,
+					6, 8,
+					7, 8,
+				};
 
 				neuronsComponent.shader.SetIntArray("uConnections", connections);
 				neuronsComponent.shader.SetInt("uConnectionsSize", connections.size());
 
-				std::cout << "uConnectionsSize: " << connections.size() << std::endl;
+				//std::cout << "uConnectionsSize: " << connections.size() << std::endl;
 
-				std::cout << "i = 0; i < uConnectionsSize - 2: " << (0 <= connections.size() - 2) << std::endl;
+				//std::cout << "i = 0; i < uConnectionsSize - 2: " << (0 <= connections.size() - 2) << std::endl;
 
 				glGenVertexArrays(1, &neuronsComponent.VAO);
 				glGenBuffers(1, &neuronsComponent.VBO);

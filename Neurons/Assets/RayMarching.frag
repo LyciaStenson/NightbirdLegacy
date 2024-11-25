@@ -105,15 +105,15 @@ void main() {
 	float dist = rayMarch(uCameraPosition, rayDir, maxSteps, maxDist, epsilon);
 	
 	// Determine color
-	vec3 color = vec3(0.0); // Default to black
+	vec3 color = vec3(0.025, 0.0, 0.01); // Background color
 	if (dist > 0.0) {
 		vec3 hitPoint = uCameraPosition + rayDir * dist;
 		vec3 normal = calcNormal(hitPoint);
 		
 		// Simple lighting
 		vec3 lightDir = normalize(vec3(0.5, 1.0, 0.5));
-		float diff = max(dot(normal, lightDir), 0.0);
-		color = vec3(0.5, 0.1, 0.4) * diff;
+		float diff = max(dot(normal, lightDir), 0.2);
+		color = vec3(0.6, 0.2, 0.5) * diff;
 	}
 	
 	FragColor = vec4(color, 1.0);

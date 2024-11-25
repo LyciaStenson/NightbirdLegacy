@@ -35,14 +35,14 @@ float sceneSDF(vec3 p) {
 	float minDist = sdSphere(p, neuronPos, 1.0);
 	for (int i = 3; i < uNeuronPositionsSize; i += 3) {
 		neuronPos = vec3(uNeuronPositions[i], uNeuronPositions[i+1], uNeuronPositions[i+2]);
-		minDist = smoothMin(minDist, sdSphere(p, neuronPos, 1.0), 1.0);
+		minDist = smoothMin(minDist, sdSphere(p, neuronPos, 1.0), 0.7);
 	}
 	for (int i = 0; i <= uConnectionsSize - 2; i += 2) {
 		int topIndex = uConnections[i] * 3;
 		int bottomIndex = uConnections[i+1] * 3;
 		vec3 top = vec3(uNeuronPositions[topIndex], uNeuronPositions[topIndex+1], uNeuronPositions[topIndex+2]);
 		vec3 bottom = vec3(uNeuronPositions[bottomIndex], uNeuronPositions[bottomIndex+1], uNeuronPositions[bottomIndex+2]);
-		minDist = smoothMin(minDist, sdCapsule(p, top, bottom, 0.3), 1.0);
+		minDist = smoothMin(minDist, sdCapsule(p, top, bottom, 0.1), 0.7);
 	}
 	return minDist;
 }
@@ -99,7 +99,7 @@ void main() {
 		// Simple lighting
 		vec3 lightDir = normalize(vec3(0.5, 1.0, 0.5));
 		float diff = max(dot(normal, lightDir), 0.2);
-		color = vec3(0.6, 0.2, 0.5) * diff;
+		color = vec3(0.85, 0.4, 0.55) * diff;
 	}
 
 	FragColor = vec4(color, 1.0);
