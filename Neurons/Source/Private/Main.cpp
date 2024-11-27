@@ -45,7 +45,7 @@ int main()
 	flecs::entity player = engine.m_World.entity("Player")
 		.add<TransformComponent, Global>()
 		.set<TransformComponent, Local>({ glm::vec3(0.0f, 0.0f, 25.0f) })
-		.set<PlayerMovementComponent>({ 5.0f })
+		.set<PlayerMovementComponent>({ 10.0f })
 		.set<PlayerYawComponent>({ 1.0f });
 
 	flecs::entity camera = engine.m_World.entity("Camera")
