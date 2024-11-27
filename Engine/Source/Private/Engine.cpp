@@ -369,7 +369,7 @@ void Engine::InitSystems()
 			{
 				InputComponent* input = m_World.get_mut<InputComponent>();
 
-				glm::quat yaw = glm::angleAxis(input->mouseX * 0.001f * playerYawComponent.sensitivity, glm::vec3(0.0f, 1.0f, 0.0f));
+				glm::quat yaw = glm::angleAxis(input->mouseX * iter.delta_time() * playerYawComponent.sensitivity, glm::vec3(0.0f, 1.0f, 0.0f));
 				yaw = glm::normalize(yaw);
 
 				transformComponent->Rotation *= yaw;
@@ -386,7 +386,7 @@ void Engine::InitSystems()
 
 				glm::vec3 right = transformComponent->Rotation * glm::vec3(1.0f, 0.0f, 0.0f);
 
-				glm::quat pitch = glm::angleAxis(input->mouseY * 0.001f * playerPitchComponent.sensitivity, right);
+				glm::quat pitch = glm::angleAxis(input->mouseY * iter.delta_time() * playerPitchComponent.sensitivity, right);
 				pitch = glm::normalize(pitch);
 
 				transformComponent->Rotation *= pitch;
@@ -417,8 +417,8 @@ void Engine::MainLoop()
 		lastFrameTime = currentFrameTime;
 
 		fps = (int)(1.0f / deltaTime);
-
-		//std::cout << "FPS: " << fps << std::endl;
+		
+		std::cout << "FPS: " << fps << std::endl;
 
 		m_GlobalTransformQuery
 			.each([](const TransformComponent& transform, const TransformComponent* parentTransform, TransformComponent& transformOut)
