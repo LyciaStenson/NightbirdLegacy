@@ -87,11 +87,11 @@ void main() {
 	// Perform ray marching
 	float maxDist = 1000.0;
 	float epsilon = 0.001;
-	int maxSteps = 512;
+	int maxSteps = 256;
 	float dist = rayMarch(uCameraPosition, rayDir, maxSteps, maxDist, epsilon);
 
 	// Determine color
-	vec3 color = vec3(0.025, 0.0, 0.01); // Background color
+	vec3 color = vec3(0.025, 0.01, 0.015); // Background color
 	if (dist > 0.0) {
 		vec3 hitPoint = uCameraPosition + rayDir * dist;
 		vec3 normal = calcNormal(hitPoint);
