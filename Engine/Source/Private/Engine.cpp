@@ -418,7 +418,7 @@ void Engine::MainLoop()
 
 		fps = (int)(1.0f / deltaTime);
 		
-		std::cout << "FPS: " << fps << std::endl;
+		//std::cout << "FPS: " << fps << std::endl;
 
 		m_GlobalTransformQuery
 			.each([](const TransformComponent& transform, const TransformComponent* parentTransform, TransformComponent& transformOut)
