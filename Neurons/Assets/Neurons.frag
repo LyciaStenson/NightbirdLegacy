@@ -98,8 +98,8 @@ void main() {
 
 		// Simple lighting
 		vec3 lightDir = normalize(vec3(0.5, 1.0, 0.5));
-		float diff = max(dot(normal, lightDir), 0.2);
-		color = normalize(normalize(hitPoint) * 0.5 + 0.5) * diff;
+		float diffuse = max(dot(normal, lightDir), 0.2);
+		color = normalize(normalize(hitPoint) * 0.5 + 0.5) * diffuse;
 	}
 
 	FragColor = vec4(color, 1.0);
