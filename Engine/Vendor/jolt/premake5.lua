@@ -6,7 +6,8 @@ project "jolt"
 	targetdir ("%{wks.location}/out/bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("%{wks.location}/out/obj/" .. outputdir .. "/%{prj.name}")
 	
-	files {
+	files
+	{
 		"**.h",
 		"**.cpp"
 	}

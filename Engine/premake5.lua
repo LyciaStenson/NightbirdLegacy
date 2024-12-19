@@ -19,11 +19,11 @@ project "Engine"
 		"Source/Public/Systems",
 		"Vendor/glm",
 		"Vendor/stb",
-		"Vendor/cgltf",
+		"Vendor/fastgltf/include",
 		"Vendor/glfw/include",
 		"Vendor/glad/include",
 		"Vendor/flecs/include",
 		"Vendor/jolt",
 	}
 
-	links { "glfw", "glad", "flecs", "jolt" }
+	links { "glfw", "glad", "fastgltf", "flecs", "jolt" }
