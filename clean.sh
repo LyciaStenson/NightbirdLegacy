@@ -9,6 +9,9 @@ rm Engine/Makefile
 rm Editor/Makefile
 
 rm Game/Makefile
+rm Neurons/Makefile
+rm Spin/Makefile
+rm Diorama/Makefile
 
 rm Engine/Vendor/assimp/Makefile
 

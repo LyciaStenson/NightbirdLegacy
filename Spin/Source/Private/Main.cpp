@@ -39,46 +39,97 @@ int main()
 		.set<SkyboxComponent>(skyboxComponent);
 
 	MeshComponent meshComponent1;
-	meshComponent1.vertexPath = "Cube.vert";
-	meshComponent1.fragmentPath = "Cube.frag";
+	meshComponent1.vertices =
+	{
+		// Positions			//Normals					// Texture Coords
+		Vertex(glm::vec3(-0.5f, -0.5f, -0.5f),	 glm::vec3(0.0f,  0.0f, -1.0f),		glm::vec2(0.0f, 0.0f)),
+		Vertex(glm::vec3( 0.5f, -0.5f, -0.5f),	 glm::vec3(0.0f,  0.0f, -1.0f),		glm::vec2(1.0f, 0.0f)),
+		Vertex(glm::vec3( 0.5f,  0.5f, -0.5f),	 glm::vec3(0.0f,  0.0f, -1.0f),		glm::vec2(1.0f, 1.0f)),
+		Vertex(glm::vec3( 0.5f,  0.5f, -0.5f),	 glm::vec3(0.0f,  0.0f, -1.0f),		glm::vec2(1.0f, 1.0f)),
+		Vertex(glm::vec3(-0.5f,  0.5f, -0.5f),	 glm::vec3(0.0f,  0.0f, -1.0f),		glm::vec2(0.0f, 1.0f)),
+		Vertex(glm::vec3(-0.5f, -0.5f, -0.5f),	 glm::vec3(0.0f,  0.0f, -1.0f),		glm::vec2(0.0f, 0.0f)),
+
+		Vertex(glm::vec3(-0.5f, -0.5f,  0.5f),	 glm::vec3(0.0f,  0.0f,  1.0f),		glm::vec2(0.0f, 0.0f)),
+		Vertex(glm::vec3( 0.5f, -0.5f,  0.5f),	 glm::vec3(0.0f,  0.0f,  1.0f),		glm::vec2(1.0f, 0.0f)),
+		Vertex(glm::vec3( 0.5f,  0.5f,  0.5f),	 glm::vec3(0.0f,  0.0f,  1.0f),		glm::vec2(1.0f, 1.0f)),
+		Vertex(glm::vec3( 0.5f,  0.5f,  0.5f),	 glm::vec3(0.0f,  0.0f,  1.0f),		glm::vec2(1.0f, 1.0f)),
+		Vertex(glm::vec3(-0.5f,  0.5f,  0.5f),	 glm::vec3(0.0f,  0.0f,  1.0f),		glm::vec2(0.0f, 1.0f)),
+		Vertex(glm::vec3(-0.5f, -0.5f,  0.5f),	 glm::vec3(0.0f,  0.0f,  1.0f),		glm::vec2(0.0f, 0.0f)),
+
+		Vertex(glm::vec3(-0.5f,  0.5f,  0.5f),	-glm::vec3(1.0f,  0.0f,  0.0f),		glm::vec2(1.0f, 0.0f)),
+		Vertex(glm::vec3(-0.5f,  0.5f, -0.5f),	-glm::vec3(1.0f,  0.0f,  0.0f),		glm::vec2(1.0f, 1.0f)),
+		Vertex(glm::vec3(-0.5f, -0.5f, -0.5f),	-glm::vec3(1.0f,  0.0f,  0.0f),		glm::vec2(0.0f, 1.0f)),
+		Vertex(glm::vec3(-0.5f, -0.5f, -0.5f),	-glm::vec3(1.0f,  0.0f,  0.0f),		glm::vec2(0.0f, 1.0f)),
+		Vertex(glm::vec3(-0.5f, -0.5f,  0.5f),	-glm::vec3(1.0f,  0.0f,  0.0f),		glm::vec2(0.0f, 0.0f)),
+		Vertex(glm::vec3(-0.5f,  0.5f,  0.5f),	-glm::vec3(1.0f,  0.0f,  0.0f),		glm::vec2(1.0f, 0.0f)),
+
+		Vertex(glm::vec3( 0.5f,  0.5f,  0.5f),	 glm::vec3(1.0f,  0.0f,  0.0f),		glm::vec2(1.0f, 0.0f)),
+		Vertex(glm::vec3( 0.5f,  0.5f, -0.5f),	 glm::vec3(1.0f,  0.0f,  0.0f),		glm::vec2(1.0f, 1.0f)),
+		Vertex(glm::vec3( 0.5f, -0.5f, -0.5f),	 glm::vec3(1.0f,  0.0f,  0.0f),		glm::vec2(0.0f, 1.0f)),
+		Vertex(glm::vec3( 0.5f, -0.5f, -0.5f),	 glm::vec3(1.0f,  0.0f,  0.0f),		glm::vec2(0.0f, 1.0f)),
+		Vertex(glm::vec3( 0.5f, -0.5f,  0.5f),	 glm::vec3(1.0f,  0.0f,  0.0f),		glm::vec2(0.0f, 0.0f)),
+		Vertex(glm::vec3( 0.5f,  0.5f,  0.5f),	 glm::vec3(1.0f,  0.0f,  0.0f),		glm::vec2(1.0f, 0.0f)),
+
+		Vertex(glm::vec3(-0.5f, -0.5f, -0.5f),	 glm::vec3(0.0f, -1.0f,  0.0f),		glm::vec2(0.0f, 1.0f)),
+		Vertex(glm::vec3( 0.5f, -0.5f, -0.5f),	 glm::vec3(0.0f, -1.0f,  0.0f),		glm::vec2(1.0f, 1.0f)),
+		Vertex(glm::vec3( 0.5f, -0.5f,  0.5f),	 glm::vec3(0.0f, -1.0f,  0.0f),		glm::vec2(1.0f, 0.0f)),
+		Vertex(glm::vec3( 0.5f, -0.5f,  0.5f),	 glm::vec3(0.0f, -1.0f,  0.0f),		glm::vec2(1.0f, 0.0f)),
+		Vertex(glm::vec3(-0.5f, -0.5f,  0.5f),	 glm::vec3(0.0f, -1.0f,  0.0f),		glm::vec2(0.0f, 0.0f)),
+		Vertex(glm::vec3(-0.5f, -0.5f, -0.5f),	 glm::vec3(0.0f, -1.0f,  0.0f),		glm::vec2(0.0f, 1.0f)),
+
+		Vertex(glm::vec3(-0.5f,  0.5f, -0.5f),	 glm::vec3(0.0f,  1.0f,  0.0f),		glm::vec2(0.0f, 1.0f)),
+		Vertex(glm::vec3( 0.5f,  0.5f, -0.5f),	 glm::vec3(0.0f,  1.0f,  0.0f),		glm::vec2(1.0f, 1.0f)),
+		Vertex(glm::vec3( 0.5f,  0.5f,  0.5f),	 glm::vec3(0.0f,  1.0f,  0.0f),		glm::vec2(1.0f, 0.0f)),
+		Vertex(glm::vec3( 0.5f,  0.5f,  0.5f),	 glm::vec3(0.0f,  1.0f,  0.0f),		glm::vec2(1.0f, 0.0f)),
+		Vertex(glm::vec3(-0.5f,  0.5f,  0.5f),	 glm::vec3(0.0f,  1.0f,  0.0f),		glm::vec2(0.0f, 0.0f)),
+		Vertex(glm::vec3(-0.5f,  0.5f, -0.5f),	 glm::vec3(0.0f,  1.0f,  0.0f),		glm::vec2(0.0f, 1.0f))
+	};
+
+	//meshComponent1.vertices =
+	//{
+		//Vertex(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(), glm::vec2())
+	//};
+
+	meshComponent1.vertexPath = "Mesh.vert";
+	meshComponent1.fragmentPath = "Mesh.frag";
 	meshComponent1.texturePath = "stevie-nicks.jpg";
 
-	MeshComponent meshComponent2;
-	meshComponent2.vertexPath = "Cube.vert";
-	meshComponent2.fragmentPath = "Cube.frag";
-	meshComponent2.texturePath = "stevie-nicks-2.jpg";
+	//MeshComponent meshComponent2;
+	//meshComponent2.vertexPath = "Cube.vert";
+	//meshComponent2.fragmentPath = "Cube.frag";
+	//meshComponent2.texturePath = "stevie-nicks-2.jpg";
 
-	flecs::entity cubes = engine.m_World.entity("Cubes")
-		.add<TransformComponent, Global>()
-		.set<TransformComponent, Local>({ glm::vec3(0.0f, 0.0f, -3.0f) })
-		.set<SpinComponent>({1.0f, glm::vec3(0.0f, 0.0f, 1.0f)});
+	//flecs::entity cubes = engine.m_World.entity("Cubes")
+		//.add<TransformComponent, Global>()
+		//.set<TransformComponent, Local>({ glm::vec3(0.0f, 0.0f, -3.0f) })
+		//.set<SpinComponent>({1.0f, glm::vec3(0.0f, 0.0f, 1.0f)});
 
 	flecs::entity stevieNicksCube = engine.m_World.entity("StevieNicksCube")
-		.child_of(cubes)
+		//.child_of(cubes)
 		.add<TransformComponent, Global>()
-		.set<TransformComponent, Local>({ glm::vec3(1.0f, 0.0f, 0.0f) })
-		.set<MeshComponent>(meshComponent1)
-		.set<SpinComponent>({ 1.23f, glm::vec3(0.0f, 1.0f, 0.0f) });
+		.set<TransformComponent, Local>({ glm::vec3(0.0f, 0.0f, -3.0f) })
+		.set<MeshComponent>(meshComponent1);
+		//.set<SpinComponent>({ 1.23f, glm::vec3(0.0f, 1.0f, 0.0f) });
 
-	flecs::entity stevieNicksCube2 = engine.m_World.entity("StevieNicksCube2")
-		.child_of(cubes)
-		.add<TransformComponent, Global>()
-		.set<TransformComponent, Local>({ glm::vec3(-1.0f, 0.0f, 0.0f) })
-		.set<MeshComponent>(meshComponent2)
-		.set<SpinComponent>({ -1.35f, glm::vec3(0.0f, 0.0f, 1.0f) });
+	//flecs::entity stevieNicksCube2 = engine.m_World.entity("StevieNicksCube2")
+		//.child_of(cubes)
+		//.add<TransformComponent, Global>()
+		//.set<TransformComponent, Local>({ glm::vec3(-1.0f, 0.0f, 0.0f) })
+		//.set<MeshComponent>(meshComponent2)
+		//.set<SpinComponent>({ -1.35f, glm::vec3(0.0f, 0.0f, 1.0f) });
 
 	flecs::entity player = engine.m_World.entity("Player")
 		.add<TransformComponent, Global>()
 		.set<TransformComponent, Local>({ glm::vec3(0.0f, 0.0f, 0.0f) })
 		.set<PlayerMovementComponent>({5.0f})
-		.set<PlayerYawComponent>({ 1.0f });
+		.set<PlayerYawComponent>({ 5.0f });
 
 	flecs::entity camera = engine.m_World.entity("Camera")
 		.child_of(player)
 		.add<TransformComponent, Global>()
 		.set<TransformComponent, Local>({ glm::vec3(0.0f, 0.0f, 0.0f) })
 		.set<CameraComponent>({ 50.0f })
-		.set<PlayerPitchComponent>({ 1.0f });
+		.set<PlayerPitchComponent>({ 5.0f });
 
 	flecs::system m_SpinSystem = engine.m_World.system<SpinComponent, flecs::pair<TransformComponent, Local>>("SpinSystem")
 		.kind(flecs::OnUpdate)

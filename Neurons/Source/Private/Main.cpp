@@ -46,14 +46,14 @@ int main()
 		.add<TransformComponent, Global>()
 		.set<TransformComponent, Local>({ glm::vec3(0.0f, 0.0f, 25.0f) })
 		.set<PlayerMovementComponent>({ 10.0f })
-		.set<PlayerYawComponent>({ 0.3f });
+		.set<PlayerYawComponent>({ 0.5f });
 
 	flecs::entity camera = engine.m_World.entity("Camera")
 		.child_of(player)
 		.add<TransformComponent, Global>()
 		.set<TransformComponent, Local>({ glm::vec3(0.0f, 0.0f, 0.0f) })
 		.add<CameraComponent>()
-		.set<PlayerPitchComponent>({ 0.3f });
+		.set<PlayerPitchComponent>({ 0.5f });
 
 	flecs::system neuronsInitSystem = engine.m_World.system<NeuronsComponent>("NeuronsInitSystem")
 		.kind(0)

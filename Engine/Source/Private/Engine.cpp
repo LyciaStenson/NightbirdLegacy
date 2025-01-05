@@ -103,8 +103,8 @@ void Engine::InitSystems()
 				glBindVertexArray(meshComponent.VAO);
 				glBindBuffer(GL_ARRAY_BUFFER, meshComponent.VBO);
 
-				glBufferData(GL_ARRAY_BUFFER, meshComponent.vertices.size() * sizeof(float), &meshComponent.vertices[0], GL_STATIC_DRAW);
-
+				glBufferData(GL_ARRAY_BUFFER, meshComponent.vertices.size() * sizeof(Vertex), &meshComponent.vertices[0], GL_STATIC_DRAW);
+				
 				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, meshComponent.EBO); // New
 				glBufferData(GL_ELEMENT_ARRAY_BUFFER, meshComponent.indices.size() * sizeof(unsigned int), &meshComponent.indices[0], GL_STATIC_DRAW); // New
 				
@@ -120,9 +120,9 @@ void Engine::InitSystems()
 				glEnableVertexAttribArray(2);
 				glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, texCoords));
 
-				glBindBuffer(GL_ARRAY_BUFFER, 0);
+				//glBindBuffer(GL_ARRAY_BUFFER, 0);
 				glBindVertexArray(0);
-				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+				//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 				
 				entity.set<TextureLoadComponent>({ std::async(LoadTexture, meshComponent.texturePath, false) });
 			}
@@ -287,7 +287,11 @@ void Engine::InitSystems()
 				model = glm::scale(model, transformComponent->Scale);
 				meshComponent.shader.SetMat4("model", model);
 
-				glDrawArrays(GL_TRIANGLES, 0, 36);
+				//glDrawArrays(GL_TRIANGLES, 0, meshComponent.vertices.size());
+				glDrawElements(GL_TRIANGLES, meshComponent.indices.size(), GL_UNSIGNED_INT, 0);
+
+				glBindVertexArray(0);
+				glActiveTexture(GL_TEXTURE0);
 			}
 		);
 

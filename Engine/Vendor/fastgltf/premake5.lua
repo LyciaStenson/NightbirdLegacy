@@ -9,6 +9,7 @@ project "fastgltf"
 
 	files
 	{
+		"**.h",
 		"**.hpp",
 		"**.cpp"
 	}
@@ -17,8 +18,3 @@ project "fastgltf"
 	{
 		"include"
 	}
-
-	filter { "system:linux", "action:gmake2" }
-		buildoptions { "-std=gnu99" }
-
-	filter { }
