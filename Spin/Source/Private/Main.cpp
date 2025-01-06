@@ -23,11 +23,6 @@ bool LoadGltfModel(std::filesystem::path path, const char* name, Engine* engine)
 		return false;
 	}
 	auto& assetData = asset.get();
-	
-	//for (auto& buffer : assetData.buffers)
-	//{
-		//std::cout << "Buffer: " << buffer.name << std::endl;
-	//}
 
 	flecs::entity modelEntity = engine->m_World.entity(name)
 		.add<TransformComponent, Global>()
@@ -40,7 +35,6 @@ bool LoadGltfModel(std::filesystem::path path, const char* name, Engine* engine)
 			std::vector<Vertex> vertices;
 			std::vector<unsigned int> indices;
 
-			std::cout << "Mesh Node" << std::endl;
 			const auto& mesh = assetData.meshes[node.meshIndex.value()];
 
 			//for (auto it = mesh.primitives.begin(); it != mesh.primitives.end(); ++it)
@@ -69,8 +63,7 @@ bool LoadGltfModel(std::filesystem::path path, const char* name, Engine* engine)
 				{
 					vertices[idx].normal = glm::vec3(normal.x(), normal.y(), normal.z());
 				});
-
-				std::string indicesStr = "";
+				
 				if (primitive.indicesAccessor.has_value())
 				{
 					auto& indexAccessor = assetData.accessors[primitive.indicesAccessor.value()];
@@ -79,69 +72,7 @@ bool LoadGltfModel(std::filesystem::path path, const char* name, Engine* engine)
 						indices.push_back(idx);
 					});
 				}
-				std::cout << indicesStr << std::endl;
-				
-				//for (Vertex vertex : vertices)
-				//{
-					//std::cout << "Position: " << vertex.position.x << ", " << vertex.position.y << ", " << vertex.position.z << std::endl;
-					//std::cout << "Normal: " << vertex.normal.x << ", " << vertex.normal.y << ", " << vertex.normal.z << std::endl;
-				//}
 			}
-
-			//for (const fastgltf::Primitive& primitive : mesh.primitives)
-			//{
-				//auto* positionIt = primitive.findAttribute("POSITION");
-				//auto& positionAccessor = asset.accessors[positionIt->seconds];
-				//const auto& positionAccessor = asset.accessors[primitive.attributes["POSITION"]];
-			//}
-
-			//std::cout << mesh.primitives.size() << std::endl;
-
-			/*
-			std::vector<Vertex> cubeVertices =
-			{
-				// Positions							// Normals							// Texture Coords
-				Vertex(glm::vec3(-0.5f, -0.5f, -0.5f),	glm::vec3(0.0f,  0.0f, -1.0f),		glm::vec2(0.0f, 0.0f)),
-				Vertex(glm::vec3(0.5f, -0.5f, -0.5f),	glm::vec3(0.0f,  0.0f, -1.0f),		glm::vec2(1.0f, 0.0f)),
-				Vertex(glm::vec3(0.5f,  0.5f, -0.5f),	glm::vec3(0.0f,  0.0f, -1.0f),		glm::vec2(1.0f, 1.0f)),
-				Vertex(glm::vec3(-0.5f,  0.5f, -0.5f),	glm::vec3(0.0f,  0.0f, -1.0f),		glm::vec2(0.0f, 1.0f)),
-
-				Vertex(glm::vec3(-0.5f, -0.5f,  0.5f),	glm::vec3(0.0f,  0.0f,  1.0f),		glm::vec2(0.0f, 0.0f)),
-				Vertex(glm::vec3(0.5f, -0.5f,  0.5f),	glm::vec3(0.0f,  0.0f,  1.0f),		glm::vec2(1.0f, 0.0f)),
-				Vertex(glm::vec3(0.5f,  0.5f,  0.5f),	glm::vec3(0.0f,  0.0f,  1.0f),		glm::vec2(1.0f, 1.0f)),
-				Vertex(glm::vec3(-0.5f,  0.5f,  0.5f),	glm::vec3(0.0f,  0.0f,  1.0f),		glm::vec2(0.0f, 1.0f)),
-
-				Vertex(glm::vec3(-0.5f,  0.5f,  0.5f),	glm::vec3(-1.0f,  0.0f,  0.0f),		glm::vec2(1.0f, 0.0f)),
-				Vertex(glm::vec3(-0.5f,  0.5f, -0.5f),	glm::vec3(-1.0f,  0.0f,  0.0f),		glm::vec2(1.0f, 1.0f)),
-				Vertex(glm::vec3(-0.5f, -0.5f, -0.5f),	glm::vec3(-1.0f,  0.0f,  0.0f),		glm::vec2(0.0f, 1.0f)),
-				Vertex(glm::vec3(-0.5f, -0.5f,  0.5f),	glm::vec3(-1.0f,  0.0f,  0.0f),		glm::vec2(0.0f, 0.0f)),
-
-				Vertex(glm::vec3(0.5f,  0.5f,  0.5f),	glm::vec3(1.0f,  0.0f,  0.0f),		glm::vec2(1.0f, 0.0f)),
-				Vertex(glm::vec3(0.5f,  0.5f, -0.5f),	glm::vec3(1.0f,  0.0f,  0.0f),		glm::vec2(1.0f, 1.0f)),
-				Vertex(glm::vec3(0.5f, -0.5f, -0.5f),	glm::vec3(1.0f,  0.0f,  0.0f),		glm::vec2(0.0f, 1.0f)),
-				Vertex(glm::vec3(0.5f, -0.5f,  0.5f),	glm::vec3(1.0f,  0.0f,  0.0f),		glm::vec2(0.0f, 0.0f)),
-
-				Vertex(glm::vec3(-0.5f, -0.5f, -0.5f),	glm::vec3(0.0f, -1.0f,  0.0f),		glm::vec2(0.0f, 1.0f)),
-				Vertex(glm::vec3(0.5f, -0.5f, -0.5f),	glm::vec3(0.0f, -1.0f,  0.0f),		glm::vec2(1.0f, 1.0f)),
-				Vertex(glm::vec3(0.5f, -0.5f,  0.5f),	glm::vec3(0.0f, -1.0f,  0.0f),		glm::vec2(1.0f, 0.0f)),
-				Vertex(glm::vec3(-0.5f, -0.5f,  0.5f),	glm::vec3(0.0f, -1.0f,  0.0f),		glm::vec2(0.0f, 0.0f)),
-
-				Vertex(glm::vec3(-0.5f,  0.5f, -0.5f),	glm::vec3(0.0f,  1.0f,  0.0f),		glm::vec2(0.0f, 1.0f)),
-				Vertex(glm::vec3(0.5f,  0.5f, -0.5f),	glm::vec3(0.0f,  1.0f,  0.0f),		glm::vec2(1.0f, 1.0f)),
-				Vertex(glm::vec3(0.5f,  0.5f,  0.5f),	glm::vec3(0.0f,  1.0f,  0.0f),		glm::vec2(1.0f, 0.0f)),
-				Vertex(glm::vec3(-0.5f,  0.5f,  0.5f),	glm::vec3(0.0f,  1.0f,  0.0f),		glm::vec2(0.0f, 0.0f))
-			};
-
-			std::vector<unsigned int> cubeIndices =
-			{
-				0, 1, 2, 2, 3, 0,
-				4, 5, 6, 6, 7, 4,
-				8, 9, 10, 10, 11, 8,
-				12, 13, 14, 14, 15, 12,
-				16, 17, 18, 18, 19, 16,
-				20, 21, 22, 22, 23, 20
-			};
-			*/
 
 			MeshComponent meshComponent;
 			meshComponent.vertices = vertices;
@@ -155,14 +86,7 @@ bool LoadGltfModel(std::filesystem::path path, const char* name, Engine* engine)
 				.add<TransformComponent, Local>()
 				.set<MeshComponent>(meshComponent);
 		}
-		else
-		{
-			std::cout << "Non-mesh Node" << std::endl;
-		}
 	}
-
-	// fastgltf::validate(asset.get()
-
 	return true;
 }
 
@@ -245,7 +169,7 @@ int main()
 		20, 21, 22, 22, 23, 20
 	};
 
-	LoadGltfModel("survival_guitar_backpack.glb", "Cube", &engine);
+	LoadGltfModel("the_great_drawing_room.glb", "Cube", &engine);
 	//LoadGltfModel("the_great_drawing_room.glb", "Cube", &engine);
 
 	//MeshComponent meshComponent1;
