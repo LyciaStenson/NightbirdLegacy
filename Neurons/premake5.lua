@@ -22,10 +22,10 @@ project "Neurons"
 		"%{wks.location}/Engine/Vendor/flecs/include",
 		"%{wks.location}/Engine/Vendor/glm",
 		"%{wks.location}/Engine/Vendor/stb",
-		"%{wks.location}/Engine/Vendor/cgltf"
+		"%{wks.location}/Engine/Vendor/fastgltf/include"
 	}
 
-	links { "Engine", "glfw", "glad", "flecs" }
+	links { "Engine", "glfw", "glad", "fastgltf", "flecs" }
 
 	filter { "configurations:debug" }
 		debugdir (outBinDir)

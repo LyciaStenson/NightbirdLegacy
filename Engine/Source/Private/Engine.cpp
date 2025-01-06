@@ -408,6 +408,8 @@ void Engine::InitSystems()
 				input->mouseY = 0.0f;
 			}
 		);
+	
+	ImportGltfModel("the_great_drawing_room.glb");
 }
 
 void Engine::Terminate()
@@ -468,6 +470,44 @@ void Engine::MainLoop()
 		glfwSwapBuffers(m_Window);
 		glfwPollEvents();
 	}
+}
+
+bool Engine::ImportGltfModel(std::filesystem::path path)
+{
+	fastgltf::Parser parser;
+	std::cout << "Created fastgltf parser" << std::endl;
+
+	auto data = fastgltf::GltfDataBuffer::FromPath(path);
+	if (data.error() != fastgltf::Error::None)
+	{
+		std::cout << "fastgltf data buffer error" << std::endl;
+		return false;
+	}
+	
+	//auto asset = parser.loadGltf(data.get(), path.parent_path(), fastgltf::Options::None);
+	auto asset = parser.loadGltfBinary(data.get(), path.parent_path(), fastgltf::Options::None);
+	if (auto error = asset.error(); error != fastgltf::Error::None)
+	{
+		std::cout << "fastgltf get data error" << std::endl;
+		return false;
+	}
+
+	std::cout << "Successfully parsed " << path << std::endl;
+	
+	for (auto& buffer : asset->buffers)
+	{
+		// Process the buffers
+		std::cout << "Buffer: " << buffer.name << std::endl;
+	}
+
+	for (auto& node : asset->nodes)
+	{
+		std::cout << "Node: " << node.name << std::endl;
+	}
+
+	// fastgltf::validate(asset.get());
+
+	return true;
 }
 
 TextureData Engine::LoadTexture(const char* path, bool flip)

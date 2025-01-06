@@ -10,6 +10,10 @@
 #include <glm/gtx/quaternion.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include <fastgltf/core.hpp>
+#include <fastgltf/types.hpp>
+#include <fastgltf/tools.hpp>
+
 #include <flecs/flecs.h>
 
 #include <Shader.h>
@@ -24,8 +28,6 @@
 #include <PlayerMovementComponent.h>
 #include <PlayerYawComponent.h>
 #include <PlayerPitchComponent.h>
-
-#include <RenderSystem.h>
 
 #include <RenderTarget.h>
 
@@ -68,6 +70,8 @@ private:
 	RenderTarget* m_RenderTarget;
 
 	unsigned int framebuffer = 0;
+
+	bool ImportGltfModel(std::filesystem::path path);
 
 	static TextureData LoadTexture(const char* path, bool flip);
 

@@ -22,11 +22,11 @@ project "Editor"
 		"%{wks.location}/Engine/Vendor/flecs/include",
 		"%{wks.location}/Engine/Vendor/glm",
 		"%{wks.location}/Engine/Vendor/stb",
-		"%{wks.location}/Engine/Vendor/cgltf",
+		"%{wks.location}/Engine/Vendor/fastgltf/include",
 		"%{wks.location}/Editor/Vendor/imgui"
 	}
 
-	links { "Engine", "glfw", "glad", "flecs", "ImGui" }
+	links { "Engine", "glfw", "glad", "fastgltf", "flecs", "ImGui" }
 
 	filter { "configurations:debug" }
 		debugdir (outBinDir)
