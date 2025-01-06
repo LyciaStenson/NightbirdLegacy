@@ -169,7 +169,7 @@ int main()
 		20, 21, 22, 22, 23, 20
 	};
 
-	LoadGltfModel("the_great_drawing_room.glb", "Cube", &engine);
+	LoadGltfModel("survival_guitar_backpack.glb", "Cube", &engine);
 	//LoadGltfModel("the_great_drawing_room.glb", "Cube", &engine);
 
 	//MeshComponent meshComponent1;
