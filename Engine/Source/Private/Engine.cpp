@@ -286,10 +286,10 @@ void Engine::InitSystems()
 				model *= glm::toMat4(transformComponent->Rotation);
 				model = glm::scale(model, transformComponent->Scale);
 				meshComponent.shader.SetMat4("model", model);
-
+				
 				//glDrawArrays(GL_TRIANGLES, 0, meshComponent.vertices.size());
 				glDrawElements(GL_TRIANGLES, meshComponent.indices.size(), GL_UNSIGNED_INT, 0);
-
+				
 				glBindVertexArray(0);
 				glActiveTexture(GL_TEXTURE0);
 			}
