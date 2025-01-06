@@ -124,7 +124,7 @@ void Engine::InitSystems()
 				glBindVertexArray(0);
 				//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 				
-				entity.set<TextureLoadComponent>({ std::async(LoadTexture, meshComponent.texturePath, false) });
+				//entity.set<TextureLoadComponent>({ std::async(LoadTexture, meshComponent.texturePath, false) });
 			}
 		);
 	meshInitSystem.run();
@@ -254,9 +254,9 @@ void Engine::InitSystems()
 				const CameraComponent* camera = mainCamera.get<CameraComponent>();
 				const TransformComponent* cameraTransform = mainCamera.get<TransformComponent, Global>();
 
-				glActiveTexture(GL_TEXTURE0);
-				glBindTexture(GL_TEXTURE_2D, meshComponent.texture);
-				glBindTexture(GL_TEXTURE_2D, meshComponent.texture);
+				//glActiveTexture(GL_TEXTURE0);
+				//glBindTexture(GL_TEXTURE_2D, meshComponent.texture);
+				//glBindTexture(GL_TEXTURE_2D, meshComponent.texture);
 
 				meshComponent.shader.Use();
 
@@ -291,7 +291,7 @@ void Engine::InitSystems()
 				glDrawElements(GL_TRIANGLES, meshComponent.indices.size(), GL_UNSIGNED_INT, 0);
 				
 				glBindVertexArray(0);
-				glActiveTexture(GL_TEXTURE0);
+				//glActiveTexture(GL_TEXTURE0);
 			}
 		);
 
@@ -409,7 +409,7 @@ void Engine::InitSystems()
 			}
 		);
 	
-	ImportGltfModel("the_great_drawing_room.glb");
+	//ImportGltfModel("survival_guitar_backpack.glb");
 }
 
 void Engine::Terminate()
@@ -474,39 +474,47 @@ void Engine::MainLoop()
 
 bool Engine::ImportGltfModel(std::filesystem::path path)
 {
-	fastgltf::Parser parser;
-	std::cout << "Created fastgltf parser" << std::endl;
+	//fastgltf::Parser parser;
 
-	auto data = fastgltf::GltfDataBuffer::FromPath(path);
-	if (data.error() != fastgltf::Error::None)
-	{
-		std::cout << "fastgltf data buffer error" << std::endl;
-		return false;
-	}
+	//auto data = fastgltf::GltfDataBuffer::FromPath(path);
+	//if (data.error() != fastgltf::Error::None)
+	//{
+		//std::cout << "fastgltf data buffer error" << std::endl;
+		//return false;
+	//}
 	
 	//auto asset = parser.loadGltf(data.get(), path.parent_path(), fastgltf::Options::None);
-	auto asset = parser.loadGltfBinary(data.get(), path.parent_path(), fastgltf::Options::None);
-	if (auto error = asset.error(); error != fastgltf::Error::None)
-	{
-		std::cout << "fastgltf get data error" << std::endl;
-		return false;
-	}
+	//auto asset = parser.loadGltfBinary(data.get(), path.parent_path(), fastgltf::Options::None);
+	//if (asset.error() != fastgltf::Error::None)
+	//{
+		//std::cout << "fastgltf get data error" << std::endl;
+		//return false;
+	//}
 
-	std::cout << "Successfully parsed " << path << std::endl;
+	//for (auto& buffer : asset->buffers)
+	//{
+		//std::cout << "Buffer: " << buffer.name << std::endl;
+	//}
 	
-	for (auto& buffer : asset->buffers)
-	{
-		// Process the buffers
-		std::cout << "Buffer: " << buffer.name << std::endl;
-	}
-
-	for (auto& node : asset->nodes)
-	{
-		std::cout << "Node: " << node.name << std::endl;
-	}
-
-	// fastgltf::validate(asset.get());
-
+	//for (auto& node : asset->nodes)
+	//{
+		//if (node.meshIndex.has_value())
+		//{
+			//size_t meshIndex = node.meshIndex.value();
+			//const auto& mesh = asset->meshes[meshIndex];
+		//}
+		//std::string nodeChildren = "";
+		//for (auto& child : node.children)
+		//{
+			//std::cout << "Child: " << child << std::endl;
+			//nodeChildren += child;
+			//nodeChildren += ", ";
+		//}
+		//std::cout << "Node " << node.name << " " << nodeChildren << std::endl;
+	//}
+	
+	// fastgltf::validate(asset.get()
+	
 	return true;
 }
 

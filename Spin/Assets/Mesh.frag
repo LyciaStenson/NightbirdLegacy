@@ -7,7 +7,7 @@ in vec3 FragPos;
 
 in vec2 texCoord;
 
-uniform sampler2D ourTexture;
+//uniform sampler2D ourTexture;
 
 uniform vec3 lightPos;
 
@@ -18,7 +18,7 @@ uniform vec3 viewPos;
 
 void main()
 {
-	float ambientStrength = 0.1f;
+	float ambientStrength = 0.2f;
 	vec3 ambient = ambientStrength * lightColor;
 
 	vec3 norm = normalize(Normal);
@@ -35,8 +35,8 @@ void main()
 
 	vec3 lighting = (ambient + diffuse + specular) * objectColor;
 
-	vec4 texColor = texture(ourTexture, texCoord);
+	//vec4 texColor = texture(ourTexture, texCoord);
 
-	FragColor = vec4(lighting, 1.0f) * texColor;
+	FragColor = vec4(lighting, 1.0f);// * texColor;
 
 }

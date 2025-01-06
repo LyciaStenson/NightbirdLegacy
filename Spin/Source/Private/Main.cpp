@@ -3,6 +3,169 @@
 
 #include <Components/SpinComponent.h>
 
+//bool LoadGltfModel(std::filesystem::path path, const char* name, Engine* engine)
+bool LoadGltfModel(std::filesystem::path path, const char* name, Engine* engine)
+{
+	fastgltf::Parser parser;
+
+	auto data = fastgltf::GltfDataBuffer::FromPath(path);
+	if (data.error() != fastgltf::Error::None)
+	{
+		std::cout << "fastgltf data buffer error" << std::endl;
+		return false;
+	}
+
+	//auto asset = parser.loadGltf(data.get(), path.parent_path(), fastgltf::Options::None);
+	auto asset = parser.loadGltfBinary(data.get(), path.parent_path(), fastgltf::Options::None);
+	if (asset.error() != fastgltf::Error::None)
+	{
+		std::cout << "fastgltf get data error" << std::endl;
+		return false;
+	}
+	auto& assetData = asset.get();
+	
+	//for (auto& buffer : assetData.buffers)
+	//{
+		//std::cout << "Buffer: " << buffer.name << std::endl;
+	//}
+
+	flecs::entity modelEntity = engine->m_World.entity(name)
+		.add<TransformComponent, Global>()
+		.set<TransformComponent, Local>({ glm::vec3(0.0f, 0.0f, -3.0) });
+	
+	for (fastgltf::Node& node : asset->nodes)
+	{
+		if (node.meshIndex.has_value())
+		{
+			std::vector<Vertex> vertices;
+			std::vector<unsigned int> indices;
+
+			std::cout << "Mesh Node" << std::endl;
+			const auto& mesh = assetData.meshes[node.meshIndex.value()];
+
+			//for (auto it = mesh.primitives.begin(); it != mesh.primitives.end(); ++it)
+			for (auto& primitive : mesh.primitives)
+			{
+				auto* positionIt = primitive.findAttribute("POSITION");
+				auto* normalIt = primitive.findAttribute("NORMAL");
+				if (positionIt == primitive.attributes.end() || normalIt == primitive.attributes.end())
+					continue;
+
+				auto& positionAccessor = assetData.accessors[positionIt->accessorIndex];
+				auto& normalAccessor = assetData.accessors[normalIt->accessorIndex];
+				
+				vertices.resize(positionAccessor.count);
+
+				fastgltf::iterateAccessorWithIndex<fastgltf::math::fvec3>(assetData, positionAccessor, [&](fastgltf::math::fvec3 position, std::size_t idx)
+				{
+					vertices[idx].position = glm::vec3(position.x(), position.y(), position.z());
+				});
+
+
+				if (normalIt == primitive.attributes.end())
+					continue;
+				
+				fastgltf::iterateAccessorWithIndex<fastgltf::math::fvec3>(assetData, normalAccessor, [&](fastgltf::math::fvec3 normal, std::size_t idx)
+				{
+					vertices[idx].normal = glm::vec3(normal.x(), normal.y(), normal.z());
+				});
+
+				std::string indicesStr = "";
+				if (primitive.indicesAccessor.has_value())
+				{
+					auto& indexAccessor = assetData.accessors[primitive.indicesAccessor.value()];
+					fastgltf::iterateAccessorWithIndex<std::uint32_t>(assetData, indexAccessor, [&](std::uint32_t idx, std::size_t index)
+					{
+						indices.push_back(idx);
+					});
+				}
+				std::cout << indicesStr << std::endl;
+				
+				//for (Vertex vertex : vertices)
+				//{
+					//std::cout << "Position: " << vertex.position.x << ", " << vertex.position.y << ", " << vertex.position.z << std::endl;
+					//std::cout << "Normal: " << vertex.normal.x << ", " << vertex.normal.y << ", " << vertex.normal.z << std::endl;
+				//}
+			}
+
+			//for (const fastgltf::Primitive& primitive : mesh.primitives)
+			//{
+				//auto* positionIt = primitive.findAttribute("POSITION");
+				//auto& positionAccessor = asset.accessors[positionIt->seconds];
+				//const auto& positionAccessor = asset.accessors[primitive.attributes["POSITION"]];
+			//}
+
+			//std::cout << mesh.primitives.size() << std::endl;
+
+			/*
+			std::vector<Vertex> cubeVertices =
+			{
+				// Positions							// Normals							// Texture Coords
+				Vertex(glm::vec3(-0.5f, -0.5f, -0.5f),	glm::vec3(0.0f,  0.0f, -1.0f),		glm::vec2(0.0f, 0.0f)),
+				Vertex(glm::vec3(0.5f, -0.5f, -0.5f),	glm::vec3(0.0f,  0.0f, -1.0f),		glm::vec2(1.0f, 0.0f)),
+				Vertex(glm::vec3(0.5f,  0.5f, -0.5f),	glm::vec3(0.0f,  0.0f, -1.0f),		glm::vec2(1.0f, 1.0f)),
+				Vertex(glm::vec3(-0.5f,  0.5f, -0.5f),	glm::vec3(0.0f,  0.0f, -1.0f),		glm::vec2(0.0f, 1.0f)),
+
+				Vertex(glm::vec3(-0.5f, -0.5f,  0.5f),	glm::vec3(0.0f,  0.0f,  1.0f),		glm::vec2(0.0f, 0.0f)),
+				Vertex(glm::vec3(0.5f, -0.5f,  0.5f),	glm::vec3(0.0f,  0.0f,  1.0f),		glm::vec2(1.0f, 0.0f)),
+				Vertex(glm::vec3(0.5f,  0.5f,  0.5f),	glm::vec3(0.0f,  0.0f,  1.0f),		glm::vec2(1.0f, 1.0f)),
+				Vertex(glm::vec3(-0.5f,  0.5f,  0.5f),	glm::vec3(0.0f,  0.0f,  1.0f),		glm::vec2(0.0f, 1.0f)),
+
+				Vertex(glm::vec3(-0.5f,  0.5f,  0.5f),	glm::vec3(-1.0f,  0.0f,  0.0f),		glm::vec2(1.0f, 0.0f)),
+				Vertex(glm::vec3(-0.5f,  0.5f, -0.5f),	glm::vec3(-1.0f,  0.0f,  0.0f),		glm::vec2(1.0f, 1.0f)),
+				Vertex(glm::vec3(-0.5f, -0.5f, -0.5f),	glm::vec3(-1.0f,  0.0f,  0.0f),		glm::vec2(0.0f, 1.0f)),
+				Vertex(glm::vec3(-0.5f, -0.5f,  0.5f),	glm::vec3(-1.0f,  0.0f,  0.0f),		glm::vec2(0.0f, 0.0f)),
+
+				Vertex(glm::vec3(0.5f,  0.5f,  0.5f),	glm::vec3(1.0f,  0.0f,  0.0f),		glm::vec2(1.0f, 0.0f)),
+				Vertex(glm::vec3(0.5f,  0.5f, -0.5f),	glm::vec3(1.0f,  0.0f,  0.0f),		glm::vec2(1.0f, 1.0f)),
+				Vertex(glm::vec3(0.5f, -0.5f, -0.5f),	glm::vec3(1.0f,  0.0f,  0.0f),		glm::vec2(0.0f, 1.0f)),
+				Vertex(glm::vec3(0.5f, -0.5f,  0.5f),	glm::vec3(1.0f,  0.0f,  0.0f),		glm::vec2(0.0f, 0.0f)),
+
+				Vertex(glm::vec3(-0.5f, -0.5f, -0.5f),	glm::vec3(0.0f, -1.0f,  0.0f),		glm::vec2(0.0f, 1.0f)),
+				Vertex(glm::vec3(0.5f, -0.5f, -0.5f),	glm::vec3(0.0f, -1.0f,  0.0f),		glm::vec2(1.0f, 1.0f)),
+				Vertex(glm::vec3(0.5f, -0.5f,  0.5f),	glm::vec3(0.0f, -1.0f,  0.0f),		glm::vec2(1.0f, 0.0f)),
+				Vertex(glm::vec3(-0.5f, -0.5f,  0.5f),	glm::vec3(0.0f, -1.0f,  0.0f),		glm::vec2(0.0f, 0.0f)),
+
+				Vertex(glm::vec3(-0.5f,  0.5f, -0.5f),	glm::vec3(0.0f,  1.0f,  0.0f),		glm::vec2(0.0f, 1.0f)),
+				Vertex(glm::vec3(0.5f,  0.5f, -0.5f),	glm::vec3(0.0f,  1.0f,  0.0f),		glm::vec2(1.0f, 1.0f)),
+				Vertex(glm::vec3(0.5f,  0.5f,  0.5f),	glm::vec3(0.0f,  1.0f,  0.0f),		glm::vec2(1.0f, 0.0f)),
+				Vertex(glm::vec3(-0.5f,  0.5f,  0.5f),	glm::vec3(0.0f,  1.0f,  0.0f),		glm::vec2(0.0f, 0.0f))
+			};
+
+			std::vector<unsigned int> cubeIndices =
+			{
+				0, 1, 2, 2, 3, 0,
+				4, 5, 6, 6, 7, 4,
+				8, 9, 10, 10, 11, 8,
+				12, 13, 14, 14, 15, 12,
+				16, 17, 18, 18, 19, 16,
+				20, 21, 22, 22, 23, 20
+			};
+			*/
+
+			MeshComponent meshComponent;
+			meshComponent.vertices = vertices;
+			meshComponent.indices = indices;
+			meshComponent.vertexPath = "Mesh.vert";
+			meshComponent.fragmentPath = "Mesh.frag";
+			
+			flecs::entity meshEntity = engine->m_World.entity(node.name.c_str())
+				.child_of(modelEntity)
+				.add<TransformComponent, Global>()
+				.add<TransformComponent, Local>()
+				.set<MeshComponent>(meshComponent);
+		}
+		else
+		{
+			std::cout << "Non-mesh Node" << std::endl;
+		}
+	}
+
+	// fastgltf::validate(asset.get()
+
+	return true;
+}
+
 int main()
 {
 	glfwInit();
@@ -82,38 +245,41 @@ int main()
 		20, 21, 22, 22, 23, 20
 	};
 
-	MeshComponent meshComponent1;
-	meshComponent1.vertices = cubeVertices;
-	meshComponent1.indices = cubeIndices;
-	meshComponent1.vertexPath = "Mesh.vert";
-	meshComponent1.fragmentPath = "Mesh.frag";
-	meshComponent1.texturePath = "stevie-nicks.jpg";
+	LoadGltfModel("survival_guitar_backpack.glb", "Cube", &engine);
+	//LoadGltfModel("the_great_drawing_room.glb", "Cube", &engine);
 
-	MeshComponent meshComponent2;
-	meshComponent2.vertices = cubeVertices;
-	meshComponent2.indices = cubeIndices;
-	meshComponent2.vertexPath = "Mesh.vert";
-	meshComponent2.fragmentPath = "Mesh.frag";
-	meshComponent2.texturePath = "stevie-nicks-2.jpg";
-	
-	flecs::entity cubes = engine.m_World.entity("Cubes")
-		.add<TransformComponent, Global>()
-		.set<TransformComponent, Local>({ glm::vec3(0.0f, 0.0f, -3.0f) })
-		.set<SpinComponent>({1.0f, glm::vec3(0.0f, 0.0f, 1.0f)});
+	//MeshComponent meshComponent1;
+	//meshComponent1.vertices = cubeVertices;
+	//meshComponent1.indices = cubeIndices;
+	//meshComponent1.vertexPath = "Mesh.vert";
+	//meshComponent1.fragmentPath = "Mesh.frag";
+	//meshComponent1.texturePath = "stevie-nicks.jpg";
 
-	flecs::entity stevieNicksCube = engine.m_World.entity("StevieNicksCube")
-		.child_of(cubes)
-		.add<TransformComponent, Global>()
-		.set<TransformComponent, Local>({ glm::vec3(1.0f, 0.0f, 0.0f) })
-		.set<MeshComponent>(meshComponent1)
-		.set<SpinComponent>({ 1.23f, glm::vec3(0.0f, 1.0f, 0.0f) });
+	//MeshComponent meshComponent2;
+	//meshComponent2.vertices = cubeVertices;
+	//meshComponent2.indices = cubeIndices;
+	//meshComponent2.vertexPath = "Mesh.vert";
+	//meshComponent2.fragmentPath = "Mesh.frag";
+	//meshComponent2.texturePath = "stevie-nicks-2.jpg";
 	
-	flecs::entity stevieNicksCube2 = engine.m_World.entity("StevieNicksCube2")
-		.child_of(cubes)
-		.add<TransformComponent, Global>()
-		.set<TransformComponent, Local>({ glm::vec3(-1.0f, 0.0f, 0.0f) })
-		.set<MeshComponent>(meshComponent2)
-		.set<SpinComponent>({ -1.35f, glm::vec3(0.0f, 0.0f, 1.0f) });
+	//flecs::entity cubes = engine.m_World.entity("Cubes")
+		//.add<TransformComponent, Global>()
+		//.set<TransformComponent, Local>({ glm::vec3(0.0f, 0.0f, -3.0f) })
+		//.set<SpinComponent>({1.0f, glm::vec3(0.0f, 0.0f, 1.0f)});
+
+	//flecs::entity stevieNicksCube = engine.m_World.entity("StevieNicksCube")
+		//.child_of(cubes)
+		//.add<TransformComponent, Global>()
+		//.set<TransformComponent, Local>({ glm::vec3(0.0f, 0.0f, -3.0f) })
+		//.set<MeshComponent>(meshComponent1);
+		//.set<SpinComponent>({ 1.23f, glm::vec3(0.0f, 1.0f, 0.0f) });
+	
+	//flecs::entity stevieNicksCube2 = engine.m_World.entity("StevieNicksCube2")
+		//.child_of(cubes)
+		//.add<TransformComponent, Global>()
+		//.set<TransformComponent, Local>({ glm::vec3(-1.0f, 0.0f, 0.0f) })
+		//.set<MeshComponent>(meshComponent2)
+		//.set<SpinComponent>({ -1.35f, glm::vec3(0.0f, 0.0f, 1.0f) });
 
 	flecs::entity player = engine.m_World.entity("Player")
 		.add<TransformComponent, Global>()
