@@ -26,7 +26,6 @@ void IterateNode(Engine* engine, const fastgltf::Node& node, const fastgltf::Ass
 
 	if (node.meshIndex.has_value())
 	{
-		std::cout << "Mesh Node: " << node.name << std::endl;
 		std::vector<Vertex> vertices;
 		std::vector<unsigned int> indices;
 		
@@ -75,11 +74,7 @@ void IterateNode(Engine* engine, const fastgltf::Node& node, const fastgltf::Ass
 		
 		nodeEntity.set<MeshComponent>(meshComponent);
 	}
-	else
-	{
-		std::cout << "Node: " << node.name << std::endl;
-	}
-
+	
 	for (const auto& childNodeIndex : node.children)
 	{
 		const auto& childNode = assetData.nodes[childNodeIndex];
@@ -87,7 +82,7 @@ void IterateNode(Engine* engine, const fastgltf::Node& node, const fastgltf::Ass
 	}
 }
 
-bool LoadGltfModel(std::filesystem::path path, const char* name, Engine* engine)
+bool LoadGltfModel(std::filesystem::path path, const char* name, glm::vec3 rootPosition, glm::quat rootRotation, glm::vec3 rootScale, Engine* engine)
 {
 	fastgltf::Parser parser;
 
@@ -108,80 +103,13 @@ bool LoadGltfModel(std::filesystem::path path, const char* name, Engine* engine)
 
 	flecs::entity modelEntity = engine->m_World.entity(name)
 		.add<TransformComponent, Global>()
-		.set<TransformComponent, Local>({ glm::vec3(0.0f, 0.0f, -3.0), glm::quat(), glm::vec3(0.01f) });
+		.set<TransformComponent, Local>({ rootPosition, rootRotation, rootScale });
 
 	for (const auto& rootNodeIndex : assetData.scenes[0].nodeIndices)
 	{
 		const auto& rootNode = assetData.nodes[rootNodeIndex];
-		std::cout << "Root Node: " << rootNode.name << std::endl;
 		IterateNode(engine, rootNode, assetData, modelEntity);
 	}
-	
-	/*
-	for (fastgltf::Node& node : asset->nodes)
-	{
-		fastgltf::math::fvec3 translation(0.0f, 0.0f, 0.0f);
-		fastgltf::math::fquat rotation;
-		fastgltf::math::fvec3 scale(1.0f, 1.0f, 1.0f);
-		
-		if (auto* transform = std::get_if<fastgltf::math::fmat4x4>(&node.transform))
-		{
-			fastgltf::math::decomposeTransformMatrix(*transform, scale, rotation, translation);
-		}
-		
-		if (node.meshIndex.has_value())
-		{
-			std::vector<Vertex> vertices;
-			std::vector<unsigned int> indices;
-
-			const auto& mesh = assetData.meshes[node.meshIndex.value()];
-			
-			for (auto& primitive : mesh.primitives)
-			{
-				auto* positionIt = primitive.findAttribute("POSITION");
-				auto* normalIt = primitive.findAttribute("NORMAL");
-				if (positionIt == primitive.attributes.end() || normalIt == primitive.attributes.end())
-					continue;
-
-				auto& positionAccessor = assetData.accessors[positionIt->accessorIndex];
-				auto& normalAccessor = assetData.accessors[normalIt->accessorIndex];
-				
-				vertices.resize(positionAccessor.count);
-
-				fastgltf::iterateAccessorWithIndex<fastgltf::math::fvec3>(assetData, positionAccessor, [&](fastgltf::math::fvec3 position, std::size_t idx)
-				{
-					vertices[idx].position = glm::vec3(position.x(), position.y(), position.z());
-				});
-				
-				fastgltf::iterateAccessorWithIndex<fastgltf::math::fvec3>(assetData, normalAccessor, [&](fastgltf::math::fvec3 normal, std::size_t idx)
-				{
-					vertices[idx].normal = glm::vec3(normal.x(), normal.y(), normal.z());
-				});
-				
-				if (primitive.indicesAccessor.has_value())
-				{
-					auto& indexAccessor = assetData.accessors[primitive.indicesAccessor.value()];
-					fastgltf::iterateAccessorWithIndex<std::uint32_t>(assetData, indexAccessor, [&](std::uint32_t idx, std::size_t index)
-					{
-						indices.push_back(idx);
-					});
-				}
-			}
-
-			MeshComponent meshComponent;
-			meshComponent.vertices = vertices;
-			meshComponent.indices = indices;
-			meshComponent.vertexPath = "Mesh.vert";
-			meshComponent.fragmentPath = "Mesh.frag";
-			
-			flecs::entity meshEntity = engine->m_World.entity(node.name.c_str())
-				.child_of(modelEntity)
-				.add<TransformComponent, Global>()
-				.add<TransformComponent, Local>()
-				.set<MeshComponent>(meshComponent);
-		}
-	}
-	*/
 
 	return true;
 }
@@ -200,7 +128,7 @@ int main()
 	int HEIGHT = 720;
 
 	GameRenderTarget* renderTarget = new GameRenderTarget(WIDTH, HEIGHT);
-	Engine engine = Engine(WIDTH, HEIGHT, "Spin", renderTarget);
+	Engine engine = Engine(WIDTH, HEIGHT, "Diorama", renderTarget);
 
 	engine.Init();
 	
@@ -265,8 +193,8 @@ int main()
 		20, 21, 22, 22, 23, 20
 	};
 
-	LoadGltfModel("survival_guitar_backpack.glb", "Cube", &engine);
-	//LoadGltfModel("the_great_drawing_room.glb", "Cube", &engine);
+	LoadGltfModel("survival_guitar_backpack.glb", "Cube", glm::vec3(0.0f, 0.0f, -3.0f), glm::quat(), glm::vec3(0.01f, 0.01f, 0.01f), &engine);
+	//LoadGltfModel("the_great_drawing_room.glb", "Cube", glm::vec3(0.0f, -2.5f, 0.0f), glm::quat(), glm::vec3(1.0f, 1.0f, 1.0f), &engine);
 
 	//MeshComponent meshComponent1;
 	//meshComponent1.vertices = cubeVertices;
