@@ -3,7 +3,7 @@
 
 #include <Components/SpinComponent.h>
 
-bool LoadImage(fastgltf::Asset& asset, fastgltf::Image& image)
+bool LoadImage(fastgltf::Asset& asset, fastgltf::Image& image, std::vector<Texture>& textures)
 {
 	auto GetLevelCount = [](int width, int height) -> GLsizei
 		{
@@ -45,6 +45,7 @@ bool LoadImage(fastgltf::Asset& asset, fastgltf::Image& image)
 		}, image.data);
 
 	glGenerateTextureMipmap(texture);
+	textures.push_back(Texture({ texture }));
 }
 
 void IterateNode(flecs::world world, const fastgltf::Node& node, const fastgltf::Asset& assetData, flecs::entity parentEntity)
@@ -161,9 +162,10 @@ bool LoadGltfModel(flecs::world world, std::filesystem::path path, std::string n
 	}
 	auto& assetData = asset.get();
 
+	std::vector<Texture> textures;
 	for (auto& image : assetData.images)
 	{
-		LoadImage(assetData, image);
+		LoadImage(assetData, image, textures);
 	}
 
 	int counter = 0;
