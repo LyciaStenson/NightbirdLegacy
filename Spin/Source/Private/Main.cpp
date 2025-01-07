@@ -3,7 +3,51 @@
 
 #include <Components/SpinComponent.h>
 
-void IterateNode(Engine* engine, const fastgltf::Node& node, const fastgltf::Asset& assetData, flecs::entity parentEntity)
+bool LoadImage(fastgltf::Asset& asset, fastgltf::Image& image)
+{
+	auto GetLevelCount = [](int width, int height) -> GLsizei
+		{
+			return static_cast<GLsizei>(1 + floor(log2(width > height ? width : height)));
+		};
+
+	unsigned int texture;
+	glCreateTextures(GL_TEXTURE_2D, 1, &texture);
+	std::visit(fastgltf::visitor
+		{
+			[](auto& arg) {},
+			[&](fastgltf::sources::URI& filePath)
+			{
+				std::cout << "Image type 1" << std::endl;
+			},
+			[&](fastgltf::sources::Array& vector)
+			{
+				std::cout << "Image type 2" << std::endl;
+			},
+			[&](fastgltf::sources::BufferView& view)
+			{
+				std::cout << "Image type 3" << std::endl;
+				auto& bufferView = asset.bufferViews[view.bufferViewIndex];
+				auto& buffer = asset.buffers[bufferView.bufferIndex];
+				std::visit(fastgltf::visitor
+					{
+						[](auto& arg) {},
+						[&](fastgltf::sources::Array& vector)
+						{
+							int width, height, nrChannels;
+							unsigned char* data = stbi_load_from_memory(reinterpret_cast<const stbi_uc*>(vector.bytes.data() + bufferView.byteOffset),
+																		static_cast<int>(bufferView.byteLength), &width, &height, &nrChannels, 4);
+							glTextureStorage2D(texture, GetLevelCount(width, height), GL_RGBA8, width, height);
+							glTextureSubImage2D(texture, 0, 0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, data);
+							stbi_image_free(data);
+						}
+					}, buffer.data);
+			},
+		}, image.data);
+
+	glGenerateTextureMipmap(texture);
+}
+
+void IterateNode(flecs::world world, const fastgltf::Node& node, const fastgltf::Asset& assetData, flecs::entity parentEntity)
 {
 	fastgltf::math::fvec3 translation(0.0f, 0.0f, 0.0f);
 	fastgltf::math::fquat rotation;
@@ -14,7 +58,7 @@ void IterateNode(Engine* engine, const fastgltf::Node& node, const fastgltf::Ass
 		fastgltf::math::decomposeTransformMatrix(*transform, scale, rotation, translation);
 	}
 
-	flecs::entity nodeEntity = engine->m_World.entity(node.name.c_str())
+	flecs::entity nodeEntity = world.entity(node.name.c_str())
 		.child_of(parentEntity)
 		.add<TransformComponent, Global>()
 		.set<TransformComponent, Local>(
@@ -30,6 +74,8 @@ void IterateNode(Engine* engine, const fastgltf::Node& node, const fastgltf::Ass
 		std::vector<unsigned int> indices;
 		
 		const auto& mesh = assetData.meshes[node.meshIndex.value()];
+
+		MeshComponent meshComponent;
 
 		for (const auto& primitive : mesh.primitives)
 		{
@@ -64,9 +110,23 @@ void IterateNode(Engine* engine, const fastgltf::Node& node, const fastgltf::Ass
 						indices.push_back(idx);
 					});
 			}
+
+			if (primitive.materialIndex.has_value())
+			{
+				auto& material = assetData.materials[primitive.materialIndex.value()];
+				auto& baseColorTexture = material.pbrData.baseColorTexture;
+				if (baseColorTexture.has_value())
+				{
+					auto& texture = assetData.textures[baseColorTexture->textureIndex];
+					if (texture.imageIndex.has_value())
+					{
+						meshComponent.textures.push_back(Texture({  }));
+						//texture.imageIndex.value();
+					}
+				}
+			}
 		}
 
-		MeshComponent meshComponent;
 		meshComponent.vertices = vertices;
 		meshComponent.indices = indices;
 		meshComponent.vertexPath = "Mesh.vert";
@@ -78,11 +138,11 @@ void IterateNode(Engine* engine, const fastgltf::Node& node, const fastgltf::Ass
 	for (const auto& childNodeIndex : node.children)
 	{
 		const auto& childNode = assetData.nodes[childNodeIndex];
-		IterateNode(engine, childNode, assetData, nodeEntity);
+		IterateNode(world, childNode, assetData, nodeEntity);
 	}
 }
 
-bool LoadGltfModel(std::filesystem::path path, const char* name, glm::vec3 rootPosition, glm::quat rootRotation, glm::vec3 rootScale, Engine* engine)
+bool LoadGltfModel(flecs::world world, std::filesystem::path path, std::string name, glm::vec3 rootPosition, glm::quat rootRotation, glm::vec3 rootScale)
 {
 	fastgltf::Parser parser;
 
@@ -101,14 +161,24 @@ bool LoadGltfModel(std::filesystem::path path, const char* name, glm::vec3 rootP
 	}
 	auto& assetData = asset.get();
 
-	flecs::entity modelEntity = engine->m_World.entity(name)
+	for (auto& image : assetData.images)
+	{
+		LoadImage(assetData, image);
+	}
+
+	int counter = 0;
+	while (world.lookup(name.c_str()))
+	{
+		name += std::to_string(counter);
+	}
+	flecs::entity modelEntity = world.entity(name.c_str())
 		.add<TransformComponent, Global>()
 		.set<TransformComponent, Local>({ rootPosition, rootRotation, rootScale });
 
 	for (const auto& rootNodeIndex : assetData.scenes[0].nodeIndices)
 	{
 		const auto& rootNode = assetData.nodes[rootNodeIndex];
-		IterateNode(engine, rootNode, assetData, modelEntity);
+		IterateNode(world, rootNode, assetData, modelEntity);
 	}
 
 	return true;
@@ -193,8 +263,8 @@ int main()
 		20, 21, 22, 22, 23, 20
 	};
 
-	LoadGltfModel("survival_guitar_backpack.glb", "Cube", glm::vec3(0.0f, 0.0f, -3.0f), glm::quat(), glm::vec3(0.01f, 0.01f, 0.01f), &engine);
-	//LoadGltfModel("the_great_drawing_room.glb", "Cube", glm::vec3(0.0f, -2.5f, 0.0f), glm::quat(), glm::vec3(1.0f, 1.0f, 1.0f), &engine);
+	LoadGltfModel(engine.m_World, "survival_guitar_backpack.glb", "Cube", glm::vec3(0.0f, 0.0f, -3.0f), glm::quat(), glm::vec3(0.002f, 0.002f, 0.002f));
+	//LoadGltfModel(engine.m_World, "the_great_drawing_room.glb", "Cube", glm::vec3(0.0f, -2.5f, 0.0f), glm::quat(), glm::vec3(1.0f, 1.0f, 1.0f));
 
 	//MeshComponent meshComponent1;
 	//meshComponent1.vertices = cubeVertices;
@@ -215,10 +285,10 @@ int main()
 		//.set<TransformComponent, Local>({ glm::vec3(0.0f, 0.0f, -3.0f) })
 		//.set<SpinComponent>({1.0f, glm::vec3(0.0f, 0.0f, 1.0f)});
 
-	//flecs::entity stevieNicksCube = engine.m_World.entity("StevieNicksCube")
+	//flecs::entity cube1 = engine.m_World.entity("Cube1")
 		//.child_of(cubes)
 		//.add<TransformComponent, Global>()
-		//.set<TransformComponent, Local>({ glm::vec3(0.0f, 0.0f, -3.0f) })
+		//.set<TransformComponent, Local>({ glm::vec3(0.0f, -2.0f, -1.5f) })
 		//.set<MeshComponent>(meshComponent1);
 		//.set<SpinComponent>({ 1.23f, glm::vec3(0.0f, 1.0f, 0.0f) });
 	

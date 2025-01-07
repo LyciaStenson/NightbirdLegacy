@@ -98,15 +98,15 @@ void Engine::InitSystems()
 
 				glGenVertexArrays(1, &meshComponent.VAO);
 				glGenBuffers(1, &meshComponent.VBO);
-				glGenBuffers(1, &meshComponent.EBO); // New
+				glGenBuffers(1, &meshComponent.EBO);
 
 				glBindVertexArray(meshComponent.VAO);
 				glBindBuffer(GL_ARRAY_BUFFER, meshComponent.VBO);
 
 				glBufferData(GL_ARRAY_BUFFER, meshComponent.vertices.size() * sizeof(Vertex), &meshComponent.vertices[0], GL_STATIC_DRAW);
 				
-				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, meshComponent.EBO); // New
-				glBufferData(GL_ELEMENT_ARRAY_BUFFER, meshComponent.indices.size() * sizeof(unsigned int), &meshComponent.indices[0], GL_STATIC_DRAW); // New
+				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, meshComponent.EBO);
+				glBufferData(GL_ELEMENT_ARRAY_BUFFER, meshComponent.indices.size() * sizeof(unsigned int), &meshComponent.indices[0], GL_STATIC_DRAW);
 				
 				// Position Attribute
 				glEnableVertexAttribArray(0);
@@ -120,9 +120,7 @@ void Engine::InitSystems()
 				glEnableVertexAttribArray(2);
 				glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, texCoords));
 
-				//glBindBuffer(GL_ARRAY_BUFFER, 0);
 				glBindVertexArray(0);
-				//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 				
 				//entity.set<TextureLoadComponent>({ std::async(LoadTexture, meshComponent.texturePath, false) });
 			}
@@ -636,10 +634,10 @@ void DebugCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsiz
 		std::cout << message << std::endl;
 		break;
 	case GL_DEBUG_SEVERITY_NOTIFICATION:
-		std::cout << "GL_DEBUG_SEVERITY_NOTIFICATION" << std::endl;
+		//std::cout << "GL_DEBUG_SEVERITY_NOTIFICATION" << std::endl;
 		break;
 	default:
-		std::cout << "Unknown severity enum" << std::endl;
+		std::cout << "OpenGL Error Unknown severity" << std::endl;
 		break;
 	}
 }
