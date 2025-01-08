@@ -39,6 +39,7 @@ bool LoadImage(fastgltf::Asset& asset, fastgltf::Image& image, std::vector<Textu
 							glTextureStorage2D(texture, GetLevelCount(width, height), GL_RGBA8, width, height);
 							glTextureSubImage2D(texture, 0, 0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, data);
 							stbi_image_free(data);
+							std::cout << "Loaded texture" << std::endl;
 						}
 					}, buffer.data);
 			},
@@ -46,6 +47,17 @@ bool LoadImage(fastgltf::Asset& asset, fastgltf::Image& image, std::vector<Textu
 
 	glGenerateTextureMipmap(texture);
 	textures.push_back(Texture({ texture }));
+
+	return true;
+}
+
+bool loadMaterial(fastgltf::Asset& asset, fastgltf::Material& gltfMaterial, std::vector<Material>& materials)
+{
+	Material material;
+
+	material.hasBaseColorTexture = gltfMaterial.pbrData.baseColorTexture.has_value();
+	
+	materials.push_back(material);
 
 	return true;
 }
@@ -80,15 +92,16 @@ void IterateNode(flecs::world world, const fastgltf::Node& node, const fastgltf:
 
 	if (node.meshIndex.has_value())
 	{
-		std::vector<Vertex> vertices;
-		std::vector<unsigned int> indices;
-		
 		const auto& mesh = assetData.meshes[node.meshIndex.value()];
+		
+		//std::cout << mesh.primitives.size() << " Primitives" << std::endl;
 
-		MeshComponent meshComponent;
-
+		std::vector<MeshPrimitive> primitives;
 		for (const auto& primitive : mesh.primitives)
 		{
+			std::vector<Vertex> vertices;
+			std::vector<unsigned int> indices;
+
 			auto* positionIt = primitive.findAttribute("POSITION");
 			auto* normalIt = primitive.findAttribute("NORMAL");
 
@@ -135,12 +148,18 @@ void IterateNode(flecs::world world, const fastgltf::Node& node, const fastgltf:
 					}
 				}
 			}
+
+			MeshPrimitive meshPrimitive;
+			meshPrimitive.vertices = vertices;
+			meshPrimitive.indices = indices;
+			meshPrimitive.material.vertexPath = "Mesh.vert";
+			meshPrimitive.material.fragmentPath = "Mesh.frag";
+			
+			primitives.push_back(meshPrimitive);
 		}
 
-		meshComponent.vertices = vertices;
-		meshComponent.indices = indices;
-		meshComponent.vertexPath = "Mesh.vert";
-		meshComponent.fragmentPath = "Mesh.frag";
+		MeshComponent meshComponent;
+		meshComponent.primitives = primitives;
 		
 		nodeEntity.set<MeshComponent>(meshComponent);
 	}
@@ -279,6 +298,8 @@ int main()
 	LoadGltfModel(engine.m_World, "Cube.glb", "Cube", glm::vec3(0.0f, 0.0f, -3.0f), glm::quat(), glm::vec3(1.0f, 1.0f, 1.0f));
 	//LoadGltfModel(engine.m_World, "survival_guitar_backpack.glb", "SurvivalGuitar", glm::vec3(0.0f, 0.0f, -3.0f), glm::quat(), glm::vec3(0.002f, 0.002f, 0.002f));
 	//LoadGltfModel(engine.m_World, "the_great_drawing_room.glb", "GreatDrawingRoom", glm::vec3(0.0f, -2.5f, 0.0f), glm::quat(), glm::vec3(1.0f, 1.0f, 1.0f));
+	//LoadGltfModel(engine.m_World, "titanic.glb", "Titanic", glm::vec3(0.0f, -3.0f, 0.0f), glm::quat(), glm::vec3(1.0f, 1.0f, 1.0f));
+	//LoadGltfModel(engine.m_World, "MorphPrimitivesTest.glb", "Thing", glm::vec3(0.0f, 0.0f, 0.0f), glm::quat(), glm::vec3(1.0f, 1.0f, 1.0f));
 
 	//MeshComponent meshComponent1;
 	//meshComponent1.vertices = cubeVertices;
@@ -317,14 +338,14 @@ int main()
 		.add<TransformComponent, Global>()
 		.set<TransformComponent, Local>({ glm::vec3(0.0f, 0.0f, 0.0f) })
 		.set<PlayerMovementComponent>({5.0f})
-		.set<PlayerYawComponent>({ 5.0f });
+		.set<PlayerYawComponent>({ 1.0f });
 
 	flecs::entity camera = engine.m_World.entity("Camera")
 		.child_of(player)
 		.add<TransformComponent, Global>()
 		.set<TransformComponent, Local>({ glm::vec3(0.0f, 0.0f, 0.0f) })
 		.set<CameraComponent>({ 50.0f })
-		.set<PlayerPitchComponent>({ 5.0f });
+		.set<PlayerPitchComponent>({ 1.0f });
 
 	flecs::system m_SpinSystem = engine.m_World.system<SpinComponent, flecs::pair<TransformComponent, Local>>("SpinSystem")
 		.kind(flecs::OnUpdate)

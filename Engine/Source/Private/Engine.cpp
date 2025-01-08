@@ -94,39 +94,43 @@ void Engine::InitSystems()
 		.kind(0)
 		.each([](flecs::entity entity, MeshComponent& meshComponent)
 			{
-				meshComponent.shader = Shader(meshComponent.vertexPath, meshComponent.fragmentPath);
+				for (auto& primitive : meshComponent.primitives)
+				{
+					primitive.material.shader = Shader(primitive.material.vertexPath, primitive.material.fragmentPath);
 
-				glGenVertexArrays(1, &meshComponent.VAO);
-				glGenBuffers(1, &meshComponent.VBO);
-				glGenBuffers(1, &meshComponent.EBO);
+					glGenVertexArrays(1, &primitive.VAO);
+					glGenBuffers(1, &primitive.VBO);
+					glGenBuffers(1, &primitive.EBO);
 
-				glBindVertexArray(meshComponent.VAO);
-				glBindBuffer(GL_ARRAY_BUFFER, meshComponent.VBO);
+					glBindVertexArray(primitive.VAO);
+					glBindBuffer(GL_ARRAY_BUFFER, primitive.VBO);
 
-				glBufferData(GL_ARRAY_BUFFER, meshComponent.vertices.size() * sizeof(Vertex), &meshComponent.vertices[0], GL_STATIC_DRAW);
-				
-				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, meshComponent.EBO);
-				glBufferData(GL_ELEMENT_ARRAY_BUFFER, meshComponent.indices.size() * sizeof(unsigned int), &meshComponent.indices[0], GL_STATIC_DRAW);
-				
-				// Position Attribute
-				glEnableVertexAttribArray(0);
-				glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
+					glBufferData(GL_ARRAY_BUFFER, primitive.vertices.size() * sizeof(Vertex), &primitive.vertices[0], GL_STATIC_DRAW);
 
-				// Normals Attribute
-				glEnableVertexAttribArray(1);
-				glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, normal));
+					glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, primitive.EBO);
+					glBufferData(GL_ELEMENT_ARRAY_BUFFER, primitive.indices.size() * sizeof(unsigned int), &primitive.indices[0], GL_STATIC_DRAW);
 
-				// Texture Coord Attribute
-				glEnableVertexAttribArray(2);
-				glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, texCoords));
+					// Position Attribute
+					glEnableVertexAttribArray(0);
+					glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
 
-				glBindVertexArray(0);
+					// Normals Attribute
+					glEnableVertexAttribArray(1);
+					glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, normal));
+
+					// Texture Coord Attribute
+					glEnableVertexAttribArray(2);
+					glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, texCoords));
+
+					glBindVertexArray(0);
+				}
 				
 				//entity.set<TextureLoadComponent>({ std::async(LoadTexture, meshComponent.texturePath, false) });
 			}
 		);
 	meshInitSystem.run();
 
+	/*
 	flecs::system meshLateInitSystem = m_World.system<MeshComponent, TextureLoadComponent>("MeshLateInitSystem")
 		.kind(flecs::OnUpdate)
 		.each([](flecs::entity entity, MeshComponent& meshComponent, TextureLoadComponent& textureLoadComponent)
@@ -160,6 +164,7 @@ void Engine::InitSystems()
 				}
 			}
 		);
+	*/
 
 	flecs::system skyboxInitSystem = m_World.system<SkyboxComponent>("SkyboxInitSystem")
 		.kind(0)
@@ -257,38 +262,42 @@ void Engine::InitSystems()
 				//glActiveTexture(GL_TEXTURE0);
 				//glBindTexture(GL_TEXTURE_2D, meshComponent.texture);
 				
-				meshComponent.shader.Use();
+				for (auto& primitive : meshComponent.primitives)
+				{
+					primitive.material.shader.Use();
 
-				meshComponent.shader.SetVec3("objectColor", glm::vec3(1.0f, 1.0f, 1.0f));
-				meshComponent.shader.SetVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
-				meshComponent.shader.SetVec3("lightPos", glm::vec3(10.0f, 10.0f, 10.0f));
+					primitive.material.shader.SetVec3("objectColor", glm::vec3(1.0f, 1.0f, 1.0f));
+					primitive.material.shader.SetVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
+					primitive.material.shader.SetVec3("lightPos", glm::vec3(10.0f, 10.0f, 10.0f));
 
-				meshComponent.shader.SetVec3("viewPos", cameraTransform->Position);
+					primitive.material.shader.SetVec3("viewPos", cameraTransform->Position);
 
-				int width;
-				int height;
-				m_RenderTarget->GetWindowSize(width, height);
+					int width;
+					int height;
+					m_RenderTarget->GetWindowSize(width, height);
 
-				glm::mat4 projection = glm::perspective(glm::radians(camera->Fov), (float)width / (float)height, 0.1f, 1000.0f);
-				meshComponent.shader.SetMat4("projection", projection);
+					glm::mat4 projection = glm::perspective(glm::radians(camera->Fov), (float)width / (float)height, 0.1f, 1000.0f);
+					primitive.material.shader.SetMat4("projection", projection);
 
-				glm::vec3 forward = cameraTransform->Rotation * glm::vec3(0.0f, 0.0f, -1.0f);
-				glm::vec3 up = glm::rotate(cameraTransform->Rotation, glm::vec3(0.0f, 1.0f, 0.0f));
+					glm::vec3 forward = cameraTransform->Rotation * glm::vec3(0.0f, 0.0f, -1.0f);
+					glm::vec3 up = glm::rotate(cameraTransform->Rotation, glm::vec3(0.0f, 1.0f, 0.0f));
 
-				glm::mat4 view = glm::lookAt(cameraTransform->Position, cameraTransform->Position + forward, up);
-				meshComponent.shader.SetMat4("view", view);
+					glm::mat4 view = glm::lookAt(cameraTransform->Position, cameraTransform->Position + forward, up);
+					primitive.material.shader.SetMat4("view", view);
 
-				glBindVertexArray(meshComponent.VAO);
+					glBindVertexArray(primitive.VAO);
 
-				glm::mat4 model = glm::mat4(1.0f);
-				model = glm::translate(model, transformComponent->Position);
-				model *= glm::toMat4(transformComponent->Rotation);
-				model = glm::scale(model, transformComponent->Scale);
-				meshComponent.shader.SetMat4("model", model);
+					glm::mat4 model = glm::mat4(1.0f);
+					model = glm::translate(model, transformComponent->Position);
+					model *= glm::toMat4(transformComponent->Rotation);
+					model = glm::scale(model, transformComponent->Scale);
+					primitive.material.shader.SetMat4("model", model);
 
-				glDrawElements(GL_TRIANGLES, meshComponent.indices.size(), GL_UNSIGNED_INT, 0);
-				
-				glBindVertexArray(0);
+					glDrawElements(GL_TRIANGLES, primitive.indices.size(), GL_UNSIGNED_INT, 0);
+
+					glBindVertexArray(0);
+				}
+
 				//glActiveTexture(GL_TEXTURE0);
 			}
 		);
@@ -331,8 +340,11 @@ void Engine::InitSystems()
 		.kind(0)
 		.each([](MeshComponent& meshComponent)
 			{
-				glDeleteVertexArrays(1, &meshComponent.VAO);
-				glDeleteBuffers(1, &meshComponent.VBO);
+				for (auto& primitive : meshComponent.primitives)
+				{
+					glDeleteVertexArrays(1, &primitive.VAO);
+					glDeleteBuffers(1, &primitive.VBO);
+				}
 			}
 		);
 
@@ -377,7 +389,7 @@ void Engine::InitSystems()
 			{
 				InputComponent* input = m_World.get_mut<InputComponent>();
 
-				glm::quat yaw = glm::angleAxis(input->mouseX * iter.delta_time() * playerYawComponent.sensitivity, glm::vec3(0.0f, 1.0f, 0.0f));
+				glm::quat yaw = glm::angleAxis(input->mouseX * 0.005f * playerYawComponent.sensitivity, glm::vec3(0.0f, 1.0f, 0.0f));
 				yaw = glm::normalize(yaw);
 
 				transformComponent->Rotation *= yaw;
@@ -394,7 +406,7 @@ void Engine::InitSystems()
 
 				glm::vec3 right = transformComponent->Rotation * glm::vec3(1.0f, 0.0f, 0.0f);
 
-				glm::quat pitch = glm::angleAxis(input->mouseY * iter.delta_time() * playerPitchComponent.sensitivity, right);
+				glm::quat pitch = glm::angleAxis(input->mouseY * 0.005f * playerPitchComponent.sensitivity, right);
 				pitch = glm::normalize(pitch);
 
 				transformComponent->Rotation *= pitch;
