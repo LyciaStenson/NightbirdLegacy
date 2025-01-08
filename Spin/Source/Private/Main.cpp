@@ -46,6 +46,8 @@ bool LoadImage(fastgltf::Asset& asset, fastgltf::Image& image, std::vector<Textu
 
 	glGenerateTextureMipmap(texture);
 	textures.push_back(Texture({ texture }));
+
+	return true;
 }
 
 void IterateNode(flecs::world world, const fastgltf::Node& node, const fastgltf::Asset& assetData, flecs::entity parentEntity)
