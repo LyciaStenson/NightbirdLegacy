@@ -123,7 +123,7 @@ void IterateNode(flecs::world world, const fastgltf::Node& node, const fastgltf:
 					auto& texture = assetData.textures[baseColorTexture->textureIndex];
 					if (texture.imageIndex.has_value())
 					{
-						meshComponent.textures.push_back(Texture({  }));
+						//meshComponent.textures.push_back(Texture({  }));
 						//texture.imageIndex.value();
 					}
 				}

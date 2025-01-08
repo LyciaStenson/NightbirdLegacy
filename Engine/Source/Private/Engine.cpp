@@ -191,6 +191,7 @@ void Engine::InitSystems()
 				}
 				entity.set<CubemapLoadComponent>(cubemapLoadComponent);
 
+				glActiveTexture(GL_TEXTURE0);
 				glGenTextures(1, &skyboxComponent.texture);
 				glBindTexture(GL_TEXTURE_CUBE_MAP, skyboxComponent.texture);
 
@@ -207,6 +208,7 @@ void Engine::InitSystems()
 		.kind(flecs::OnUpdate)
 		.each([&](flecs::entity entity, CubemapLoadComponent& cubemapLoadComponent, SkyboxComponent& skyboxComponent)
 			{
+				glActiveTexture(GL_TEXTURE0);
 				glBindTexture(GL_TEXTURE_CUBE_MAP, skyboxComponent.texture);
 				for (unsigned int i = 0; i < 6; i++)
 				{
