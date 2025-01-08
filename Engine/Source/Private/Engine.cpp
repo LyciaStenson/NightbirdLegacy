@@ -145,7 +145,7 @@ void Engine::InitSystems()
 
 					if (textureData.data)
 					{
-						glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, textureData.width, textureData.height, 0, GL_RGB, GL_UNSIGNED_BYTE, textureData.data);
+						glTexImage2D(GL_TEXTURE_2D, 0, GL_SRGB, textureData.width, textureData.height, 0, GL_RGB, GL_UNSIGNED_BYTE, textureData.data);
 						glGenerateMipmap(GL_TEXTURE_2D);
 						stbi_image_free(textureData.data);
 						entity.remove<TextureLoadComponent>();
@@ -217,7 +217,7 @@ void Engine::InitSystems()
 						TextureData textureData = cubemapLoadComponent.futures[i].get();
 						if (textureData.data)
 						{
-							glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, textureData.width, textureData.height, 0, GL_RGB, GL_UNSIGNED_BYTE, textureData.data);
+							glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_SRGB, textureData.width, textureData.height, 0, GL_RGB, GL_UNSIGNED_BYTE, textureData.data);
 							stbi_image_free(textureData.data);
 
 							cubemapLoadComponent.loadedChecks[i] = true;
@@ -256,8 +256,7 @@ void Engine::InitSystems()
 
 				//glActiveTexture(GL_TEXTURE0);
 				//glBindTexture(GL_TEXTURE_2D, meshComponent.texture);
-				//glBindTexture(GL_TEXTURE_2D, meshComponent.texture);
-
+				
 				meshComponent.shader.Use();
 
 				meshComponent.shader.SetVec3("objectColor", glm::vec3(1.0f, 1.0f, 1.0f));
@@ -286,8 +285,7 @@ void Engine::InitSystems()
 				model *= glm::toMat4(transformComponent->Rotation);
 				model = glm::scale(model, transformComponent->Scale);
 				meshComponent.shader.SetMat4("model", model);
-				
-				//glDrawArrays(GL_TRIANGLES, 0, meshComponent.vertices.size());
+
 				glDrawElements(GL_TRIANGLES, meshComponent.indices.size(), GL_UNSIGNED_INT, 0);
 				
 				glBindVertexArray(0);

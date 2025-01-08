@@ -61,7 +61,14 @@ void IterateNode(flecs::world world, const fastgltf::Node& node, const fastgltf:
 		fastgltf::math::decomposeTransformMatrix(*transform, scale, rotation, translation);
 	}
 
-	flecs::entity nodeEntity = world.entity(node.name.c_str())
+	int counter = 2;
+	std::string name = node.name.c_str();
+	while (world.lookup(name.c_str()))
+	{
+		name = node.name.c_str() + std::to_string(counter);
+		counter++;
+	}
+	flecs::entity nodeEntity = world.entity(name.c_str())
 		.child_of(parentEntity)
 		.add<TransformComponent, Global>()
 		.set<TransformComponent, Local>(
@@ -170,12 +177,14 @@ bool LoadGltfModel(flecs::world world, std::filesystem::path path, std::string n
 		LoadImage(assetData, image, textures);
 	}
 
-	int counter = 0;
-	while (world.lookup(name.c_str()))
+	int counter = 2;
+	std::string nodeName = name;
+	while (world.lookup(nodeName.c_str()))
 	{
-		name += std::to_string(counter);
+		nodeName = name + std::to_string(counter);
+		counter++;
 	}
-	flecs::entity modelEntity = world.entity(name.c_str())
+	flecs::entity modelEntity = world.entity(nodeName.c_str())
 		.add<TransformComponent, Global>()
 		.set<TransformComponent, Local>({ rootPosition, rootRotation, rootScale });
 
@@ -202,7 +211,7 @@ int main()
 	int HEIGHT = 720;
 
 	GameRenderTarget* renderTarget = new GameRenderTarget(WIDTH, HEIGHT);
-	Engine engine = Engine(WIDTH, HEIGHT, "Diorama", renderTarget);
+	Engine engine = Engine(WIDTH, HEIGHT, "Spin", renderTarget);
 
 	engine.Init();
 	
@@ -267,8 +276,9 @@ int main()
 		20, 21, 22, 22, 23, 20
 	};
 
-	LoadGltfModel(engine.m_World, "survival_guitar_backpack.glb", "Cube", glm::vec3(0.0f, 0.0f, -3.0f), glm::quat(), glm::vec3(0.002f, 0.002f, 0.002f));
-	//LoadGltfModel(engine.m_World, "the_great_drawing_room.glb", "Cube", glm::vec3(0.0f, -2.5f, 0.0f), glm::quat(), glm::vec3(1.0f, 1.0f, 1.0f));
+	LoadGltfModel(engine.m_World, "Cube.glb", "Cube", glm::vec3(0.0f, 0.0f, -3.0f), glm::quat(), glm::vec3(1.0f, 1.0f, 1.0f));
+	//LoadGltfModel(engine.m_World, "survival_guitar_backpack.glb", "SurvivalGuitar", glm::vec3(0.0f, 0.0f, -3.0f), glm::quat(), glm::vec3(0.002f, 0.002f, 0.002f));
+	//LoadGltfModel(engine.m_World, "the_great_drawing_room.glb", "GreatDrawingRoom", glm::vec3(0.0f, -2.5f, 0.0f), glm::quat(), glm::vec3(1.0f, 1.0f, 1.0f));
 
 	//MeshComponent meshComponent1;
 	//meshComponent1.vertices = cubeVertices;
@@ -292,7 +302,7 @@ int main()
 	//flecs::entity cube1 = engine.m_World.entity("Cube1")
 		//.child_of(cubes)
 		//.add<TransformComponent, Global>()
-		//.set<TransformComponent, Local>({ glm::vec3(0.0f, -2.0f, -1.5f) })
+		//.set<TransformComponent, Local>({ glm::vec3(-1.5f, 0.0f, -3.0f) })
 		//.set<MeshComponent>(meshComponent1);
 		//.set<SpinComponent>({ 1.23f, glm::vec3(0.0f, 1.0f, 0.0f) });
 	

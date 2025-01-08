@@ -38,5 +38,4 @@ void main()
 	//vec4 texColor = texture(ourTexture, texCoord);
 
 	FragColor = vec4(lighting, 1.0f);// * texColor;
-
 }

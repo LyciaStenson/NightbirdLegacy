@@ -10,4 +10,7 @@ void main()
 {
 	vec3 col = texture(screenTexture, TexCoords).rgb;
 	FragColor = vec4(col, 1.0f);
+
+	float gamma = 2.2f;
+	FragColor.rgb = pow(FragColor.rgb, vec3(1.0f/gamma));
 }
