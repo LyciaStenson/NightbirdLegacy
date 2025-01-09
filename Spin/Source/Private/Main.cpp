@@ -34,9 +34,10 @@ bool LoadImage(fastgltf::Asset& asset, fastgltf::Image& image, std::vector<Textu
 						[&](fastgltf::sources::Array& vector)
 						{
 							int width, height, nrChannels;
+							stbi_set_flip_vertically_on_load(true);
 							unsigned char* data = stbi_load_from_memory(reinterpret_cast<const stbi_uc*>(vector.bytes.data() + bufferView.byteOffset),
 																		static_cast<int>(bufferView.byteLength), &width, &height, &nrChannels, 4);
-							glTextureStorage2D(texture, GetLevelCount(width, height), GL_RGBA8, width, height);
+							glTextureStorage2D(texture, GetLevelCount(width, height), GL_SRGB8_ALPHA8, width, height);
 							glTextureSubImage2D(texture, 0, 0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, data);
 							stbi_image_free(data);
 							std::cout << "Loaded texture" << std::endl;
@@ -168,7 +169,7 @@ void IterateNode(flecs::world world, const fastgltf::Node& node, const fastgltf:
 				{
 					fastgltf::iterateAccessorWithIndex<fastgltf::math::fvec2>(assetData, texcoordAccessor, [&](fastgltf::math::fvec2 uv, std::size_t idx)
 						{
-							vertices[idx].texCoords = glm::vec2(uv.x(), 1.0f - uv.y());
+							vertices[idx].texCoords = glm::vec2(uv.x(), uv.y());
 						});
 				}
 			}
@@ -327,8 +328,7 @@ int main()
 	//LoadGltfModel(engine.m_World, "Cube.glb", "Cube", glm::vec3(0.0f, 0.0f, -3.0f), glm::quat(), glm::vec3(1.0f, 1.0f, 1.0f));
 	LoadGltfModel(engine.m_World, "survival_guitar_backpack.glb", "SurvivalGuitar", glm::vec3(0.0f, 0.0f, -3.0f), glm::quat(), glm::vec3(0.002f, 0.002f, 0.002f));
 	//LoadGltfModel(engine.m_World, "the_great_drawing_room.glb", "GreatDrawingRoom", glm::vec3(0.0f, -2.5f, 0.0f), glm::quat(), glm::vec3(1.0f, 1.0f, 1.0f));
-	//LoadGltfModel(engine.m_World, "MorphPrimitivesTest.glb", "Thing", glm::vec3(0.0f, 0.0f, 0.0f), glm::quat(), glm::vec3(1.0f, 1.0f, 1.0f));
-
+	
 	//MeshComponent meshComponent1;
 	//meshComponent1.vertices = cubeVertices;
 	//meshComponent1.indices = cubeIndices;
