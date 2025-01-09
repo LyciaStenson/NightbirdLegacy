@@ -258,13 +258,14 @@ void Engine::InitSystems()
 			{
 				const CameraComponent* camera = mainCamera.get<CameraComponent>();
 				const TransformComponent* cameraTransform = mainCamera.get<TransformComponent, Global>();
-
-				//glActiveTexture(GL_TEXTURE0);
-				//glBindTexture(GL_TEXTURE_2D, meshComponent.texture);
 				
 				for (auto& primitive : meshComponent.primitives)
 				{
+					glBindTextureUnit(0, primitive.material.baseColorTexture);
+
 					primitive.material.shader.Use();
+
+					primitive.material.shader.SetInt("baseColorTexture", 0);
 
 					primitive.material.shader.SetVec3("objectColor", glm::vec3(1.0f, 1.0f, 1.0f));
 					primitive.material.shader.SetVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
@@ -297,8 +298,6 @@ void Engine::InitSystems()
 
 					glBindVertexArray(0);
 				}
-
-				//glActiveTexture(GL_TEXTURE0);
 			}
 		);
 

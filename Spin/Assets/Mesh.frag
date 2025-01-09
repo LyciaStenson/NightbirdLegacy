@@ -1,4 +1,4 @@
-#version 330 core
+#version 460 core
 
 out vec4 FragColor;
 
@@ -7,7 +7,7 @@ in vec3 FragPos;
 
 in vec2 texCoord;
 
-//uniform sampler2D ourTexture;
+uniform sampler2D baseColorTexture;
 
 uniform vec3 lightPos;
 
@@ -35,7 +35,8 @@ void main()
 
 	vec3 lighting = (ambient + diffuse + specular) * objectColor;
 
-	//vec4 texColor = texture(ourTexture, texCoord);
+	vec4 baseColor = texture(baseColorTexture, texCoord);
+	//FragColor = baseColor;
 
-	FragColor = vec4(lighting, 1.0f);// * texColor;
+	FragColor = vec4(lighting, 1.0f) * baseColor;
 }

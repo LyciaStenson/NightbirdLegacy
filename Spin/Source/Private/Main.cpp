@@ -51,7 +51,7 @@ bool LoadImage(fastgltf::Asset& asset, fastgltf::Image& image, std::vector<Textu
 	return true;
 }
 
-bool loadMaterial(fastgltf::Asset& asset, fastgltf::Material& gltfMaterial, std::vector<Material>& materials)
+bool LoadMaterial(fastgltf::Asset& asset, fastgltf::Material& gltfMaterial, std::vector<Material>& materials)
 {
 	Material material;
 
@@ -62,7 +62,7 @@ bool loadMaterial(fastgltf::Asset& asset, fastgltf::Material& gltfMaterial, std:
 	return true;
 }
 
-void IterateNode(flecs::world world, const fastgltf::Node& node, const fastgltf::Asset& assetData, flecs::entity parentEntity)
+void IterateNode(flecs::world world, const fastgltf::Node& node, const fastgltf::Asset& assetData, const std::vector<Texture> textures, flecs::entity parentEntity)
 {
 	fastgltf::math::fvec3 translation(0.0f, 0.0f, 0.0f);
 	fastgltf::math::fquat rotation;
@@ -99,12 +99,14 @@ void IterateNode(flecs::world world, const fastgltf::Node& node, const fastgltf:
 		std::vector<MeshPrimitive> primitives;
 		for (const auto& primitive : mesh.primitives)
 		{
+			MeshPrimitive meshPrimitive;
+
 			std::vector<Vertex> vertices;
 			std::vector<unsigned int> indices;
 
 			auto* positionIt = primitive.findAttribute("POSITION");
 			auto* normalIt = primitive.findAttribute("NORMAL");
-
+			
 			if (positionIt != primitive.attributes.end())
 			{
 				const auto& positionAccessor = assetData.accessors[positionIt->accessorIndex];
@@ -134,6 +136,7 @@ void IterateNode(flecs::world world, const fastgltf::Node& node, const fastgltf:
 					});
 			}
 
+			std::size_t baseColorTexcoordIndex = 0;
 			if (primitive.materialIndex.has_value())
 			{
 				auto& material = assetData.materials[primitive.materialIndex.value()];
@@ -143,13 +146,33 @@ void IterateNode(flecs::world world, const fastgltf::Node& node, const fastgltf:
 					auto& texture = assetData.textures[baseColorTexture->textureIndex];
 					if (texture.imageIndex.has_value())
 					{
-						//meshComponent.textures.push_back(Texture({  }));
-						//texture.imageIndex.value();
+						meshPrimitive.material.baseColorTexture = textures[texture.imageIndex.value()].id;
+
+						if (baseColorTexture->transform && baseColorTexture->transform->texCoordIndex.has_value())
+						{
+							baseColorTexcoordIndex = baseColorTexture->transform->texCoordIndex.value();
+						}
+						else
+						{
+							baseColorTexcoordIndex = material.pbrData.baseColorTexture->texCoordIndex;
+						}
 					}
 				}
 			}
 
-			MeshPrimitive meshPrimitive;
+			auto texcoordAttribute = std::string("TEXCOORD_") + std::to_string(baseColorTexcoordIndex);
+			if (const auto* texcoord = primitive.findAttribute(texcoordAttribute); texcoord != primitive.attributes.end())
+			{
+				auto& texcoordAccessor = assetData.accessors[texcoord->accessorIndex];
+				if (texcoordAccessor.bufferViewIndex.has_value())
+				{
+					fastgltf::iterateAccessorWithIndex<fastgltf::math::fvec2>(assetData, texcoordAccessor, [&](fastgltf::math::fvec2 uv, std::size_t idx)
+						{
+							vertices[idx].texCoords = glm::vec2(uv.x(), 1.0f - uv.y());
+						});
+				}
+			}
+
 			meshPrimitive.vertices = vertices;
 			meshPrimitive.indices = indices;
 			meshPrimitive.material.vertexPath = "Mesh.vert";
@@ -167,7 +190,7 @@ void IterateNode(flecs::world world, const fastgltf::Node& node, const fastgltf:
 	for (const auto& childNodeIndex : node.children)
 	{
 		const auto& childNode = assetData.nodes[childNodeIndex];
-		IterateNode(world, childNode, assetData, nodeEntity);
+		IterateNode(world, childNode, assetData, textures, nodeEntity);
 	}
 }
 
@@ -196,6 +219,12 @@ bool LoadGltfModel(flecs::world world, std::filesystem::path path, std::string n
 		LoadImage(assetData, image, textures);
 	}
 
+	std::vector<Material> materials;
+	for (auto& material : assetData.materials)
+	{
+		LoadMaterial(assetData, material, materials);
+	}
+
 	int counter = 2;
 	std::string nodeName = name;
 	while (world.lookup(nodeName.c_str()))
@@ -210,7 +239,7 @@ bool LoadGltfModel(flecs::world world, std::filesystem::path path, std::string n
 	for (const auto& rootNodeIndex : assetData.scenes[0].nodeIndices)
 	{
 		const auto& rootNode = assetData.nodes[rootNodeIndex];
-		IterateNode(world, rootNode, assetData, modelEntity);
+		IterateNode(world, rootNode, assetData, textures, modelEntity);
 	}
 
 	return true;
@@ -295,10 +324,9 @@ int main()
 		20, 21, 22, 22, 23, 20
 	};
 
-	LoadGltfModel(engine.m_World, "Cube.glb", "Cube", glm::vec3(0.0f, 0.0f, -3.0f), glm::quat(), glm::vec3(1.0f, 1.0f, 1.0f));
-	//LoadGltfModel(engine.m_World, "survival_guitar_backpack.glb", "SurvivalGuitar", glm::vec3(0.0f, 0.0f, -3.0f), glm::quat(), glm::vec3(0.002f, 0.002f, 0.002f));
+	//LoadGltfModel(engine.m_World, "Cube.glb", "Cube", glm::vec3(0.0f, 0.0f, -3.0f), glm::quat(), glm::vec3(1.0f, 1.0f, 1.0f));
+	LoadGltfModel(engine.m_World, "survival_guitar_backpack.glb", "SurvivalGuitar", glm::vec3(0.0f, 0.0f, -3.0f), glm::quat(), glm::vec3(0.002f, 0.002f, 0.002f));
 	//LoadGltfModel(engine.m_World, "the_great_drawing_room.glb", "GreatDrawingRoom", glm::vec3(0.0f, -2.5f, 0.0f), glm::quat(), glm::vec3(1.0f, 1.0f, 1.0f));
-	//LoadGltfModel(engine.m_World, "titanic.glb", "Titanic", glm::vec3(0.0f, -3.0f, 0.0f), glm::quat(), glm::vec3(1.0f, 1.0f, 1.0f));
 	//LoadGltfModel(engine.m_World, "MorphPrimitivesTest.glb", "Thing", glm::vec3(0.0f, 0.0f, 0.0f), glm::quat(), glm::vec3(1.0f, 1.0f, 1.0f));
 
 	//MeshComponent meshComponent1;
