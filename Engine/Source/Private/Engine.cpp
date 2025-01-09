@@ -69,8 +69,10 @@ bool Engine::Init()
 	glDebugMessageCallback(DebugCallback, 0);
 
 	m_RenderTarget->Init(m_Window);
+	
+	glEnable(GL_FRAMEBUFFER_SRGB);
 
-	glDisable(GL_CULL_FACE);
+	glEnable(GL_CULL_FACE);
 
 	glEnable(GL_DEPTH_TEST);
 
@@ -277,7 +279,7 @@ void Engine::InitSystems()
 					int height;
 					m_RenderTarget->GetWindowSize(width, height);
 
-					glm::mat4 projection = glm::perspective(glm::radians(camera->Fov), (float)width / (float)height, 0.1f, 1000.0f);
+					glm::mat4 projection = glm::perspective(glm::radians(camera->Fov), (float)width / (float)height, 0.01f, 1000.0f);
 					primitive.material.shader.SetMat4("projection", projection);
 
 					glm::vec3 forward = cameraTransform->Rotation * glm::vec3(0.0f, 0.0f, -1.0f);

@@ -254,6 +254,7 @@ int main()
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
+	glfwWindowHint(GLFW_SRGB_CAPABLE, GL_TRUE);
 	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
 
 	int WIDTH = 1280;
@@ -365,7 +366,7 @@ int main()
 	flecs::entity player = engine.m_World.entity("Player")
 		.add<TransformComponent, Global>()
 		.set<TransformComponent, Local>({ glm::vec3(0.0f, 0.0f, 0.0f) })
-		.set<PlayerMovementComponent>({5.0f})
+		.set<PlayerMovementComponent>({ 3.0f })
 		.set<PlayerYawComponent>({ 1.0f });
 
 	flecs::entity camera = engine.m_World.entity("Camera")
