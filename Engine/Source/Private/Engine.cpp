@@ -100,6 +100,18 @@ void Engine::InitSystems()
 				{
 					primitive.material.shader = Shader(primitive.material.vertexPath, primitive.material.fragmentPath);
 
+					primitive.material.shader.Use();
+					
+					primitive.material.shader.SetBool("hasBaseColorTexture", primitive.material.hasBaseColorTexture);
+					if (primitive.material.hasBaseColorTexture)
+					{
+						primitive.material.shader.SetInt("baseColorTexture", 0);
+					}
+					else
+					{
+						primitive.material.shader.SetVec4("baseColor", primitive.material.baseColor);
+					}
+
 					glGenVertexArrays(1, &primitive.VAO);
 					glGenBuffers(1, &primitive.VBO);
 					glGenBuffers(1, &primitive.EBO);
@@ -266,10 +278,7 @@ void Engine::InitSystems()
 					glBindTextureUnit(0, primitive.material.baseColorTexture);
 
 					primitive.material.shader.Use();
-
-					primitive.material.shader.SetInt("baseColorTexture", 0);
-
-					primitive.material.shader.SetVec3("objectColor", glm::vec3(1.0f, 1.0f, 1.0f));
+					
 					primitive.material.shader.SetVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
 					primitive.material.shader.SetVec3("lightPos", glm::vec3(10.0f, 10.0f, 10.0f));
 
@@ -442,6 +451,9 @@ void Engine::MainLoop()
 		fps = (int)(1.0f / deltaTime);
 		
 		//std::cout << "FPS: " << fps << std::endl;
+
+		//std::string title = "Nightbird | " + std::to_string(fps) + " FPS";
+		//glfwSetWindowTitle(m_Window, title.c_str());
 
 		m_GlobalTransformQuery
 			.each([](const TransformComponent& transform, const TransformComponent* parentTransform, TransformComponent& transformOut)

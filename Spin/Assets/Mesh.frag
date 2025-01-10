@@ -7,11 +7,12 @@ in vec3 FragPos;
 
 in vec2 texCoord;
 
+uniform vec4 baseColor;
 uniform sampler2D baseColorTexture;
+uniform bool hasBaseColorTexture;
 
 uniform vec3 lightPos;
 
-uniform vec3 objectColor;
 uniform vec3 lightColor;
 
 uniform vec3 viewPos;
@@ -33,10 +34,9 @@ void main()
 	float spec = pow(max(dot(viewDir, reflectDir), 0.0f), 32);
 	vec3 specular = specularStrength * spec * lightColor;
 
-	vec3 lighting = (ambient + diffuse + specular) * objectColor;
+	vec3 lighting = (ambient + diffuse + specular);
 
-	vec4 baseColor = texture(baseColorTexture, texCoord);
-	//FragColor = baseColor;
+	vec4 finalBaseColor = hasBaseColorTexture ? texture(baseColorTexture, texCoord) : baseColor;
 
-	FragColor = vec4(lighting, 1.0f) * baseColor;
+	FragColor = vec4(lighting, 1.0f) * finalBaseColor;
 }

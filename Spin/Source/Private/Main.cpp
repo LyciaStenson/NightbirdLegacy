@@ -25,7 +25,6 @@ bool LoadImage(fastgltf::Asset& asset, fastgltf::Image& image, std::vector<Textu
 			},
 			[&](fastgltf::sources::BufferView& view)
 			{
-				std::cout << "Image type 3" << std::endl;
 				auto& bufferView = asset.bufferViews[view.bufferViewIndex];
 				auto& buffer = asset.buffers[bufferView.bufferIndex];
 				std::visit(fastgltf::visitor
@@ -40,7 +39,6 @@ bool LoadImage(fastgltf::Asset& asset, fastgltf::Image& image, std::vector<Textu
 							glTextureStorage2D(texture, GetLevelCount(width, height), GL_SRGB8_ALPHA8, width, height);
 							glTextureSubImage2D(texture, 0, 0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, data);
 							stbi_image_free(data);
-							std::cout << "Loaded texture" << std::endl;
 						}
 					}, buffer.data);
 			},
@@ -95,8 +93,6 @@ void IterateNode(flecs::world world, const fastgltf::Node& node, const fastgltf:
 	{
 		const auto& mesh = assetData.meshes[node.meshIndex.value()];
 		
-		//std::cout << mesh.primitives.size() << " Primitives" << std::endl;
-
 		std::vector<MeshPrimitive> primitives;
 		for (const auto& primitive : mesh.primitives)
 		{
@@ -148,7 +144,7 @@ void IterateNode(flecs::world world, const fastgltf::Node& node, const fastgltf:
 					if (texture.imageIndex.has_value())
 					{
 						meshPrimitive.material.baseColorTexture = textures[texture.imageIndex.value()].id;
-
+						meshPrimitive.material.hasBaseColorTexture = true;
 						if (baseColorTexture->transform && baseColorTexture->transform->texCoordIndex.has_value())
 						{
 							baseColorTexcoordIndex = baseColorTexture->transform->texCoordIndex.value();
@@ -158,6 +154,13 @@ void IterateNode(flecs::world world, const fastgltf::Node& node, const fastgltf:
 							baseColorTexcoordIndex = material.pbrData.baseColorTexture->texCoordIndex;
 						}
 					}
+				}
+				else
+				{
+					auto& baseColor = material.pbrData.baseColorFactor;
+					std::cout << "baseColor: " << baseColor.x() << ", " << baseColor.y() << ", " << baseColor.z() << ", " << baseColor.w() << std::endl;
+					meshPrimitive.material.baseColor = glm::vec4(baseColor.x(), baseColor.y(), baseColor.z(), baseColor.w());
+					meshPrimitive.material.hasBaseColorTexture = false;
 				}
 			}
 
@@ -237,8 +240,10 @@ bool LoadGltfModel(flecs::world world, std::filesystem::path path, std::string n
 		.add<TransformComponent, Global>()
 		.set<TransformComponent, Local>({ rootPosition, rootRotation, rootScale });
 
+	std::cout << assetData.nodes.size() << " Nodes" << std::endl;
 	for (const auto& rootNodeIndex : assetData.scenes[0].nodeIndices)
 	{
+		std::cout << "Scene" << std::endl;
 		const auto& rootNode = assetData.nodes[rootNodeIndex];
 		IterateNode(world, rootNode, assetData, textures, modelEntity);
 	}
@@ -328,7 +333,7 @@ int main()
 
 	//LoadGltfModel(engine.m_World, "Cube.glb", "Cube", glm::vec3(0.0f, 0.0f, -3.0f), glm::quat(), glm::vec3(1.0f, 1.0f, 1.0f));
 	LoadGltfModel(engine.m_World, "survival_guitar_backpack.glb", "SurvivalGuitar", glm::vec3(0.0f, 0.0f, -3.0f), glm::quat(), glm::vec3(0.002f, 0.002f, 0.002f));
-	//LoadGltfModel(engine.m_World, "the_great_drawing_room.glb", "GreatDrawingRoom", glm::vec3(0.0f, -2.5f, 0.0f), glm::quat(), glm::vec3(1.0f, 1.0f, 1.0f));
+	LoadGltfModel(engine.m_World, "the_great_drawing_room.glb", "GreatDrawingRoom", glm::vec3(0.0f, -2.5f, 0.0f), glm::quat(glm::vec3(0.0f, glm::radians(-42.0f), 0.0f)), glm::vec3(1.0f, 1.0f, 1.0f));
 	
 	//MeshComponent meshComponent1;
 	//meshComponent1.vertices = cubeVertices;
@@ -366,14 +371,14 @@ int main()
 	flecs::entity player = engine.m_World.entity("Player")
 		.add<TransformComponent, Global>()
 		.set<TransformComponent, Local>({ glm::vec3(0.0f, 0.0f, 0.0f) })
-		.set<PlayerMovementComponent>({ 3.0f })
+		.set<PlayerMovementComponent>({ 7.0f })
 		.set<PlayerYawComponent>({ 1.0f });
 
 	flecs::entity camera = engine.m_World.entity("Camera")
 		.child_of(player)
 		.add<TransformComponent, Global>()
 		.set<TransformComponent, Local>({ glm::vec3(0.0f, 0.0f, 0.0f) })
-		.set<CameraComponent>({ 50.0f })
+		.set<CameraComponent>({ 70.0f })
 		.set<PlayerPitchComponent>({ 1.0f });
 
 	flecs::system m_SpinSystem = engine.m_World.system<SpinComponent, flecs::pair<TransformComponent, Local>>("SpinSystem")
