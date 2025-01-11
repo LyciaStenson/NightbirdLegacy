@@ -37,7 +37,7 @@ void main()
 
 	vec3 lighting = (ambient + diffuse + specular);
 
-	vec4 finalBaseColor = hasBaseColorTexture ? texture(baseColorTexture, texCoord) : baseColor;
+	vec4 finalBaseColor = hasBaseColorTexture ? texture(baseColorTexture, baseColorTexCoord) : baseColor;
 
 	FragColor = vec4(lighting, 1.0f) * finalBaseColor;
 }
