@@ -101,14 +101,22 @@ void Engine::InitSystems()
 					primitive.material.shader = Shader(primitive.material.vertexPath, primitive.material.fragmentPath);
 
 					primitive.material.shader.Use();
+
+					primitive.material.shader.SetVec4("baseColorFactor", primitive.material.baseColorFactor);
 					primitive.material.shader.SetBool("hasBaseColorTexture", primitive.material.hasBaseColorTexture);
 					if (primitive.material.hasBaseColorTexture)
 					{
+						glBindTextureUnit(0, primitive.material.baseColorTexture);
 						primitive.material.shader.SetInt("baseColorTexture", 0);
 					}
-					else
+
+					primitive.material.shader.SetFloat("metallicFactor", primitive.material.metallicFactor);
+					primitive.material.shader.SetFloat("roughnessFactor", primitive.material.roughnessFactor);
+					primitive.material.shader.SetBool("hasMetallicRoughnessTexture", primitive.material.hasMetallicRoughnessTexture);
+					if (primitive.material.hasMetallicRoughnessTexture)
 					{
-						primitive.material.shader.SetVec4("baseColor", primitive.material.baseColor);
+						glBindTextureUnit(1, primitive.material.metallicRoughnessTexture);
+						primitive.material.shader.SetInt("metallicRoughnessTexture", 1);
 					}
 
 					glGenVertexArrays(1, &primitive.VAO);
@@ -124,24 +132,24 @@ void Engine::InitSystems()
 					glBufferData(GL_ELEMENT_ARRAY_BUFFER, primitive.indices.size() * sizeof(unsigned int), &primitive.indices[0], GL_STATIC_DRAW);
 
 					// Position Attribute
-					glEnableVertexAttribArray(0);
 					glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
+					glEnableVertexAttribArray(0);
 
 					// Normals Attribute
-					glEnableVertexAttribArray(1);
 					glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, normal));
+					glEnableVertexAttribArray(1);
 
 					// Base Color Texture Coord Attribute
-					glEnableVertexAttribArray(2);
 					glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, baseColorTexCoords));
+					glEnableVertexAttribArray(2);
 
 					// Metallic Roughness Texture Coord Attribute
+					glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, metallicRoughnessTexCoords));
 					glEnableVertexAttribArray(3);
-					glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, metallicRoughnessTexCoords));
 
 					glBindVertexArray(0);
 				}
-				
+
 				//entity.set<TextureLoadComponent>({ std::async(LoadTexture, meshComponent.texturePath, false) });
 			}
 		);
@@ -279,9 +287,9 @@ void Engine::InitSystems()
 				for (auto& primitive : meshComponent.primitives)
 				{
 					glBindTextureUnit(0, primitive.material.baseColorTexture);
-
-					primitive.material.shader.Use();
 					
+					primitive.material.shader.Use();
+
 					primitive.material.shader.SetVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
 					primitive.material.shader.SetVec3("lightPos", glm::vec3(10.0f, 10.0f, 10.0f));
 

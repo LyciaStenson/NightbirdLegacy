@@ -8,9 +8,14 @@ in vec3 FragPos;
 in vec2 baseColorTexCoord;
 in vec2 metallicRoughnessTexCoord;
 
-uniform vec4 baseColor;
+uniform vec4 baseColorFactor;
 uniform sampler2D baseColorTexture;
 uniform bool hasBaseColorTexture;
+
+uniform float metallicFactor = 1.0f;
+uniform float roughnessFactor = 1.0f;
+uniform sampler2D metallicRoughnessTexture;
+uniform bool hasMetallicRoughnessTexture;
 
 uniform vec3 lightPos;
 
@@ -37,7 +42,24 @@ void main()
 
 	vec3 lighting = (ambient + diffuse + specular);
 
-	vec4 finalBaseColor = hasBaseColorTexture ? texture(baseColorTexture, baseColorTexCoord) : baseColor;
+	vec4 finalBaseColor = hasBaseColorTexture ? texture(baseColorTexture, baseColorTexCoord) : baseColorFactor;
 
+	float finalMetallic = metallicFactor;
+	float finalRoughness = roughnessFactor;
+	float ambientOcclusion = 1.0f;
+	
+	FragColor = vec4(0.95f, 0.1f, 0.1f, 1.0f);
+
+	if (hasMetallicRoughnessTexture)
+	{
+		vec4 metallicRoughnessData = texture(metallicRoughnessTexture, metallicRoughnessTexCoord);
+		ambientOcclusion = metallicRoughnessData.r;
+		finalMetallic = metallicRoughnessData.b;
+		finalRoughness = metallicRoughnessData.g;
+	}
+	
 	FragColor = vec4(lighting, 1.0f) * finalBaseColor;
+	//FragColor = vec4(ambientOcclusion, ambientOcclusion, ambientOcclusion, 1.0f);
+	//FragColor = vec4(finalMetallic, finalMetallic, finalMetallic, 1.0f);
+	//FragColor = vec4(finalRoughness, finalRoughness, finalRoughness, 1.0f);
 }

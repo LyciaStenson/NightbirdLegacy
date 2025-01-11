@@ -133,6 +133,9 @@ void ResourceManager::IterateNode(flecs::world world, const fastgltf::Node& node
 			{
 				auto& material = assetData.materials[primitive.materialIndex.value()];
 
+				auto& baseColorFactor = material.pbrData.baseColorFactor;
+				meshPrimitive.material.baseColorFactor = glm::vec4(baseColorFactor.x(), baseColorFactor.y(), baseColorFactor.z(), baseColorFactor.w());
+
 				auto& baseColorTexture = material.pbrData.baseColorTexture;
 				if (baseColorTexture.has_value())
 				{
@@ -153,8 +156,6 @@ void ResourceManager::IterateNode(flecs::world world, const fastgltf::Node& node
 				}
 				else
 				{
-					auto& baseColor = material.pbrData.baseColorFactor;
-					meshPrimitive.material.baseColor = glm::vec4(baseColor.x(), baseColor.y(), baseColor.z(), baseColor.w());
 					meshPrimitive.material.hasBaseColorTexture = false;
 				}
 
@@ -170,12 +171,12 @@ void ResourceManager::IterateNode(flecs::world world, const fastgltf::Node& node
 				}
 				else
 				{
-					meshPrimitive.material.metallic = material.pbrData.metallicFactor;
-					meshPrimitive.material.roughness = material.pbrData.roughnessFactor;
+					meshPrimitive.material.metallicFactor = material.pbrData.metallicFactor;
+					meshPrimitive.material.roughnessFactor = material.pbrData.roughnessFactor;
 					meshPrimitive.material.hasMetallicRoughnessTexture = false;
 				}
 			}
-
+			
 			auto baseColorTexcoordAttribute = std::string("TEXCOORD_") + std::to_string(baseColorTexcoordIndex);
 			if (const auto* texcoord = primitive.findAttribute(baseColorTexcoordAttribute); texcoord != primitive.attributes.end())
 			{

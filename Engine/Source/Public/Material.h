@@ -6,9 +6,9 @@
 
 struct Material
 {
-	glm::vec4 baseColor = glm::vec4(1.0f);
-	float metallic = 0.0f;
-	float roughness = 0.0f;
+	glm::vec4 baseColorFactor = glm::vec4(1.0f);
+	float metallicFactor = 0.0f;
+	float roughnessFactor = 0.0f;
 	float normalScale = 1.0f;
 
 	unsigned int baseColorTexture = 0;
