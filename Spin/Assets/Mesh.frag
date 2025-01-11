@@ -5,7 +5,8 @@ out vec4 FragColor;
 in vec3 Normal;
 in vec3 FragPos;
 
-in vec2 texCoord;
+in vec2 baseColorTexCoord;
+in vec2 metallicRoughnessTexCoord;
 
 uniform vec4 baseColor;
 uniform sampler2D baseColorTexture;

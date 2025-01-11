@@ -23,11 +23,6 @@ bool ResourceManager::LoadModel(flecs::world world, const std::filesystem::path&
 	{
 		LoadImage(assetData, image, name.c_str());
 	}
-
-	for (auto& material : assetData.materials)
-	{
-		LoadMaterial(assetData, material, name.c_str());
-	}
 	
 	flecs::entity modelPrefab = world.prefab((name + "Prefab").c_str())
 		.add<TransformComponent, Global>()
@@ -41,7 +36,7 @@ bool ResourceManager::LoadModel(flecs::world world, const std::filesystem::path&
 	return true;
 }
 
-void ResourceManager::SpawnModelEntities(flecs::world world, const std::string& name, const glm::vec3& rootPosition, const glm::quat& rootRotation, const glm::vec3& rootScale)
+void ResourceManager::InstantiateModel(flecs::world world, const std::string& name, const glm::vec3& rootPosition, const glm::quat& rootRotation, const glm::vec3& rootScale)
 {
 	flecs::entity prefab = world.lookup((name + "Prefab").c_str());
 	if (prefab.is_valid())
@@ -133,9 +128,11 @@ void ResourceManager::IterateNode(flecs::world world, const fastgltf::Node& node
 			}
 
 			std::size_t baseColorTexcoordIndex = 0;
+			std::size_t metallicRoughnessTexcoordIndex = 0;
 			if (primitive.materialIndex.has_value())
 			{
 				auto& material = assetData.materials[primitive.materialIndex.value()];
+
 				auto& baseColorTexture = material.pbrData.baseColorTexture;
 				if (baseColorTexture.has_value())
 				{
@@ -160,17 +157,47 @@ void ResourceManager::IterateNode(flecs::world world, const fastgltf::Node& node
 					meshPrimitive.material.baseColor = glm::vec4(baseColor.x(), baseColor.y(), baseColor.z(), baseColor.w());
 					meshPrimitive.material.hasBaseColorTexture = false;
 				}
+
+				auto& metallicRoughnessTexture = material.pbrData.metallicRoughnessTexture;
+				if (metallicRoughnessTexture.has_value())
+				{
+					auto& texture = assetData.textures[metallicRoughnessTexture->textureIndex];
+					if (texture.imageIndex.has_value())
+					{
+						meshPrimitive.material.metallicRoughnessTexture = texturesMap[modelName][texture.imageIndex.value()].id;
+						meshPrimitive.material.hasMetallicRoughnessTexture = true;
+					}
+				}
+				else
+				{
+					meshPrimitive.material.metallic = material.pbrData.metallicFactor;
+					meshPrimitive.material.roughness = material.pbrData.roughnessFactor;
+					meshPrimitive.material.hasMetallicRoughnessTexture = false;
+				}
 			}
 
-			auto texcoordAttribute = std::string("TEXCOORD_") + std::to_string(baseColorTexcoordIndex);
-			if (const auto* texcoord = primitive.findAttribute(texcoordAttribute); texcoord != primitive.attributes.end())
+			auto baseColorTexcoordAttribute = std::string("TEXCOORD_") + std::to_string(baseColorTexcoordIndex);
+			if (const auto* texcoord = primitive.findAttribute(baseColorTexcoordAttribute); texcoord != primitive.attributes.end())
 			{
 				auto& texcoordAccessor = assetData.accessors[texcoord->accessorIndex];
 				if (texcoordAccessor.bufferViewIndex.has_value())
 				{
 					fastgltf::iterateAccessorWithIndex<fastgltf::math::fvec2>(assetData, texcoordAccessor, [&](fastgltf::math::fvec2 uv, std::size_t idx)
 						{
-							vertices[idx].texCoords = glm::vec2(uv.x(), uv.y());
+							vertices[idx].baseColorTexCoords = glm::vec2(uv.x(), uv.y());
+						});
+				}
+			}
+
+			auto metallicRoughnessTexcoordAttribute = std::string("TEXCOORD_") + std::to_string(metallicRoughnessTexcoordIndex);
+			if (const auto* texcoord = primitive.findAttribute(metallicRoughnessTexcoordAttribute); texcoord != primitive.attributes.end())
+			{
+				auto& texcoordAccessor = assetData.accessors[texcoord->accessorIndex];
+				if (texcoordAccessor.bufferViewIndex.has_value())
+				{
+					fastgltf::iterateAccessorWithIndex<fastgltf::math::fvec2>(assetData, texcoordAccessor, [&](fastgltf::math::fvec2 uv, std::size_t idx)
+						{
+							vertices[idx].metallicRoughnessTexCoords = glm::vec2(uv.x(), uv.y());
 						});
 				}
 			}
@@ -196,17 +223,6 @@ void ResourceManager::IterateNode(flecs::world world, const fastgltf::Node& node
 	}
 }
 
-bool ResourceManager::LoadMaterial(fastgltf::Asset& asset, fastgltf::Material& gltfMaterial, const char* modelName)
-{
-	Material material;
-
-	material.hasBaseColorTexture = gltfMaterial.pbrData.baseColorTexture.has_value();
-
-	materialsMap[modelName].push_back(material);
-	
-	return true;
-}
-
 bool ResourceManager::LoadImage(fastgltf::Asset& asset, fastgltf::Image& image, const char* modelName)
 {
 	auto GetLevelCount = [](int width, int height) -> int
@@ -221,11 +237,11 @@ bool ResourceManager::LoadImage(fastgltf::Asset& asset, fastgltf::Image& image, 
 			[](auto& arg) {},
 			[&](fastgltf::sources::URI& filePath)
 			{
-				std::cout << "Image type 1" << std::endl;
+				std::cout << "External GLTF textures not yet supported. Please use GLB models." << std::endl;
 			},
 			[&](fastgltf::sources::Array& vector)
 			{
-				std::cout << "Image type 2" << std::endl;
+				std::cout << "GLTF textures not yet supported. Please use GLB models." << std::endl;
 			},
 			[&](fastgltf::sources::BufferView& view)
 			{

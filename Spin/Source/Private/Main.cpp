@@ -84,20 +84,14 @@ int main()
 	};
 
 	//engine.GetResourceManager().LoadModel(engine.m_World, "Cube.glb", "Cube");
-	engine.GetResourceManager().LoadModel(engine.m_World, "the_great_drawing_room.glb", "GreatDrawingRoom");
-	engine.GetResourceManager().LoadModel(engine.m_World, "survival_guitar_backpack.glb", "SurvivalGuitar");
-
-	//engine.GetResourceManager().SpawnModelEntities(engine.m_World, "Cube", glm::vec3(0.0f, 0.0f, -3.0f), glm::quat(), glm::vec3(1.0f, 1.0f, 1.0f));
-	//engine.GetResourceManager().SpawnModelEntities(engine.m_World, "GreatDrawingRoom", glm::vec3(15.0f, -2.5f, 0.0f), glm::quat(glm::vec3(0.0f, glm::radians(-42.0f), 0.0f)), glm::vec3(1.0f, 1.0f, 1.0f));
-	engine.GetResourceManager().SpawnModelEntities(engine.m_World, "GreatDrawingRoom", glm::vec3(0.0f, -2.5f, 0.0f), glm::quat(glm::vec3(0.0f, glm::radians(-42.0f), 0.0f)), glm::vec3(1.0f, 1.0f, 1.0f));
-	//engine.GetResourceManager().SpawnModelEntities(engine.m_World, "GreatDrawingRoom", glm::vec3(-15.0f, -2.5f, 0.0f), glm::quat(glm::vec3(0.0f, glm::radians(-42.0f), 0.0f)), glm::vec3(1.0f, 1.0f, 1.0f));
-	//engine.GetResourceManager().SpawnModelEntities(engine.m_World, "SurvivalGuitar", glm::vec3(3.0f, 0.0f, -3.0f), glm::quat(), glm::vec3(0.002f, 0.002f, 0.002f));
-	//engine.GetResourceManager().SpawnModelEntities(engine.m_World, "SurvivalGuitar", glm::vec3(2.0f, 0.0f, -3.0f), glm::quat(), glm::vec3(0.002f, 0.002f, 0.002f));
-	//engine.GetResourceManager().SpawnModelEntities(engine.m_World, "SurvivalGuitar", glm::vec3(1.0f, 0.0f, -3.0f), glm::quat(), glm::vec3(0.002f, 0.002f, 0.002f));
-	engine.GetResourceManager().SpawnModelEntities(engine.m_World, "SurvivalGuitar", glm::vec3(0.0f, 0.0f, -3.0f), glm::quat(), glm::vec3(0.002f, 0.002f, 0.002f));
-	//engine.GetResourceManager().SpawnModelEntities(engine.m_World, "SurvivalGuitar", glm::vec3(-1.0f, 0.0f, -3.0f), glm::quat(), glm::vec3(0.002f, 0.002f, 0.002f));
-	//engine.GetResourceManager().SpawnModelEntities(engine.m_World, "SurvivalGuitar", glm::vec3(-2.0f, 0.0f, -3.0f), glm::quat(), glm::vec3(0.002f, 0.002f, 0.002f));
-	//engine.GetResourceManager().SpawnModelEntities(engine.m_World, "SurvivalGuitar", glm::vec3(-3.0f, 0.0f, -3.0f), glm::quat(), glm::vec3(0.002f, 0.002f, 0.002f));
+	//engine.GetResourceManager().LoadModel(engine.m_World, "the_great_drawing_room.glb", "GreatDrawingRoom");
+	engine.GetResourceManager().LoadModel(engine.m_World, "survival_guitar_backpack.glb", "SurvivalBackpack");
+	
+	//engine.GetResourceManager().InstantiateModel(engine.m_World, "Cube", glm::vec3(0.0f, 0.0f, -3.0f), glm::quat(), glm::vec3(1.0f, 1.0f, 1.0f));
+	
+	//engine.GetResourceManager().InstantiateModel(engine.m_World, "GreatDrawingRoom", glm::vec3(0.0f, -2.5f, 0.0f), glm::quat(glm::vec3(0.0f, glm::radians(-42.0f), 0.0f)), glm::vec3(1.0f, 1.0f, 1.0f));
+	
+	engine.GetResourceManager().InstantiateModel(engine.m_World, "SurvivalBackpack", glm::vec3(0.0f, 0.0f, -3.0f), glm::quat(), glm::vec3(0.002f, 0.002f, 0.002f));
 	
 	//MeshComponent meshComponent1;
 	//meshComponent1.vertices = cubeVertices;

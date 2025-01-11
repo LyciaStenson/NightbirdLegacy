@@ -28,14 +28,12 @@ public:
 
 	bool LoadModel(flecs::world world, const std::filesystem::path& path, const std::string& name);
 
-	void SpawnModelEntities(flecs::world world, const std::string& name, const glm::vec3& rootPosition, const glm::quat& rootRotation, const glm::vec3& rootScale);
+	void InstantiateModel(flecs::world world, const std::string& name, const glm::vec3& rootPosition, const glm::quat& rootRotation, const glm::vec3& rootScale);
 
 private:
 	std::unordered_map<const char*, std::vector<Texture>> texturesMap;
-	std::unordered_map<const char*, std::vector<Material>> materialsMap;
 	
 	void IterateNode(flecs::world world, const fastgltf::Node& node, const fastgltf::Asset& assetData, const char* modelName, flecs::entity parent);
 	
-	bool LoadMaterial(fastgltf::Asset& asset, fastgltf::Material& gltfMaterial, const char* modelName);
 	bool LoadImage(fastgltf::Asset& asset, fastgltf::Image& image, const char* modelName);
 };
