@@ -16,6 +16,8 @@
 
 #include <flecs/flecs.h>
 
+#include <ResourceManager.h>
+
 #include <Shader.h>
 
 #include <TransformComponent.h>
@@ -56,13 +58,17 @@ public:
 
 	Engine(int width, int height, const char* name, RenderTarget* renderTarget);
 	~Engine();
-
+	
 	bool Init();
 	void InitSystems();
 	void Terminate();
 	void MainLoop();
+	
+	ResourceManager& GetResourceManager();
 
 private:
+	ResourceManager m_ResourceManager;
+
 	flecs::system m_RenderShutdownSystem;
 
 	flecs::query<const TransformComponent, const TransformComponent*, TransformComponent> m_GlobalTransformQuery;
@@ -70,8 +76,6 @@ private:
 	RenderTarget* m_RenderTarget;
 
 	unsigned int framebuffer = 0;
-
-	bool ImportGltfModel(std::filesystem::path path);
 
 	static TextureData LoadTexture(const char* path, bool flip);
 

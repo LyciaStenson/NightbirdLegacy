@@ -101,7 +101,6 @@ void Engine::InitSystems()
 					primitive.material.shader = Shader(primitive.material.vertexPath, primitive.material.fragmentPath);
 
 					primitive.material.shader.Use();
-					
 					primitive.material.shader.SetBool("hasBaseColorTexture", primitive.material.hasBaseColorTexture);
 					if (primitive.material.hasBaseColorTexture)
 					{
@@ -495,50 +494,9 @@ void Engine::MainLoop()
 	}
 }
 
-bool Engine::ImportGltfModel(std::filesystem::path path)
+ResourceManager& Engine::GetResourceManager()
 {
-	//fastgltf::Parser parser;
-
-	//auto data = fastgltf::GltfDataBuffer::FromPath(path);
-	//if (data.error() != fastgltf::Error::None)
-	//{
-		//std::cout << "fastgltf data buffer error" << std::endl;
-		//return false;
-	//}
-	
-	//auto asset = parser.loadGltf(data.get(), path.parent_path(), fastgltf::Options::None);
-	//auto asset = parser.loadGltfBinary(data.get(), path.parent_path(), fastgltf::Options::None);
-	//if (asset.error() != fastgltf::Error::None)
-	//{
-		//std::cout << "fastgltf get data error" << std::endl;
-		//return false;
-	//}
-
-	//for (auto& buffer : asset->buffers)
-	//{
-		//std::cout << "Buffer: " << buffer.name << std::endl;
-	//}
-	
-	//for (auto& node : asset->nodes)
-	//{
-		//if (node.meshIndex.has_value())
-		//{
-			//size_t meshIndex = node.meshIndex.value();
-			//const auto& mesh = asset->meshes[meshIndex];
-		//}
-		//std::string nodeChildren = "";
-		//for (auto& child : node.children)
-		//{
-			//std::cout << "Child: " << child << std::endl;
-			//nodeChildren += child;
-			//nodeChildren += ", ";
-		//}
-		//std::cout << "Node " << node.name << " " << nodeChildren << std::endl;
-	//}
-	
-	// fastgltf::validate(asset.get()
-	
-	return true;
+	return m_ResourceManager;
 }
 
 TextureData Engine::LoadTexture(const char* path, bool flip)

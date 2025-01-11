@@ -2,6 +2,8 @@
 
 #include <glm/glm.hpp>
 
+#include <Shader.h>
+
 struct Material
 {
 	glm::vec4 baseColor = glm::vec4(1.0f);
