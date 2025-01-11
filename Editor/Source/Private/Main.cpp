@@ -33,28 +33,7 @@ int main()
 
 	flecs::entity skybox = engine.m_World.entity("Skybox")
 		.set<SkyboxComponent>(skyboxComponent);
-
-	MeshComponent meshComponent;
-	meshComponent.vertexPath = "Cube.vert";
-	meshComponent.fragmentPath = "Cube.frag";
-	meshComponent.texturePath = "stevie-nicks.jpg";
-
-	flecs::entity cubes = engine.m_World.entity("Cubes")
-		.add<TransformComponent, Global>()
-		.set<TransformComponent, Local>({glm::vec3(0.0f, 0.0f, -3.0f)});
-
-	flecs::entity stevieNicksCube = engine.m_World.entity("StevieNicksCube")
-		.child_of(cubes)
-		.add<TransformComponent, Global>()
-		.set<TransformComponent, Local>({glm::vec3(1.0f, 0.0f, 0.0f)})
-		.set<MeshComponent>(meshComponent);
-
-	flecs::entity stevieNicksCube2 = engine.m_World.entity("StevieNicksCube2")
-		.child_of(cubes)
-		.add<TransformComponent, Global>()
-		.set<TransformComponent, Local>({glm::vec3(-1.0f, 0.0f, 0.0f)})
-		.set<MeshComponent>(meshComponent);
-
+	
 	flecs::entity player = engine.m_World.entity("Player")
 		.add<TransformComponent, Global>()
 		.set<TransformComponent, Local>({glm::vec3(0.0f, 0.0f, 0.0f)})

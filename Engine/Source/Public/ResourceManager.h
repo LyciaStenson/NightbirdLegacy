@@ -33,8 +33,6 @@ public:
 private:
 	std::unordered_map<const char*, std::vector<Texture>> texturesMap;
 	std::unordered_map<const char*, std::vector<Material>> materialsMap;
-	//std::vector<Texture> textures;
-	//std::vector<Material> materials;
 	
 	void IterateNode(flecs::world world, const fastgltf::Node& node, const fastgltf::Asset& assetData, const char* modelName, flecs::entity parent);
 	

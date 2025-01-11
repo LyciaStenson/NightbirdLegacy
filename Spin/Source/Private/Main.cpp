@@ -88,16 +88,16 @@ int main()
 	engine.GetResourceManager().LoadModel(engine.m_World, "survival_guitar_backpack.glb", "SurvivalGuitar");
 
 	//engine.GetResourceManager().SpawnModelEntities(engine.m_World, "Cube", glm::vec3(0.0f, 0.0f, -3.0f), glm::quat(), glm::vec3(1.0f, 1.0f, 1.0f));
-	engine.GetResourceManager().SpawnModelEntities(engine.m_World, "GreatDrawingRoom", glm::vec3(15.0f, -2.5f, 0.0f), glm::quat(glm::vec3(0.0f, glm::radians(-42.0f), 0.0f)), glm::vec3(1.0f, 1.0f, 1.0f));
+	//engine.GetResourceManager().SpawnModelEntities(engine.m_World, "GreatDrawingRoom", glm::vec3(15.0f, -2.5f, 0.0f), glm::quat(glm::vec3(0.0f, glm::radians(-42.0f), 0.0f)), glm::vec3(1.0f, 1.0f, 1.0f));
 	engine.GetResourceManager().SpawnModelEntities(engine.m_World, "GreatDrawingRoom", glm::vec3(0.0f, -2.5f, 0.0f), glm::quat(glm::vec3(0.0f, glm::radians(-42.0f), 0.0f)), glm::vec3(1.0f, 1.0f, 1.0f));
-	engine.GetResourceManager().SpawnModelEntities(engine.m_World, "GreatDrawingRoom", glm::vec3(-15.0f, -2.5f, 0.0f), glm::quat(glm::vec3(0.0f, glm::radians(-42.0f), 0.0f)), glm::vec3(1.0f, 1.0f, 1.0f));
-	engine.GetResourceManager().SpawnModelEntities(engine.m_World, "SurvivalGuitar", glm::vec3(3.0f, 0.0f, -3.0f), glm::quat(), glm::vec3(0.002f, 0.002f, 0.002f));
-	engine.GetResourceManager().SpawnModelEntities(engine.m_World, "SurvivalGuitar", glm::vec3(2.0f, 0.0f, -3.0f), glm::quat(), glm::vec3(0.002f, 0.002f, 0.002f));
-	engine.GetResourceManager().SpawnModelEntities(engine.m_World, "SurvivalGuitar", glm::vec3(1.0f, 0.0f, -3.0f), glm::quat(), glm::vec3(0.002f, 0.002f, 0.002f));
+	//engine.GetResourceManager().SpawnModelEntities(engine.m_World, "GreatDrawingRoom", glm::vec3(-15.0f, -2.5f, 0.0f), glm::quat(glm::vec3(0.0f, glm::radians(-42.0f), 0.0f)), glm::vec3(1.0f, 1.0f, 1.0f));
+	//engine.GetResourceManager().SpawnModelEntities(engine.m_World, "SurvivalGuitar", glm::vec3(3.0f, 0.0f, -3.0f), glm::quat(), glm::vec3(0.002f, 0.002f, 0.002f));
+	//engine.GetResourceManager().SpawnModelEntities(engine.m_World, "SurvivalGuitar", glm::vec3(2.0f, 0.0f, -3.0f), glm::quat(), glm::vec3(0.002f, 0.002f, 0.002f));
+	//engine.GetResourceManager().SpawnModelEntities(engine.m_World, "SurvivalGuitar", glm::vec3(1.0f, 0.0f, -3.0f), glm::quat(), glm::vec3(0.002f, 0.002f, 0.002f));
 	engine.GetResourceManager().SpawnModelEntities(engine.m_World, "SurvivalGuitar", glm::vec3(0.0f, 0.0f, -3.0f), glm::quat(), glm::vec3(0.002f, 0.002f, 0.002f));
-	engine.GetResourceManager().SpawnModelEntities(engine.m_World, "SurvivalGuitar", glm::vec3(-1.0f, 0.0f, -3.0f), glm::quat(), glm::vec3(0.002f, 0.002f, 0.002f));
-	engine.GetResourceManager().SpawnModelEntities(engine.m_World, "SurvivalGuitar", glm::vec3(-2.0f, 0.0f, -3.0f), glm::quat(), glm::vec3(0.002f, 0.002f, 0.002f));
-	engine.GetResourceManager().SpawnModelEntities(engine.m_World, "SurvivalGuitar", glm::vec3(-3.0f, 0.0f, -3.0f), glm::quat(), glm::vec3(0.002f, 0.002f, 0.002f));
+	//engine.GetResourceManager().SpawnModelEntities(engine.m_World, "SurvivalGuitar", glm::vec3(-1.0f, 0.0f, -3.0f), glm::quat(), glm::vec3(0.002f, 0.002f, 0.002f));
+	//engine.GetResourceManager().SpawnModelEntities(engine.m_World, "SurvivalGuitar", glm::vec3(-2.0f, 0.0f, -3.0f), glm::quat(), glm::vec3(0.002f, 0.002f, 0.002f));
+	//engine.GetResourceManager().SpawnModelEntities(engine.m_World, "SurvivalGuitar", glm::vec3(-3.0f, 0.0f, -3.0f), glm::quat(), glm::vec3(0.002f, 0.002f, 0.002f));
 	
 	//MeshComponent meshComponent1;
 	//meshComponent1.vertices = cubeVertices;
@@ -135,7 +135,7 @@ int main()
 	flecs::entity player = engine.m_World.entity("Player")
 		.add<TransformComponent, Global>()
 		.set<TransformComponent, Local>({ glm::vec3(0.0f, 0.0f, 0.0f) })
-		.set<PlayerMovementComponent>({ 3.0f })
+		.set<PlayerMovementComponent>({ 2.0f })
 		.set<PlayerYawComponent>({ 1.0f });
 
 	flecs::entity camera = engine.m_World.entity("Camera")

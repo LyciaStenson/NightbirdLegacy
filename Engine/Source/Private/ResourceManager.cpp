@@ -19,30 +19,20 @@ bool ResourceManager::LoadModel(flecs::world world, const std::filesystem::path&
 	}
 	auto& assetData = asset.get();
 
-	//std::vector<Texture> textures;
 	for (auto& image : assetData.images)
 	{
 		LoadImage(assetData, image, name.c_str());
 	}
 
-	//std::vector<Material> materials;
 	for (auto& material : assetData.materials)
 	{
 		LoadMaterial(assetData, material, name.c_str());
 	}
-
-	//int counter = 2;
-	//std::string prefabName = name + "Prefab";
-	//while (world.lookup(prefabName.c_str()))
-	//{
-		//prefabName = name + "Prefab" + std::to_string(counter);
-		//counter++;
-	//}
 	
 	flecs::entity modelPrefab = world.prefab((name + "Prefab").c_str())
 		.add<TransformComponent, Global>()
 		.set<TransformComponent, Local>({ glm::vec3(), glm::quat(), glm::vec3(1.0f) });
-	//std::cout << "Prefab name: " << name + "Prefab" << std::endl;
+	
 	for (const auto& rootNodeIndex : assetData.scenes[0].nodeIndices)
 	{
 		const auto& rootNode = assetData.nodes[rootNodeIndex];
@@ -67,14 +57,8 @@ void ResourceManager::SpawnModelEntities(flecs::world world, const std::string& 
 		flecs::entity modelEntity = world.entity(modelName.c_str())
 			.is_a(prefab)
 			.set<TransformComponent, Local>({ rootPosition, rootRotation, rootScale });
-		//std::cout << "Instantiated " << name + "Prefab" << " as " << modelName << std::endl;
 	}
 }
-
-//fastgltf::Asset& ResourceManager::LoadNewModel(const std::string& path)
-//{
-
-//}
 
 void ResourceManager::IterateNode(flecs::world world, const fastgltf::Node& node, const fastgltf::Asset& assetData, const char* modelName, flecs::entity parent)
 {
@@ -155,13 +139,11 @@ void ResourceManager::IterateNode(flecs::world world, const fastgltf::Node& node
 				auto& baseColorTexture = material.pbrData.baseColorTexture;
 				if (baseColorTexture.has_value())
 				{
-					std::cout << baseColorTexture->textureIndex << std::endl;
 					auto& texture = assetData.textures[baseColorTexture->textureIndex];
 					if (texture.imageIndex.has_value())
 					{
 						meshPrimitive.material.baseColorTexture = texturesMap[modelName][texture.imageIndex.value()].id;
 						meshPrimitive.material.hasBaseColorTexture = true;
-						//std::cout << "Setting " << name << " baseColorTexture: " << textures[texture.imageIndex.value()].id << std::endl;
 						if (baseColorTexture->transform && baseColorTexture->transform->texCoordIndex.has_value())
 						{
 							baseColorTexcoordIndex = baseColorTexture->transform->texCoordIndex.value();
@@ -268,8 +250,6 @@ bool ResourceManager::LoadImage(fastgltf::Asset& asset, fastgltf::Image& image, 
 
 	glGenerateTextureMipmap(texture);
 	texturesMap[modelName].push_back(Texture{ texture });
-	//std::cout << "Loaded texture " << texture << std::endl;
-	//textures.push_back(Texture({ texture }));
 	
 	return true;
 }
