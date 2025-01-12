@@ -33,7 +33,9 @@ public:
 private:
 	std::unordered_map<const char*, std::vector<Texture>> texturesMap;
 	
-	void IterateNode(flecs::world world, const fastgltf::Node& node, const fastgltf::Asset& assetData, const char* modelName, flecs::entity parent);
+	void IterateNode(flecs::world world, const fastgltf::Node& node, const fastgltf::Asset& asset, const char* modelName, flecs::entity parent);
 	
-	bool LoadImage(fastgltf::Asset& asset, fastgltf::Image& image, const char* modelName);
+	bool LoadImage(fastgltf::Asset& asset, fastgltf::Image& image, const char* modelName, bool sRGB);
+
+	void LoadImages(fastgltf::Asset& asset, const char* modelName);
 };

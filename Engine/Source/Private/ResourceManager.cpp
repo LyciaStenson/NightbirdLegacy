@@ -18,11 +18,8 @@ bool ResourceManager::LoadModel(flecs::world world, const std::filesystem::path&
 		return false;
 	}
 	auto& assetData = asset.get();
-
-	for (auto& image : assetData.images)
-	{
-		LoadImage(assetData, image, name.c_str());
-	}
+	
+	LoadImages(assetData, name.c_str());
 	
 	flecs::entity modelPrefab = world.prefab((name + "Prefab").c_str())
 		.add<TransformComponent, Global>()
@@ -55,7 +52,7 @@ void ResourceManager::InstantiateModel(flecs::world world, const std::string& na
 	}
 }
 
-void ResourceManager::IterateNode(flecs::world world, const fastgltf::Node& node, const fastgltf::Asset& assetData, const char* modelName, flecs::entity parent)
+void ResourceManager::IterateNode(flecs::world world, const fastgltf::Node& node, const fastgltf::Asset& asset, const char* modelName, flecs::entity parent)
 {
 	fastgltf::math::fvec3 translation(0.0f, 0.0f, 0.0f);
 	fastgltf::math::fquat rotation;
@@ -85,7 +82,7 @@ void ResourceManager::IterateNode(flecs::world world, const fastgltf::Node& node
 	
 	if (node.meshIndex.has_value())
 	{
-		const auto& mesh = assetData.meshes[node.meshIndex.value()];
+		const auto& mesh = asset.meshes[node.meshIndex.value()];
 
 		std::vector<MeshPrimitive> primitives;
 		for (const auto& primitive : mesh.primitives)
@@ -100,10 +97,10 @@ void ResourceManager::IterateNode(flecs::world world, const fastgltf::Node& node
 
 			if (positionIt != primitive.attributes.end())
 			{
-				const auto& positionAccessor = assetData.accessors[positionIt->accessorIndex];
+				const auto& positionAccessor = asset.accessors[positionIt->accessorIndex];
 				vertices.resize(positionAccessor.count);
 
-				fastgltf::iterateAccessorWithIndex<fastgltf::math::fvec3>(assetData, positionAccessor, [&](fastgltf::math::fvec3 position, std::size_t idx)
+				fastgltf::iterateAccessorWithIndex<fastgltf::math::fvec3>(asset, positionAccessor, [&](fastgltf::math::fvec3 position, std::size_t idx)
 					{
 						vertices[idx].position = glm::vec3(position.x(), position.y(), position.z());
 					});
@@ -111,8 +108,8 @@ void ResourceManager::IterateNode(flecs::world world, const fastgltf::Node& node
 
 			if (normalIt != primitive.attributes.end())
 			{
-				auto& normalAccessor = assetData.accessors[normalIt->accessorIndex];
-				fastgltf::iterateAccessorWithIndex<fastgltf::math::fvec3>(assetData, normalAccessor, [&](fastgltf::math::fvec3 normal, std::size_t idx)
+				auto& normalAccessor = asset.accessors[normalIt->accessorIndex];
+				fastgltf::iterateAccessorWithIndex<fastgltf::math::fvec3>(asset, normalAccessor, [&](fastgltf::math::fvec3 normal, std::size_t idx)
 					{
 						vertices[idx].normal = glm::vec3(normal.x(), normal.y(), normal.z());
 					});
@@ -120,8 +117,8 @@ void ResourceManager::IterateNode(flecs::world world, const fastgltf::Node& node
 
 			if (primitive.indicesAccessor.has_value())
 			{
-				auto& indexAccessor = assetData.accessors[primitive.indicesAccessor.value()];
-				fastgltf::iterateAccessorWithIndex<std::uint32_t>(assetData, indexAccessor, [&](std::uint32_t idx, std::size_t index)
+				auto& indexAccessor = asset.accessors[primitive.indicesAccessor.value()];
+				fastgltf::iterateAccessorWithIndex<std::uint32_t>(asset, indexAccessor, [&](std::uint32_t idx, std::size_t index)
 					{
 						indices.push_back(idx);
 					});
@@ -131,7 +128,7 @@ void ResourceManager::IterateNode(flecs::world world, const fastgltf::Node& node
 			std::size_t metallicRoughnessTexcoordIndex = 0;
 			if (primitive.materialIndex.has_value())
 			{
-				auto& material = assetData.materials[primitive.materialIndex.value()];
+				auto& material = asset.materials[primitive.materialIndex.value()];
 
 				auto& baseColorFactor = material.pbrData.baseColorFactor;
 				meshPrimitive.material.baseColorFactor = glm::vec4(baseColorFactor.x(), baseColorFactor.y(), baseColorFactor.z(), baseColorFactor.w());
@@ -139,7 +136,7 @@ void ResourceManager::IterateNode(flecs::world world, const fastgltf::Node& node
 				auto& baseColorTexture = material.pbrData.baseColorTexture;
 				if (baseColorTexture.has_value())
 				{
-					auto& texture = assetData.textures[baseColorTexture->textureIndex];
+					auto& texture = asset.textures[baseColorTexture->textureIndex];
 					if (texture.imageIndex.has_value())
 					{
 						meshPrimitive.material.baseColorTexture = texturesMap[modelName][texture.imageIndex.value()].id;
@@ -162,7 +159,7 @@ void ResourceManager::IterateNode(flecs::world world, const fastgltf::Node& node
 				auto& metallicRoughnessTexture = material.pbrData.metallicRoughnessTexture;
 				if (metallicRoughnessTexture.has_value())
 				{
-					auto& texture = assetData.textures[metallicRoughnessTexture->textureIndex];
+					auto& texture = asset.textures[metallicRoughnessTexture->textureIndex];
 					if (texture.imageIndex.has_value())
 					{
 						meshPrimitive.material.metallicRoughnessTexture = texturesMap[modelName][texture.imageIndex.value()].id;
@@ -180,10 +177,10 @@ void ResourceManager::IterateNode(flecs::world world, const fastgltf::Node& node
 			auto baseColorTexcoordAttribute = std::string("TEXCOORD_") + std::to_string(baseColorTexcoordIndex);
 			if (const auto* texcoord = primitive.findAttribute(baseColorTexcoordAttribute); texcoord != primitive.attributes.end())
 			{
-				auto& texcoordAccessor = assetData.accessors[texcoord->accessorIndex];
+				auto& texcoordAccessor = asset.accessors[texcoord->accessorIndex];
 				if (texcoordAccessor.bufferViewIndex.has_value())
 				{
-					fastgltf::iterateAccessorWithIndex<fastgltf::math::fvec2>(assetData, texcoordAccessor, [&](fastgltf::math::fvec2 uv, std::size_t idx)
+					fastgltf::iterateAccessorWithIndex<fastgltf::math::fvec2>(asset, texcoordAccessor, [&](fastgltf::math::fvec2 uv, std::size_t idx)
 						{
 							vertices[idx].baseColorTexCoords = glm::vec2(uv.x(), uv.y());
 						});
@@ -193,10 +190,10 @@ void ResourceManager::IterateNode(flecs::world world, const fastgltf::Node& node
 			auto metallicRoughnessTexcoordAttribute = std::string("TEXCOORD_") + std::to_string(metallicRoughnessTexcoordIndex);
 			if (const auto* texcoord = primitive.findAttribute(metallicRoughnessTexcoordAttribute); texcoord != primitive.attributes.end())
 			{
-				auto& texcoordAccessor = assetData.accessors[texcoord->accessorIndex];
+				auto& texcoordAccessor = asset.accessors[texcoord->accessorIndex];
 				if (texcoordAccessor.bufferViewIndex.has_value())
 				{
-					fastgltf::iterateAccessorWithIndex<fastgltf::math::fvec2>(assetData, texcoordAccessor, [&](fastgltf::math::fvec2 uv, std::size_t idx)
+					fastgltf::iterateAccessorWithIndex<fastgltf::math::fvec2>(asset, texcoordAccessor, [&](fastgltf::math::fvec2 uv, std::size_t idx)
 						{
 							vertices[idx].metallicRoughnessTexCoords = glm::vec2(uv.x(), uv.y());
 						});
@@ -219,12 +216,12 @@ void ResourceManager::IterateNode(flecs::world world, const fastgltf::Node& node
 
 	for (const auto& childNodeIndex : node.children)
 	{
-		const auto& childNode = assetData.nodes[childNodeIndex];
-		IterateNode(world, childNode, assetData, modelName, nodePrefab);
+		const auto& childNode = asset.nodes[childNodeIndex];
+		IterateNode(world, childNode, asset, modelName, nodePrefab);
 	}
 }
 
-bool ResourceManager::LoadImage(fastgltf::Asset& asset, fastgltf::Image& image, const char* modelName)
+bool ResourceManager::LoadImage(fastgltf::Asset& asset, fastgltf::Image& image, const char* modelName, bool sRGB)
 {
 	auto GetLevelCount = [](int width, int height) -> int
 		{
@@ -257,16 +254,34 @@ bool ResourceManager::LoadImage(fastgltf::Asset& asset, fastgltf::Image& image, 
 							stbi_set_flip_vertically_on_load(true);
 							unsigned char* data = stbi_load_from_memory(reinterpret_cast<const stbi_uc*>(vector.bytes.data() + bufferView.byteOffset),
 																		static_cast<int>(bufferView.byteLength), &width, &height, &nrChannels, 4);
-							glTextureStorage2D(texture, GetLevelCount(width, height), GL_SRGB8_ALPHA8, width, height);
+							glTextureStorage2D(texture, GetLevelCount(width, height), sRGB ? GL_SRGB8_ALPHA8 : GL_RGBA8, width, height);
 							glTextureSubImage2D(texture, 0, 0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, data);
 							stbi_image_free(data);
 						}
 					}, buffer.data);
 			},
 		}, image.data);
-
+	
 	glGenerateTextureMipmap(texture);
 	texturesMap[modelName].push_back(Texture{ texture });
 	
 	return true;
+}
+
+void ResourceManager::LoadImages(fastgltf::Asset& asset, const char* modelName)
+{
+	for (auto& image : asset.images)
+	{
+		bool sRGB = false;
+		for (auto& material : asset.materials)
+		{
+			if (material.pbrData.baseColorTexture.has_value()
+				&& asset.textures[material.pbrData.baseColorTexture.value().textureIndex].imageIndex == &image - &asset.images[0])
+			{
+				sRGB = true;
+			}
+		}
+
+		LoadImage(asset, image, modelName, sRGB);
+	}
 }
