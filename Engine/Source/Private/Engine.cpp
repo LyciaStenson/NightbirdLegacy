@@ -119,6 +119,13 @@ void Engine::InitSystems()
 						primitive.material.shader.SetInt("metallicRoughnessTexture", 1);
 					}
 
+					primitive.material.shader.SetBool("hasNormalTexture", primitive.material.hasNormalTexture);
+					if (primitive.material.hasNormalTexture)
+					{
+						glBindTextureUnit(2, primitive.material.normalTexture);
+						primitive.material.shader.SetInt("normalTexture", 2);
+					}
+					
 					glGenVertexArrays(1, &primitive.VAO);
 					glGenBuffers(1, &primitive.VBO);
 					glGenBuffers(1, &primitive.EBO);
@@ -146,6 +153,10 @@ void Engine::InitSystems()
 					// Metallic Roughness Texture Coord Attribute
 					glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, metallicRoughnessTexCoords));
 					glEnableVertexAttribArray(3);
+
+					// Normal Texture Coord Attribute
+					glVertexAttribPointer(4, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, normalTexCoords));
+					glEnableVertexAttribArray(4);
 
 					glBindVertexArray(0);
 				}

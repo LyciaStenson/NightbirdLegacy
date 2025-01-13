@@ -126,13 +126,14 @@ void ResourceManager::IterateNode(flecs::world world, const fastgltf::Node& node
 
 			std::size_t baseColorTexcoordIndex = 0;
 			std::size_t metallicRoughnessTexcoordIndex = 0;
+			std::size_t normalTexcoordIndex = 0;
 			if (primitive.materialIndex.has_value())
 			{
 				auto& material = asset.materials[primitive.materialIndex.value()];
 
 				auto& baseColorFactor = material.pbrData.baseColorFactor;
 				meshPrimitive.material.baseColorFactor = glm::vec4(baseColorFactor.x(), baseColorFactor.y(), baseColorFactor.z(), baseColorFactor.w());
-
+				meshPrimitive.material.hasBaseColorTexture = false;
 				auto& baseColorTexture = material.pbrData.baseColorTexture;
 				if (baseColorTexture.has_value())
 				{
@@ -151,12 +152,11 @@ void ResourceManager::IterateNode(flecs::world world, const fastgltf::Node& node
 						}
 					}
 				}
-				else
-				{
-					meshPrimitive.material.hasBaseColorTexture = false;
-				}
-
+				
 				auto& metallicRoughnessTexture = material.pbrData.metallicRoughnessTexture;
+				meshPrimitive.material.metallicFactor = material.pbrData.metallicFactor;
+				meshPrimitive.material.roughnessFactor = material.pbrData.roughnessFactor;
+				meshPrimitive.material.hasMetallicRoughnessTexture = false;
 				if (metallicRoughnessTexture.has_value())
 				{
 					auto& texture = asset.textures[metallicRoughnessTexture->textureIndex];
@@ -164,13 +164,35 @@ void ResourceManager::IterateNode(flecs::world world, const fastgltf::Node& node
 					{
 						meshPrimitive.material.metallicRoughnessTexture = texturesMap[modelName][texture.imageIndex.value()].id;
 						meshPrimitive.material.hasMetallicRoughnessTexture = true;
+						if (metallicRoughnessTexture->transform && metallicRoughnessTexture->transform->texCoordIndex.has_value())
+						{
+							metallicRoughnessTexcoordIndex = baseColorTexture->transform->texCoordIndex.value();
+						}
+						else
+						{
+							metallicRoughnessTexcoordIndex = material.pbrData.baseColorTexture->texCoordIndex;
+						}
 					}
 				}
-				else
+
+				auto& normalTexture = material.normalTexture;
+				meshPrimitive.material.hasNormalTexture = false;
+				if (normalTexture.has_value())
 				{
-					meshPrimitive.material.metallicFactor = material.pbrData.metallicFactor;
-					meshPrimitive.material.roughnessFactor = material.pbrData.roughnessFactor;
-					meshPrimitive.material.hasMetallicRoughnessTexture = false;
+					auto& texture = asset.textures[normalTexture->textureIndex];
+					if (texture.imageIndex.has_value())
+					{
+						meshPrimitive.material.normalTexture = texturesMap[modelName][texture.imageIndex.value()].id;
+						meshPrimitive.material.hasNormalTexture = true;
+						if (normalTexture->transform && normalTexture->transform->texCoordIndex.has_value())
+						{
+							normalTexcoordIndex = normalTexture->transform->texCoordIndex.value();
+						}
+						else
+						{
+							normalTexcoordIndex = material.normalTexture->texCoordIndex;
+						}
+					}
 				}
 			}
 			
@@ -196,6 +218,19 @@ void ResourceManager::IterateNode(flecs::world world, const fastgltf::Node& node
 					fastgltf::iterateAccessorWithIndex<fastgltf::math::fvec2>(asset, texcoordAccessor, [&](fastgltf::math::fvec2 uv, std::size_t idx)
 						{
 							vertices[idx].metallicRoughnessTexCoords = glm::vec2(uv.x(), uv.y());
+						});
+				}
+			}
+
+			auto normalTexcoordAttribute = std::string("TEXCOORD_") + std::to_string(normalTexcoordIndex);
+			if (const auto* texcoord = primitive.findAttribute(normalTexcoordAttribute); texcoord != primitive.attributes.end())
+			{
+				auto& texcoordAccessor = asset.accessors[texcoord->accessorIndex];
+				if (texcoordAccessor.bufferViewIndex.has_value())
+				{
+					fastgltf::iterateAccessorWithIndex<fastgltf::math::fvec2>(asset, texcoordAccessor, [&](fastgltf::math::fvec2 uv, std::size_t idx)
+						{
+							vertices[idx].normalTexCoords = glm::vec2(uv.x(), uv.y());
 						});
 				}
 			}
@@ -251,7 +286,7 @@ bool ResourceManager::LoadImage(fastgltf::Asset& asset, fastgltf::Image& image, 
 						[&](fastgltf::sources::Array& vector)
 						{
 							int width, height, nrChannels;
-							stbi_set_flip_vertically_on_load(true);
+							stbi_set_flip_vertically_on_load(false);
 							unsigned char* data = stbi_load_from_memory(reinterpret_cast<const stbi_uc*>(vector.bytes.data() + bufferView.byteOffset),
 																		static_cast<int>(bufferView.byteLength), &width, &height, &nrChannels, 4);
 							glTextureStorage2D(texture, GetLevelCount(width, height), sRGB ? GL_SRGB8_ALPHA8 : GL_RGBA8, width, height);

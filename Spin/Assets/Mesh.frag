@@ -7,6 +7,7 @@ in vec3 FragPos;
 
 in vec2 baseColorTexCoord;
 in vec2 metallicRoughnessTexCoord;
+in vec2 normalTexCoord;
 
 uniform vec4 baseColorFactor;
 uniform sampler2D baseColorTexture;
@@ -16,6 +17,9 @@ uniform float metallicFactor = 1.0f;
 uniform float roughnessFactor = 1.0f;
 uniform sampler2D metallicRoughnessTexture;
 uniform bool hasMetallicRoughnessTexture;
+
+uniform sampler2D normalTexture;
+uniform bool hasNormalTexture;
 
 uniform vec3 lightPos;
 
@@ -47,8 +51,6 @@ void main()
 	float finalMetallic = metallicFactor;
 	float finalRoughness = roughnessFactor;
 	float ambientOcclusion = 1.0f;
-	
-	FragColor = vec4(0.95f, 0.1f, 0.1f, 1.0f);
 
 	if (hasMetallicRoughnessTexture)
 	{
@@ -57,9 +59,16 @@ void main()
 		finalMetallic = metallicRoughnessData.b;
 		finalRoughness = metallicRoughnessData.g;
 	}
+
+	vec4 normalAsColor = vec4(0.9f, 0.1f, 0.1f, 1.0f);
+	if (hasNormalTexture)
+	{
+		normalAsColor = texture(normalTexture, normalTexCoord);
+	}
 	
 	FragColor = vec4(lighting, 1.0f) * finalBaseColor;
 	//FragColor = vec4(ambientOcclusion, ambientOcclusion, ambientOcclusion, 1.0f);
 	//FragColor = vec4(finalMetallic, finalMetallic, finalMetallic, 1.0f);
 	//FragColor = vec4(finalRoughness, finalRoughness, finalRoughness, 1.0f);
+	//FragColor = normalAsColor;
 }
