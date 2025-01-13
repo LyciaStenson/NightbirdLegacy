@@ -9,6 +9,7 @@ int main()
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
+	glfwWindowHint(GLFW_SRGB_CAPABLE, GL_TRUE);
 	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
 
 	int WIDTH = 1280;
@@ -19,20 +20,50 @@ int main()
 
 	engine.Init();
 
-	// Define entities and systems here
+	glfwSetInputMode(engine.m_Window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
+	SkyboxComponent skyboxComponent;
+	skyboxComponent.vertexPath = "Skybox/Skybox.vert";
+	skyboxComponent.fragmentPath = "Skybox/Skybox.frag";
+	skyboxComponent.texturePaths = {
+		"Skybox/Right.hdr",
+		"Skybox/Left.hdr",
+		"Skybox/Top.hdr",
+		"Skybox/Bottom.hdr",
+		"Skybox/Front.hdr",
+		"Skybox/Back.hdr",
+	};
+
+	flecs::entity skybox = engine.m_World.entity("Skybox")
+		.set<SkyboxComponent>(skyboxComponent);
+
+	flecs::entity directionalLight = engine.m_World.entity("DirectionalLight")
+		.add<TransformComponent, Global>()
+		.set<LightComponent>({ 1.0f })
+		.add<DirectionalLightComponent>();
+
+	//engine.GetResourceManager().LoadModel(engine.m_World, "Cube.glb", "Cube");
+	//engine.GetResourceManager().LoadModel(engine.m_World, "the_great_drawing_room.glb", "GreatDrawingRoom");
+	engine.GetResourceManager().LoadModel(engine.m_World, "survival_guitar_backpack.glb", "SurvivalBackpack");
+
+	//engine.GetResourceManager().InstantiateModel(engine.m_World, "Cube", glm::vec3(0.0f, 0.0f, -3.0f), glm::quat(), glm::vec3(1.0f, 1.0f, 1.0f));
+
+	//engine.GetResourceManager().InstantiateModel(engine.m_World, "GreatDrawingRoom", glm::vec3(0.0f, -2.5f, 0.0f), glm::quat(glm::vec3(0.0f, glm::radians(-42.0f), 0.0f)), glm::vec3(1.0f, 1.0f, 1.0f));
+
+	engine.GetResourceManager().InstantiateModel(engine.m_World, "SurvivalBackpack", glm::vec3(0.0f, 0.0f, -3.0f), glm::quat(), glm::vec3(0.002f, 0.002f, 0.002f));
+	
 	flecs::entity player = engine.m_World.entity("Player")
 		.add<TransformComponent, Global>()
-		.set<TransformComponent, Local>({glm::vec3(0.0f, 0.0f, 0.0f)})
-		.set<PlayerMovementComponent>({5.0f})
-		.set<PlayerYawComponent>({1.0f});
+		.set<TransformComponent, Local>({ glm::vec3(0.0f, 0.0f, 0.0f) })
+		.set<PlayerMovementComponent>({ 2.0f })
+		.set<PlayerYawComponent>({ 1.0f });
 
 	flecs::entity camera = engine.m_World.entity("Camera")
 		.child_of(player)
 		.add<TransformComponent, Global>()
-		.set<TransformComponent, Local>({glm::vec3(0.0f, 0.0f, 0.0f)})
-		.add<CameraComponent>()
-		.set<PlayerPitchComponent>({1.0f});
+		.set<TransformComponent, Local>({ glm::vec3(0.0f, 0.0f, 0.0f) })
+		.set<CameraComponent>({ 70.0f })
+		.set<PlayerPitchComponent>({ 1.0f });
 	
 	engine.InitSystems();
 	engine.MainLoop();

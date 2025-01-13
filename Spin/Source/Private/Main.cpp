@@ -38,60 +38,6 @@ int main()
 
 	flecs::entity skybox = engine.m_World.entity("Skybox")
 		.set<SkyboxComponent>(skyboxComponent);
-
-	std::vector<Vertex> cubeVertices =
-	{
-		// Positions							// Normals						// Texture Coords
-		Vertex(glm::vec3(-0.5f, -0.5f, -0.5f),	glm::vec3(0.0f,  0.0f, -1.0f),	glm::vec2(0.0f, 0.0f)),
-		Vertex(glm::vec3(0.5f, -0.5f, -0.5f),	glm::vec3(0.0f,  0.0f, -1.0f),	glm::vec2(1.0f, 0.0f)),
-		Vertex(glm::vec3(0.5f,  0.5f, -0.5f),	glm::vec3(0.0f,  0.0f, -1.0f),	glm::vec2(1.0f, 1.0f)),
-		Vertex(glm::vec3(-0.5f,  0.5f, -0.5f),	glm::vec3(0.0f,  0.0f, -1.0f),	glm::vec2(0.0f, 1.0f)),
-
-		Vertex(glm::vec3(-0.5f, -0.5f,  0.5f),	glm::vec3(0.0f,  0.0f,  1.0f),	glm::vec2(0.0f, 0.0f)),
-		Vertex(glm::vec3(0.5f, -0.5f,  0.5f),	glm::vec3(0.0f,  0.0f,  1.0f),	glm::vec2(1.0f, 0.0f)),
-		Vertex(glm::vec3(0.5f,  0.5f,  0.5f),	glm::vec3(0.0f,  0.0f,  1.0f),	glm::vec2(1.0f, 1.0f)),
-		Vertex(glm::vec3(-0.5f,  0.5f,  0.5f),	glm::vec3(0.0f,  0.0f,  1.0f),	glm::vec2(0.0f, 1.0f)),
-
-		Vertex(glm::vec3(-0.5f,  0.5f,  0.5f),	glm::vec3(-1.0f,  0.0f,  0.0f),	glm::vec2(1.0f, 0.0f)),
-		Vertex(glm::vec3(-0.5f,  0.5f, -0.5f),	glm::vec3(-1.0f,  0.0f,  0.0f),	glm::vec2(1.0f, 1.0f)),
-		Vertex(glm::vec3(-0.5f, -0.5f, -0.5f),	glm::vec3(-1.0f,  0.0f,  0.0f),	glm::vec2(0.0f, 1.0f)),
-		Vertex(glm::vec3(-0.5f, -0.5f,  0.5f),	glm::vec3(-1.0f,  0.0f,  0.0f),	glm::vec2(0.0f, 0.0f)),
-
-		Vertex(glm::vec3(0.5f,  0.5f,  0.5f),	glm::vec3(1.0f,  0.0f,  0.0f),	glm::vec2(1.0f, 0.0f)),
-		Vertex(glm::vec3(0.5f,  0.5f, -0.5f),	glm::vec3(1.0f,  0.0f,  0.0f),	glm::vec2(1.0f, 1.0f)),
-		Vertex(glm::vec3(0.5f, -0.5f, -0.5f),	glm::vec3(1.0f,  0.0f,  0.0f),	glm::vec2(0.0f, 1.0f)),
-		Vertex(glm::vec3(0.5f, -0.5f,  0.5f),	glm::vec3(1.0f,  0.0f,  0.0f),	glm::vec2(0.0f, 0.0f)),
-
-		Vertex(glm::vec3(-0.5f, -0.5f, -0.5f),	glm::vec3(0.0f, -1.0f,  0.0f),	glm::vec2(0.0f, 1.0f)),
-		Vertex(glm::vec3(0.5f, -0.5f, -0.5f),	glm::vec3(0.0f, -1.0f,  0.0f),	glm::vec2(1.0f, 1.0f)),
-		Vertex(glm::vec3(0.5f, -0.5f,  0.5f),	glm::vec3(0.0f, -1.0f,  0.0f),	glm::vec2(1.0f, 0.0f)),
-		Vertex(glm::vec3(-0.5f, -0.5f,  0.5f),	glm::vec3(0.0f, -1.0f,  0.0f),	glm::vec2(0.0f, 0.0f)),
-
-		Vertex(glm::vec3(-0.5f,  0.5f, -0.5f),	glm::vec3(0.0f,  1.0f,  0.0f),	glm::vec2(0.0f, 1.0f)),
-		Vertex(glm::vec3(0.5f,  0.5f, -0.5f),	glm::vec3(0.0f,  1.0f,  0.0f),	glm::vec2(1.0f, 1.0f)),
-		Vertex(glm::vec3(0.5f,  0.5f,  0.5f),	glm::vec3(0.0f,  1.0f,  0.0f),	glm::vec2(1.0f, 0.0f)),
-		Vertex(glm::vec3(-0.5f,  0.5f,  0.5f),	glm::vec3(0.0f,  1.0f,  0.0f),	glm::vec2(0.0f, 0.0f))
-	};
-
-	std::vector<unsigned int> cubeIndices =
-	{
-		0, 1, 2, 2, 3, 0,
-		4, 5, 6, 6, 7, 4,
-		8, 9, 10, 10, 11, 8,
-		12, 13, 14, 14, 15, 12,
-		16, 17, 18, 18, 19, 16,
-		20, 21, 22, 22, 23, 20
-	};
-
-	//engine.GetResourceManager().LoadModel(engine.m_World, "Cube.glb", "Cube");
-	//engine.GetResourceManager().LoadModel(engine.m_World, "the_great_drawing_room.glb", "GreatDrawingRoom");
-	engine.GetResourceManager().LoadModel(engine.m_World, "survival_guitar_backpack.glb", "SurvivalBackpack");
-	
-	//engine.GetResourceManager().InstantiateModel(engine.m_World, "Cube", glm::vec3(0.0f, 0.0f, -3.0f), glm::quat(), glm::vec3(1.0f, 1.0f, 1.0f));
-	
-	//engine.GetResourceManager().InstantiateModel(engine.m_World, "GreatDrawingRoom", glm::vec3(0.0f, -2.5f, 0.0f), glm::quat(glm::vec3(0.0f, glm::radians(-42.0f), 0.0f)), glm::vec3(1.0f, 1.0f, 1.0f));
-	
-	engine.GetResourceManager().InstantiateModel(engine.m_World, "SurvivalBackpack", glm::vec3(0.0f, 0.0f, -3.0f), glm::quat(), glm::vec3(0.002f, 0.002f, 0.002f));
 	
 	//MeshComponent meshComponent1;
 	//meshComponent1.vertices = cubeVertices;

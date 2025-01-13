@@ -25,6 +25,8 @@
 #include <TextureLoadComponent.h>
 #include <SkyboxComponent.h>
 #include <CubemapLoadComponent.h>
+#include <LightComponent.h>
+#include <DirectionalLightComponent.h>
 #include <CameraComponent.h>
 #include <InputComponent.h>
 #include <PlayerMovementComponent.h>

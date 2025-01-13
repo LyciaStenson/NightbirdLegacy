@@ -100,27 +100,27 @@ void ResourceManager::IterateNode(flecs::world world, const fastgltf::Node& node
 				const auto& positionAccessor = asset.accessors[positionIt->accessorIndex];
 				vertices.resize(positionAccessor.count);
 
-				fastgltf::iterateAccessorWithIndex<fastgltf::math::fvec3>(asset, positionAccessor, [&](fastgltf::math::fvec3 position, std::size_t idx)
+				fastgltf::iterateAccessorWithIndex<fastgltf::math::fvec3>(asset, positionAccessor, [&](fastgltf::math::fvec3 position, std::size_t verticeIndex)
 					{
-						vertices[idx].position = glm::vec3(position.x(), position.y(), position.z());
+						vertices[verticeIndex].position = glm::vec3(position.x(), position.y(), position.z());
 					});
 			}
 
 			if (normalIt != primitive.attributes.end())
 			{
 				auto& normalAccessor = asset.accessors[normalIt->accessorIndex];
-				fastgltf::iterateAccessorWithIndex<fastgltf::math::fvec3>(asset, normalAccessor, [&](fastgltf::math::fvec3 normal, std::size_t idx)
+				fastgltf::iterateAccessorWithIndex<fastgltf::math::fvec3>(asset, normalAccessor, [&](fastgltf::math::fvec3 normal, std::size_t verticeIndex)
 					{
-						vertices[idx].normal = glm::vec3(normal.x(), normal.y(), normal.z());
+						vertices[verticeIndex].normal = glm::vec3(normal.x(), normal.y(), normal.z());
 					});
 			}
 
 			if (primitive.indicesAccessor.has_value())
 			{
 				auto& indexAccessor = asset.accessors[primitive.indicesAccessor.value()];
-				fastgltf::iterateAccessorWithIndex<std::uint32_t>(asset, indexAccessor, [&](std::uint32_t idx, std::size_t index)
+				fastgltf::iterateAccessorWithIndex<std::uint32_t>(asset, indexAccessor, [&](std::uint32_t index, std::size_t verticeIndex)
 					{
-						indices.push_back(idx);
+						indices.push_back(index);
 					});
 			}
 

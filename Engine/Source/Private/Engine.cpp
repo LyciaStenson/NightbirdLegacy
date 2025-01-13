@@ -142,21 +142,25 @@ void Engine::InitSystems()
 					glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
 					glEnableVertexAttribArray(0);
 
-					// Normals Attribute
+					// Normal Attribute
 					glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, normal));
 					glEnableVertexAttribArray(1);
 
-					// Base Color Texture Coord Attribute
-					glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, baseColorTexCoords));
-					glEnableVertexAttribArray(2);
+					// Tangent Attribute
+					glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, tangent));
+					glEnableVertexAttribArray(1);
 
-					// Metallic Roughness Texture Coord Attribute
-					glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, metallicRoughnessTexCoords));
+					// Base Color Texture Coord Attribute
+					glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, baseColorTexCoords));
 					glEnableVertexAttribArray(3);
 
-					// Normal Texture Coord Attribute
-					glVertexAttribPointer(4, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, normalTexCoords));
+					// Metallic Roughness Texture Coord Attribute
+					glVertexAttribPointer(4, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, metallicRoughnessTexCoords));
 					glEnableVertexAttribArray(4);
+
+					// Normal Texture Coord Attribute
+					glVertexAttribPointer(5, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, normalTexCoords));
+					glEnableVertexAttribArray(5);
 
 					glBindVertexArray(0);
 				}
