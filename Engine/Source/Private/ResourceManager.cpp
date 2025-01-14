@@ -7,14 +7,14 @@ bool ResourceManager::LoadModel(flecs::world world, const std::filesystem::path&
 	auto data = fastgltf::GltfDataBuffer::FromPath(path);
 	if (data.error() != fastgltf::Error::None)
 	{
-		std::cout << "fastgltf data buffer error" << std::endl;
+		std::cout << "fastgltf get buffer error: " << fastgltf::getErrorMessage(data.error()) << std::endl;
 		return false;
 	}
 
 	auto asset = parser.loadGltfBinary(data.get(), path.parent_path(), fastgltf::Options::None);
 	if (asset.error() != fastgltf::Error::None)
 	{
-		std::cout << "fastgltf get data error" << std::endl;
+		std::cout << "fastgltf get data error: " << fastgltf::getErrorMessage(asset.error()) << std::endl;
 		return false;
 	}
 	auto& assetData = asset.get();
