@@ -36,7 +36,7 @@ int main()
 
 	flecs::entity skybox = engine.m_World.entity("Skybox")
 		.set<SkyboxComponent>(skyboxComponent);
-
+	
 	flecs::entity directionalLight = engine.m_World.entity("DirectionalLight")
 		.add<TransformComponent, Global>()
 		.set<LightComponent>({ 1.0f })
@@ -46,7 +46,7 @@ int main()
 	//engine.GetResourceManager().LoadModel(engine.m_World, "the_great_drawing_room.glb", "GreatDrawingRoom");
 	engine.GetResourceManager().LoadModel(engine.m_World, "survival_guitar_backpack.glb", "SurvivalBackpack");
 
-	//engine.GetResourceManager().InstantiateModel(engine.m_World, "Cube", glm::vec3(0.0f, 0.0f, -3.0f), glm::quat(), glm::vec3(1.0f, 1.0f, 1.0f));
+	//engine.GetResourceManager().InstantiateModel(engine.m_World, "Cube", glm::vec3(0.0f, 3.0f, -5.0f), glm::quat(), glm::vec3(1.0f, 1.0f, 1.0f));
 
 	//engine.GetResourceManager().InstantiateModel(engine.m_World, "GreatDrawingRoom", glm::vec3(0.0f, -2.5f, 0.0f), glm::quat(glm::vec3(0.0f, glm::radians(-42.0f), 0.0f)), glm::vec3(1.0f, 1.0f, 1.0f));
 

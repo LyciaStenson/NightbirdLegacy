@@ -21,6 +21,13 @@ bool ResourceManager::LoadModel(flecs::world world, const std::filesystem::path&
 	
 	LoadImages(assetData, name.c_str());
 	
+	int counter = 2;
+	std::string prefabName = name;
+	while (world.lookup(prefabName.c_str()))
+	{
+		prefabName = name.c_str() + std::to_string(counter);
+		counter++;
+	}
 	flecs::entity modelPrefab = world.prefab((name + "Prefab").c_str())
 		.add<TransformComponent, Global>()
 		.set<TransformComponent, Local>({ glm::vec3(), glm::quat(), glm::vec3(1.0f) });
@@ -65,9 +72,12 @@ void ResourceManager::IterateNode(flecs::world world, const fastgltf::Node& node
 
 	int counter = 2;
 	std::string name = node.name.c_str();
-	while (world.lookup(name.c_str()))
+	std::string separator = "::";
+	std::string path = parent.path().c_str() + separator + name;
+	while (world.lookup(path.c_str()))
 	{
 		name = node.name.c_str() + std::to_string(counter);
+		path = parent.path().c_str() + separator + name;
 		counter++;
 	}
 	flecs::entity nodePrefab = world.prefab(name.c_str())
