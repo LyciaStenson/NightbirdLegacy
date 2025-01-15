@@ -48,7 +48,7 @@ public:
 	
 	flecs::world m_World;
 
-	flecs::entity mainCamera;
+	flecs::entity m_MainCamera;
 
 	float lastX = 0.0f;
 	float lastY = 0.0f;
@@ -74,6 +74,8 @@ private:
 	flecs::system m_RenderShutdownSystem;
 
 	flecs::query<const TransformComponent, const TransformComponent*, TransformComponent> m_GlobalTransformQuery;
+
+	flecs::entity m_DirectionalLight;
 
 	RenderTarget* m_RenderTarget;
 

@@ -124,7 +124,7 @@ int main()
 
 				neuronsComponent.shader.SetFloat("uTime", glfwGetTime());
 
-				const TransformComponent* cameraTransform = engine.mainCamera.get<TransformComponent, Global>();
+				const TransformComponent* cameraTransform = engine.m_MainCamera.get<TransformComponent, Global>();
 
 				glm::vec3 forward = cameraTransform->Rotation * glm::vec3(0.0f, 0.0f, -1.0f);
 				glm::vec3 right = cameraTransform->Rotation * glm::vec3(1.0f, 0.0f, 0.0f);

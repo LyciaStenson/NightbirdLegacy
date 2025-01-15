@@ -87,10 +87,19 @@ void Engine::InitSystems()
 		.kind(0)
 		.each([&](flecs::entity entity, CameraComponent& cameraComponent)
 			{
-				mainCamera = entity;
+				m_MainCamera = entity;
 			}
 		);
 	mainCameraInitSystem.run();
+
+	flecs::system directionalLightInitSystem = m_World.system<LightComponent, DirectionalLightComponent>("directionalLightInitSystem")
+		.kind(0)
+		.each([&](flecs::entity entity, LightComponent& lightComponent, DirectionalLightComponent& directionalLightComponent)
+			{
+				m_DirectionalLight = entity;
+			}
+		);
+	directionalLightInitSystem.run();
 
 	flecs::system meshInitSystem = m_World.system<MeshComponent>("MeshInitSystem")
 		.kind(0)
@@ -147,7 +156,7 @@ void Engine::InitSystems()
 					glEnableVertexAttribArray(1);
 
 					// Tangent Attribute
-					glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, tangent));
+					glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, tangent));
 					glEnableVertexAttribArray(1);
 
 					// Base Color Texture Coord Attribute
@@ -296,17 +305,23 @@ void Engine::InitSystems()
 		.kind(flecs::OnUpdate)
 		.each([&](flecs::iter& iter, size_t index, flecs::pair<TransformComponent, Global> transformComponent, MeshComponent& meshComponent)
 			{
-				const CameraComponent* camera = mainCamera.get<CameraComponent>();
-				const TransformComponent* cameraTransform = mainCamera.get<TransformComponent, Global>();
-				
+				const CameraComponent* camera = m_MainCamera.get<CameraComponent>();
+				const TransformComponent* cameraTransform = m_MainCamera.get<TransformComponent, Global>();
+
+				const TransformComponent* directionalLightTransform = m_DirectionalLight.get<TransformComponent, Global>();
+
+				const glm::vec3 directionalLightDir = glm::vec3(0.0f, 0.0f, -1.0f) * directionalLightTransform->Rotation;
+
 				for (auto& primitive : meshComponent.primitives)
 				{
 					glBindTextureUnit(0, primitive.material.baseColorTexture);
 					
 					primitive.material.shader.Use();
 
-					primitive.material.shader.SetVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
-					primitive.material.shader.SetVec3("lightPos", glm::vec3(10.0f, 10.0f, 10.0f));
+					//primitive.material.shader.SetVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
+					//primitive.material.shader.SetVec3("lightPos", glm::vec3(10.0f, 10.0f, 10.0f));
+
+					primitive.material.shader.SetVec3("directionalLight.direction", directionalLightDir);
 
 					primitive.material.shader.SetVec3("viewPos", cameraTransform->Position);
 
@@ -342,8 +357,8 @@ void Engine::InitSystems()
 		.kind(flecs::OnUpdate)
 		.each([&](flecs::iter& iter, size_t index, SkyboxComponent& skyboxComponent)
 			{
-				const CameraComponent* camera = mainCamera.get<CameraComponent>();
-				const TransformComponent* cameraTransform = mainCamera.get<TransformComponent, Global>();
+				const CameraComponent* camera = m_MainCamera.get<CameraComponent>();
+				const TransformComponent* cameraTransform = m_MainCamera.get<TransformComponent, Global>();
 
 				glDepthFunc(GL_LEQUAL);
 
