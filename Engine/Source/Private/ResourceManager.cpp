@@ -71,7 +71,7 @@ void ResourceManager::IterateNode(flecs::world world, const fastgltf::Node& node
 	{
 		fastgltf::math::decomposeTransformMatrix(*transform, scale, rotation, translation);
 	}
-	if (auto* trs = std::get_if<fastgltf::TRS>(&node.transform))
+	else if (auto* trs = std::get_if<fastgltf::TRS>(&node.transform))
 	{
 		translation = trs->translation;
 		rotation = trs->rotation;
@@ -259,7 +259,6 @@ void ResourceManager::IterateNode(flecs::world world, const fastgltf::Node& node
 			meshPrimitive.material.fragmentPath = "Mesh.frag";
 
 			primitives.push_back(meshPrimitive);
-			std::cout << "Primitive of " << node.name << std::endl;
 		}
 
 		MeshComponent meshComponent;

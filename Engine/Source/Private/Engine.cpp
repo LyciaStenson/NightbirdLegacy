@@ -310,7 +310,7 @@ void Engine::InitSystems()
 
 				const TransformComponent* directionalLightTransform = m_DirectionalLight.get<TransformComponent, Global>();
 
-				const glm::vec3 directionalLightDir = glm::vec3(0.0f, 0.0f, -1.0f) * directionalLightTransform->Rotation;
+				const glm::vec3 directionalLightDir = glm::rotate(directionalLightTransform->Rotation, glm::vec3(0.0f, 0.0f, -1.0f));
 
 				for (auto& primitive : meshComponent.primitives)
 				{
