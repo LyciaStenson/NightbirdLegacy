@@ -40,8 +40,9 @@ bool ResourceManager::LoadModel(flecs::world world, const std::filesystem::path&
 	return true;
 }
 
-void ResourceManager::InstantiateModel(flecs::world world, const std::string& name, const glm::vec3& rootPosition, const glm::quat& rootRotation, const glm::vec3& rootScale)
+flecs::entity ResourceManager::InstantiateModel(flecs::world world, const std::string& name, const glm::vec3& rootPosition, const glm::quat& rootRotation, const glm::vec3& rootScale)
 {
+	flecs::entity modelEntity;
 	flecs::entity prefab = world.lookup((name + "Prefab").c_str());
 	if (prefab.is_valid())
 	{
@@ -53,10 +54,11 @@ void ResourceManager::InstantiateModel(flecs::world world, const std::string& na
 			counter++;
 		}
 
-		flecs::entity modelEntity = world.entity(modelName.c_str())
+		modelEntity = world.entity(modelName.c_str())
 			.is_a(prefab)
 			.set<TransformComponent, Local>({ rootPosition, rootRotation, rootScale });
 	}
+	return modelEntity;
 }
 
 void ResourceManager::IterateNode(flecs::world world, const fastgltf::Node& node, const fastgltf::Asset& asset, const char* modelName, flecs::entity parent)
@@ -69,7 +71,13 @@ void ResourceManager::IterateNode(flecs::world world, const fastgltf::Node& node
 	{
 		fastgltf::math::decomposeTransformMatrix(*transform, scale, rotation, translation);
 	}
-
+	if (auto* trs = std::get_if<fastgltf::TRS>(&node.transform))
+	{
+		translation = trs->translation;
+		rotation = trs->rotation;
+		scale = trs->scale;
+	}
+	
 	int counter = 2;
 	std::string name = node.name.c_str();
 	std::string separator = "::";
@@ -251,6 +259,7 @@ void ResourceManager::IterateNode(flecs::world world, const fastgltf::Node& node
 			meshPrimitive.material.fragmentPath = "Mesh.frag";
 
 			primitives.push_back(meshPrimitive);
+			std::cout << "Primitive of " << node.name << std::endl;
 		}
 
 		MeshComponent meshComponent;

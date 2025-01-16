@@ -39,6 +39,7 @@ void main()
 {
 	//float ambientStrength = 0.2f;
 	//vec3 ambient = ambientStrength * lightColor;
+	vec3 ambient = vec3(1.0f, 1.0f, 1.0f) * 0.15f;
 	
 	vec3 norm = normalize(Normal);
 	vec3 lightDir = normalize(-directionalLight.direction);
@@ -54,7 +55,7 @@ void main()
 	//vec3 specular = specularStrength * spec * lightColor;
 
 	//vec3 lighting = (ambient + diffuse + specular);
-	vec3 lighting = diffuse;
+	vec3 lighting = ambient + diffuse;
 
 	vec4 finalBaseColor = hasBaseColorTexture ? texture(baseColorTexture, baseColorTexCoord) : baseColorFactor;
 
@@ -76,8 +77,8 @@ void main()
 		normalAsColor = texture(normalTexture, normalTexCoord);
 	}
 	
-	//FragColor = vec4(lighting, 1.0f) * finalBaseColor;
-	FragColor = finalBaseColor;
+	FragColor = vec4(lighting, 1.0f) * finalBaseColor;
+	//FragColor = finalBaseColor;
 	//FragColor = vec4(ambientOcclusion, ambientOcclusion, ambientOcclusion, 1.0f);
 	//FragColor = vec4(finalMetallic, finalMetallic, finalMetallic, 1.0f);
 	//FragColor = vec4(finalRoughness, finalRoughness, finalRoughness, 1.0f);

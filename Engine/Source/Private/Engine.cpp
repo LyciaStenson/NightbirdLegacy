@@ -339,7 +339,7 @@ void Engine::InitSystems()
 					primitive.material.shader.SetMat4("view", view);
 
 					glBindVertexArray(primitive.VAO);
-
+					
 					glm::mat4 model = glm::mat4(1.0f);
 					model = glm::translate(model, transformComponent->Position);
 					model *= glm::toMat4(transformComponent->Rotation);
