@@ -37,10 +37,8 @@ uniform DirectionalLight directionalLight;
 
 void main()
 {
-	//float ambientStrength = 0.2f;
-	//vec3 ambient = ambientStrength * lightColor;
-	vec3 ambient = vec3(1.0f, 1.0f, 1.0f) * 0.015f;
-	
+	vec3 ambient = vec3(1.0f, 1.0f, 1.0f) * 0.01f;
+
 	vec3 norm = normalize(Normal);
 	vec3 lightDir = normalize(-directionalLight.direction);
 	//vec3 lightDir = normalize(-vec3(0.0f, 1.0f, 0.0f));

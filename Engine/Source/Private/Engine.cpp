@@ -91,15 +91,15 @@ void Engine::InitSystems()
 			}
 		);
 	mainCameraInitSystem.run();
-
-	//flecs::system directionalLightInitSystem = m_World.system<LightComponent, DirectionalLightComponent>("DirectionalLightInitSystem")
-		//.kind(0)
-		//.each([&](flecs::entity entity, LightComponent& lightComponent, DirectionalLightComponent& directionalLightComponent)
-			//{
-				//m_DirectionalLight = entity;
-			//}
-		//);
-	//directionalLightInitSystem.run();
+	
+	flecs::system directionalLightInitSystem = m_World.system<LightComponent, DirectionalLightComponent>("DirectionalLightInitSystem")
+		.kind(0)
+		.each([&](flecs::entity entity, LightComponent& lightComponent, DirectionalLightComponent& directionalLightComponent)
+			{
+				m_DirectionalLight = entity;
+			}
+		);
+	directionalLightInitSystem.run();
 
 	flecs::system meshInitSystem = m_World.system<MeshComponent>("MeshInitSystem")
 		.kind(0)
@@ -308,10 +308,15 @@ void Engine::InitSystems()
 				const CameraComponent* camera = m_MainCamera.get<CameraComponent>();
 				const TransformComponent* cameraTransform = m_MainCamera.get<TransformComponent, Global>();
 
-				const TransformComponent* directionalLightTransform = m_DirectionalLight.get<TransformComponent, Global>();
-
-				const glm::vec3 directionalLightDir = glm::rotate(directionalLightTransform->Rotation, glm::vec3(0.0f, 0.0f, -1.0f));
-
+				const TransformComponent* directionalLightTransform;
+				glm::vec3 directionalLightDir;
+				
+				if (m_DirectionalLight.is_valid())
+				{
+					directionalLightTransform = m_DirectionalLight.get<TransformComponent, Global>();
+					directionalLightDir = glm::rotate(directionalLightTransform->Rotation, glm::vec3(0.0f, 0.0f, -1.0f));
+				}
+				
 				for (auto& primitive : meshComponent.primitives)
 				{
 					glBindTextureUnit(0, primitive.material.baseColorTexture);
@@ -321,8 +326,11 @@ void Engine::InitSystems()
 					//primitive.material.shader.SetVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
 					//primitive.material.shader.SetVec3("lightPos", glm::vec3(10.0f, 10.0f, 10.0f));
 
-					primitive.material.shader.SetVec3("directionalLight.direction", directionalLightDir);
-
+					if (m_DirectionalLight.is_valid())
+					{
+						primitive.material.shader.SetVec3("directionalLight.direction", directionalLightDir);
+					}
+					
 					primitive.material.shader.SetVec3("viewPos", cameraTransform->Position);
 
 					int width;
