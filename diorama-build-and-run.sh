@@ -14,7 +14,7 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-cp -r Game/Assets out/bin/$1-linux-x86_64/Diorama
+cp -r Diorama/Assets out/bin/$1-linux-x86_64/Diorama
 
 if [ $? -ne 0 ]; then
     echo Failed to copy Assets directory to out/bin/$1-linux-x86_64/Diorama
@@ -28,9 +28,9 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-./Game
+./Diorama
 
 if [ $? -ne 0 ]; then
-    echo "Failed to run Game"
+    echo "Failed to run Diorama"
     exit 1
 fi
