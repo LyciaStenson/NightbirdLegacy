@@ -4,3 +4,7 @@ struct LightComponent
 {
 	float intensity;
 };
+
+struct DirectionalLightComponent
+{
+};

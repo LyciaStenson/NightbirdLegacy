@@ -92,9 +92,9 @@ void Engine::InitSystems()
 		);
 	mainCameraInitSystem.run();
 	
-	flecs::system directionalLightInitSystem = m_World.system<LightComponent, DirectionalLightComponent>("DirectionalLightInitSystem")
+	flecs::system directionalLightInitSystem = m_World.system<flecs::pair<LightComponent, DirectionalLightComponent>>("DirectionalLightInitSystem")
 		.kind(0)
-		.each([&](flecs::entity entity, LightComponent& lightComponent, DirectionalLightComponent& directionalLightComponent)
+		.each([&](flecs::entity entity, flecs::pair<LightComponent, DirectionalLightComponent> lightComponent)
 			{
 				m_DirectionalLight = entity;
 			}

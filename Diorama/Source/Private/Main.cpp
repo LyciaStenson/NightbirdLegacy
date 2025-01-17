@@ -40,9 +40,8 @@ int main()
 	flecs::entity directionalLight = engine.m_World.entity("DirectionalLight")
 		.add<TransformComponent, Global>()
 		.set<TransformComponent, Local>({ glm::vec3(), glm::quat(glm::vec3(glm::radians(-45.0f), glm::radians(45.0f), glm::radians(0.0f))) })
-		.set<LightComponent>({ 1.0f })
-		.add<DirectionalLightComponent>();
-
+		.set<LightComponent, DirectionalLightComponent>({ 1.0f });
+	
 	//engine.GetResourceManager().LoadModel(engine.m_World, "Cube.glb", "Cube");
 	//engine.GetResourceManager().LoadModel(engine.m_World, "the_great_drawing_room.glb", "GreatDrawingRoom");
 	engine.GetResourceManager().LoadModel(engine.m_World, "survival_guitar_backpack.glb", "SurvivalBackpack");
