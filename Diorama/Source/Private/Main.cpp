@@ -37,22 +37,32 @@ int main()
 	flecs::entity skybox = engine.m_World.entity("Skybox")
 		.set<SkyboxComponent>(skyboxComponent);
 	
-	flecs::entity directionalLight = engine.m_World.entity("DirectionalLight")
-		.add<TransformComponent, Global>()
-		.set<TransformComponent, Local>({ glm::vec3(), glm::quat(glm::vec3(glm::radians(-45.0f), glm::radians(45.0f), glm::radians(0.0f))) })
-		.set<LightComponent, DirectionalLightComponent>({ 1.0f });
-	
-	//engine.GetResourceManager().LoadModel(engine.m_World, "Cube.glb", "Cube");
-	//engine.GetResourceManager().LoadModel(engine.m_World, "the_great_drawing_room.glb", "GreatDrawingRoom");
-	engine.GetResourceManager().LoadModel(engine.m_World, "survival_guitar_backpack.glb", "SurvivalBackpack");
+	//flecs::entity directionalLight = engine.m_World.entity("DirectionalLight")
+	//	.add<TransformComponent, Global>()
+	//	.set<TransformComponent, Local>({ glm::vec3(), glm::quat(glm::vec3(glm::radians(-45.0f), glm::radians(45.0f), glm::radians(0.0f))) })
+	//	.set<LightComponent, DirectionalLightComponent>({ 1.0f });
 
-	//engine.GetResourceManager().InstantiateModel(engine.m_World, "Cube", glm::vec3(0.0f, 0.0f, -3.0f), glm::quat(glm::vec3(glm::radians(0.0f), glm::radians(0.0f), glm::radians(0.0f))), glm::vec3(1.0f, 1.0f, 1.0f));
+	flecs::entity pointLight1 = engine.m_World.entity("PointLight1")
+		.add<TransformComponent, Global>()
+		.set<TransformComponent, Local>({ glm::vec3(1.5f, 1.5f, 1.5f) })
+		.set<LightComponent, PointLightComponent>({ 1.0f });
+	
+	flecs::entity pointLight2 = engine.m_World.entity("PointLight2")
+		.add<TransformComponent, Global>()
+		.set<TransformComponent, Local>({glm::vec3(-1.5f, 1.5f, 1.5f)})
+		.set<LightComponent, PointLightComponent>({ 1.0f });
+
+	engine.GetResourceManager().LoadModel(engine.m_World, "Cube.glb", "Cube");
+	//engine.GetResourceManager().LoadModel(engine.m_World, "the_great_drawing_room.glb", "GreatDrawingRoom");
+	//engine.GetResourceManager().LoadModel(engine.m_World, "survival_guitar_backpack.glb", "SurvivalBackpack");
+
+	engine.GetResourceManager().InstantiateModel(engine.m_World, "Cube", glm::vec3(0.0f, 0.0f, 0.0f), glm::quat(glm::vec3(glm::radians(0.0f), glm::radians(0.0f), glm::radians(0.0f))), glm::vec3(1.0f, 1.0f, 1.0f));
 	//engine.GetResourceManager().InstantiateModel(engine.m_World, "GreatDrawingRoom", glm::vec3(0.0f, -2.5f, 0.0f), glm::quat(glm::vec3(0.0f, glm::radians(-42.0f), 0.0f)), glm::vec3(1.0f, 1.0f, 1.0f));
-	engine.GetResourceManager().InstantiateModel(engine.m_World, "SurvivalBackpack", glm::vec3(0.0f, 0.0f, -2.0f), glm::quat(), glm::vec3(0.0015f, 0.0015f, 0.0015f));
+	//engine.GetResourceManager().InstantiateModel(engine.m_World, "SurvivalBackpack", glm::vec3(0.0f, 0.0f, -2.0f), glm::quat(), glm::vec3(0.0015f, 0.0015f, 0.0015f));
 	
 	flecs::entity player = engine.m_World.entity("Player")
 		.add<TransformComponent, Global>()
-		.set<TransformComponent, Local>({ glm::vec3(0.0f, 0.0f, 0.0f) })
+		.set<TransformComponent, Local>({ glm::vec3(0.0f, 0.0f, 3.0f) })
 		.set<PlayerMovementComponent>({ 3.0f })
 		.set<PlayerYawComponent>({ 1.0f });
 

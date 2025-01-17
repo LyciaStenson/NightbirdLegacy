@@ -28,6 +28,8 @@ Engine::Engine(int width, int height, const char* name, RenderTarget* renderTarg
 	glfwSwapInterval(0);
 
 	m_RenderTarget = renderTarget;
+	
+	m_PointLightQuery = m_World.query<flecs::pair<LightComponent, PointLightComponent>, flecs::pair<TransformComponent, Global>>();
 }
 
 Engine::~Engine()
@@ -81,6 +83,14 @@ bool Engine::Init()
 
 void Engine::InitSystems()
 {
+	m_GlobalTransformQuery = m_World.query_builder<const TransformComponent, const TransformComponent*, TransformComponent>()
+		.term_at(0).second<Local>()
+		.term_at(1).second<Global>()
+		.term_at(2).second<Global>()
+		.term_at(1)
+		.parent().cascade()
+		.build();
+
 	m_World.add<InputComponent>();
 
 	flecs::system mainCameraInitSystem = m_World.system<CameraComponent>("MainCameraInitSystem")
@@ -100,7 +110,7 @@ void Engine::InitSystems()
 			}
 		);
 	directionalLightInitSystem.run();
-
+	
 	flecs::system meshInitSystem = m_World.system<MeshComponent>("MeshInitSystem")
 		.kind(0)
 		.each([](flecs::entity entity, MeshComponent& meshComponent)
@@ -310,25 +320,47 @@ void Engine::InitSystems()
 
 				const TransformComponent* directionalLightTransform;
 				glm::vec3 directionalLightDir;
+				float directionalLightIntensity = 0.0f;
 				
 				if (m_DirectionalLight.is_valid())
 				{
 					directionalLightTransform = m_DirectionalLight.get<TransformComponent, Global>();
 					directionalLightDir = glm::rotate(directionalLightTransform->Rotation, glm::vec3(0.0f, 0.0f, -1.0f));
 				}
+
+				std::vector<int> pointLightIntensities;
+				std::vector<glm::vec3> pointLightPositions;;
+				m_PointLightQuery.each([&](flecs::entity pointLight, flecs::pair<LightComponent, PointLightComponent> lightComponent, flecs::pair<TransformComponent, Global> transformComponent)
+					{
+						pointLightIntensities.push_back(lightComponent->intensity);
+						pointLightPositions.push_back(transformComponent->Position);
+					});
 				
 				for (auto& primitive : meshComponent.primitives)
 				{
 					glBindTextureUnit(0, primitive.material.baseColorTexture);
 					
 					primitive.material.shader.Use();
-
-					//primitive.material.shader.SetVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
-					//primitive.material.shader.SetVec3("lightPos", glm::vec3(10.0f, 10.0f, 10.0f));
-
+					
 					if (m_DirectionalLight.is_valid())
 					{
 						primitive.material.shader.SetVec3("directionalLight.direction", directionalLightDir);
+						primitive.material.shader.SetFloat("directionalLight.intensity", directionalLightIntensity);
+					}
+					
+					for (int i = 0; i < pointLightIntensities.size() && i < pointLightPositions.size() && i < 16; i++)
+					{
+						const std::string name = "pointLights[" + std::to_string(i) + "]";
+						primitive.material.shader.SetVec3(name + ".position", pointLightPositions[i]);
+						primitive.material.shader.SetFloat(name + ".intensity", pointLightIntensities[i]);
+					}
+					if (pointLightIntensities.size() < pointLightPositions.size())
+					{
+						primitive.material.shader.SetInt("pointLightCount", pointLightIntensities.size());
+					}
+					else
+					{
+						primitive.material.shader.SetInt("pointLightCount", pointLightPositions.size());
 					}
 					
 					primitive.material.shader.SetVec3("viewPos", cameraTransform->Position);
@@ -406,15 +438,7 @@ void Engine::InitSystems()
 				}
 			}
 		);
-
-	m_GlobalTransformQuery = m_World.query_builder<const TransformComponent, const TransformComponent*, TransformComponent>()
-		.term_at(0).second<Local>()
-		.term_at(1).second<Global>()
-		.term_at(2).second<Global>()
-		.term_at(1)
-		.parent().cascade()
-		.build();
-
+	
 	flecs::system playerMovementSystem = m_World.system<PlayerMovementComponent, flecs::pair<TransformComponent, Local>>("PlayerMovementSystem")
 		.kind(flecs::OnUpdate)
 		.each([&](flecs::iter& iter, size_t index, PlayerMovementComponent& playerMovementComponent, flecs::pair<TransformComponent, Local> transformComponent)
@@ -477,8 +501,6 @@ void Engine::InitSystems()
 				input->mouseY = 0.0f;
 			}
 		);
-	
-	//ImportGltfModel("survival_guitar_backpack.glb");
 }
 
 void Engine::Terminate()

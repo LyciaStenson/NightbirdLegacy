@@ -8,3 +8,7 @@ struct LightComponent
 struct DirectionalLightComponent
 {
 };
+
+struct PointLightComponent
+{
+};

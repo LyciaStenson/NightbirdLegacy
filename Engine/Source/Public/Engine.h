@@ -75,6 +75,9 @@ private:
 	flecs::query<const TransformComponent, const TransformComponent*, TransformComponent> m_GlobalTransformQuery;
 
 	flecs::entity m_DirectionalLight;
+	//std::vector<flecs::entity> m_PointLights;
+
+	flecs::query<flecs::pair<LightComponent, PointLightComponent>, flecs::pair<TransformComponent, Global>> m_PointLightQuery;
 
 	RenderTarget* m_RenderTarget;
 
