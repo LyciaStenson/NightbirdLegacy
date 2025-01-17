@@ -29,7 +29,7 @@ Engine::Engine(int width, int height, const char* name, RenderTarget* renderTarg
 
 	m_RenderTarget = renderTarget;
 	
-	m_PointLightQuery = m_World.query<flecs::pair<LightComponent, PointLightComponent>, flecs::pair<TransformComponent, Global>>();
+	m_PointLightQuery = m_World.query<LightComponent, PointLightComponent, flecs::pair<TransformComponent, Global>>();
 }
 
 Engine::~Engine()
@@ -102,9 +102,9 @@ void Engine::InitSystems()
 		);
 	mainCameraInitSystem.run();
 	
-	flecs::system directionalLightInitSystem = m_World.system<flecs::pair<LightComponent, DirectionalLightComponent>>("DirectionalLightInitSystem")
+	flecs::system directionalLightInitSystem = m_World.system<LightComponent, DirectionalLightComponent>("DirectionalLightInitSystem")
 		.kind(0)
-		.each([&](flecs::entity entity, flecs::pair<LightComponent, DirectionalLightComponent> lightComponent)
+		.each([&](flecs::entity entity, LightComponent& lightComponent, DirectionalLightComponent& directionalLightComponent)
 			{
 				m_DirectionalLight = entity;
 			}
@@ -321,18 +321,21 @@ void Engine::InitSystems()
 				const TransformComponent* directionalLightTransform;
 				glm::vec3 directionalLightDir;
 				float directionalLightIntensity = 0.0f;
+				float directionalLightAmbient = 0.0f;
 				
 				if (m_DirectionalLight.is_valid())
 				{
 					directionalLightTransform = m_DirectionalLight.get<TransformComponent, Global>();
 					directionalLightDir = glm::rotate(directionalLightTransform->Rotation, glm::vec3(0.0f, 0.0f, -1.0f));
+					directionalLightIntensity = m_DirectionalLight.get<LightComponent>()->intensity;
+					directionalLightAmbient = m_DirectionalLight.get<DirectionalLightComponent>()->ambient;
 				}
 
 				std::vector<int> pointLightIntensities;
 				std::vector<glm::vec3> pointLightPositions;;
-				m_PointLightQuery.each([&](flecs::entity pointLight, flecs::pair<LightComponent, PointLightComponent> lightComponent, flecs::pair<TransformComponent, Global> transformComponent)
+				m_PointLightQuery.each([&](flecs::entity pointLight, LightComponent& lightComponent, PointLightComponent& pointLightComponent, flecs::pair<TransformComponent, Global> transformComponent)
 					{
-						pointLightIntensities.push_back(lightComponent->intensity);
+						pointLightIntensities.push_back(lightComponent.intensity);
 						pointLightPositions.push_back(transformComponent->Position);
 					});
 				
@@ -346,6 +349,7 @@ void Engine::InitSystems()
 					{
 						primitive.material.shader.SetVec3("directionalLight.direction", directionalLightDir);
 						primitive.material.shader.SetFloat("directionalLight.intensity", directionalLightIntensity);
+						primitive.material.shader.SetFloat("directionalLight.ambient", directionalLightAmbient);
 					}
 					
 					for (int i = 0; i < pointLightIntensities.size() && i < pointLightPositions.size() && i < 16; i++)

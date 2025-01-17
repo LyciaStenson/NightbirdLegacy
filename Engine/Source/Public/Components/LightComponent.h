@@ -7,6 +7,7 @@ struct LightComponent
 
 struct DirectionalLightComponent
 {
+	float ambient;
 };
 
 struct PointLightComponent
