@@ -21,41 +21,60 @@ uniform bool hasMetallicRoughnessTexture;
 uniform sampler2D normalTexture;
 uniform bool hasNormalTexture;
 
-//uniform vec3 lightPos;
-
-//uniform vec3 lightColor;
-
 uniform vec3 viewPos;
 
 struct DirectionalLight
 {
 	vec3 direction;
 	float intensity;
+	float ambient;
+};
+
+struct PointLight
+{
+	vec3 position;
+	float intensity;
 };
 
 uniform DirectionalLight directionalLight;
 
+#define MAX_POINT_LIGHTS 16
+uniform PointLight pointLights[MAX_POINT_LIGHTS];
+uniform int pointLightCount;
+
 void main()
 {
-	vec3 ambient = vec3(1.0f, 1.0f, 1.0f) * 0.01f;
-
+	vec3 ambient = vec3(1.0f, 1.0f, 1.0f) * directionalLight.ambient;
+	
 	vec3 norm = normalize(Normal);
-	vec3 lightDir = normalize(-directionalLight.direction);
-	//vec3 lightDir = normalize(-vec3(0.0f, 1.0f, 0.0f));
-	//vec3 lightDir = normalize(lightPos - FragPos);
-
-	float diff = max(dot(norm, lightDir), 0.0f);
-	vec3 diffuse = diff * vec3(1.0f, 1.0f, 1.0f);// * lightColor;
+	vec3 directionalLightDir = normalize(-directionalLight.direction);
+	
+	float directionalDiffuse = max(dot(norm, directionalLightDir), 0.0f) * directionalLight.intensity;
 	
 	//float specularStrength = 0.5f;
 	//vec3 viewDir = normalize(viewPos - FragPos);
-	//vec3 reflectDir = reflect(-lightDir, norm);
+	//vec3 reflectDir = reflect(-directionalLightDir, norm);
 	//float spec = pow(max(dot(viewDir, reflectDir), 0.0f), 32);
 	//vec3 specular = specularStrength * spec * lightColor;
 
+	float pointDiffuse = 0.0f;
+	//vec3 testColor;
+	for (int i = 0; i < pointLightCount; i++)
+	{
+		vec3 pointLightDir = pointLights[i].position - FragPos;
+		float dist = length(pointLightDir);
+		pointLightDir = normalize(pointLightDir);
+		float attenuation = pointLights[i].intensity / (dist * dist);
+		//float attenuation = 1.0f / (dist * dist + 0.1f);
+		pointDiffuse += max(dot(norm, pointLightDir), 0.0f) * attenuation;
+		//testColor = pointLightDir;
+	}
+
+	vec3 diffuse = (directionalDiffuse + pointDiffuse) * vec3(1.0f, 1.0f, 1.0f);
+
 	//vec3 lighting = (ambient + diffuse + specular);
 	vec3 lighting = ambient + diffuse;
-
+	
 	vec4 finalBaseColor = hasBaseColorTexture ? texture(baseColorTexture, baseColorTexCoord) : baseColorFactor;
 
 	float finalMetallic = metallicFactor;
