@@ -12,4 +12,6 @@ struct DirectionalLightComponent
 
 struct PointLightComponent
 {
+	// This value will be used for optimisation
+	float range;
 };
