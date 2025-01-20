@@ -40,19 +40,19 @@ int main()
 	flecs::entity directionalLight = engine.m_World.entity("DirectionalLight")
 		.add<TransformComponent, Global>()
 		.set<TransformComponent, Local>({ glm::vec3(), glm::quat(glm::vec3(glm::radians(-35.0f), glm::radians(45.0f), glm::radians(0.0f))) })
-		.set<LightComponent>({ 1.0f })
-		.set<DirectionalLightComponent>({ 0.025f });
+		.set<BaseLightComponent>({ 0.0f, glm::vec3(1.0f, 1.0f, 1.0f) })
+		.set<DirectionalLightComponent>({ 0.05f });
 
 	flecs::entity pointLight1 = engine.m_World.entity("PointLight1")
 		.add<TransformComponent, Global>()
-		.set<TransformComponent, Local>({glm::vec3(0.0f, 2.0f, 0.0f)})
-		.set<LightComponent>({ 2.5f })
+		.set<TransformComponent, Local>({glm::vec3(0.5f, 2.0f, 0.0f) })
+		.set<BaseLightComponent>({ 3.0f, glm::vec3(0.1f, 0.1f, 1.0f) })
 		.add<PointLightComponent>();
 	
 	flecs::entity pointLight2 = engine.m_World.entity("PointLight2")
 		.add<TransformComponent, Global>()
-		.set<TransformComponent, Local>({ glm::vec3(-2.0, 1.0f, -1.0f) })
-		.set<LightComponent>({ 5.0f })
+		.set<TransformComponent, Local>({ glm::vec3(-0.5f, 2.0f, 0.0f) })
+		.set<BaseLightComponent>({ 3.0f, glm::vec3(1.0f, 0.1f, 0.1f) })
 		.add<PointLightComponent>();
 	
 	engine.GetResourceManager().LoadModel(engine.m_World, "Cube.glb", "Cube");

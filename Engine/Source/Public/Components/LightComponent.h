@@ -1,8 +1,11 @@
 #pragma once
 
-struct LightComponent
+#include <glm/glm.hpp>
+
+struct BaseLightComponent
 {
 	float intensity;
+	glm::vec3 color;
 };
 
 struct DirectionalLightComponent

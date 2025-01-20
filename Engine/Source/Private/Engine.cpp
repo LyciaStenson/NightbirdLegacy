@@ -29,7 +29,7 @@ Engine::Engine(int width, int height, const char* name, RenderTarget* renderTarg
 
 	m_RenderTarget = renderTarget;
 	
-	m_PointLightQuery = m_World.query<LightComponent, PointLightComponent, flecs::pair<TransformComponent, Global>>();
+	m_PointLightQuery = m_World.query<BaseLightComponent, PointLightComponent, flecs::pair<TransformComponent, Global>>();
 }
 
 Engine::~Engine()
@@ -102,9 +102,9 @@ void Engine::InitSystems()
 		);
 	mainCameraInitSystem.run();
 	
-	flecs::system directionalLightInitSystem = m_World.system<LightComponent, DirectionalLightComponent>("DirectionalLightInitSystem")
+	flecs::system directionalLightInitSystem = m_World.system<BaseLightComponent, DirectionalLightComponent>("DirectionalLightInitSystem")
 		.kind(0)
-		.each([&](flecs::entity entity, LightComponent& lightComponent, DirectionalLightComponent& directionalLightComponent)
+		.each([&](flecs::entity entity, BaseLightComponent& lightComponent, DirectionalLightComponent& directionalLightComponent)
 			{
 				m_DirectionalLight = entity;
 			}
@@ -267,7 +267,7 @@ void Engine::InitSystems()
 			}
 		);
 	skyboxInitSystem.run();
-
+	
 	flecs::system skyboxLateInitSystem = m_World.system<CubemapLoadComponent, SkyboxComponent>("SkyboxLateInitSystem")
 		.kind(flecs::OnUpdate)
 		.each([&](flecs::entity entity, CubemapLoadComponent& cubemapLoadComponent, SkyboxComponent& skyboxComponent)
@@ -317,26 +317,31 @@ void Engine::InitSystems()
 			{
 				const CameraComponent* camera = m_MainCamera.get<CameraComponent>();
 				const TransformComponent* cameraTransform = m_MainCamera.get<TransformComponent, Global>();
-
-				const TransformComponent* directionalLightTransform;
+				
 				glm::vec3 directionalLightDir;
 				float directionalLightIntensity = 0.0f;
 				float directionalLightAmbient = 0.0f;
-				
+				glm::vec3 directionalLightColor = glm::vec3(1.0f, 1.0f, 1.0f);
+
 				if (m_DirectionalLight.is_valid())
 				{
-					directionalLightTransform = m_DirectionalLight.get<TransformComponent, Global>();
-					directionalLightDir = glm::rotate(directionalLightTransform->Rotation, glm::vec3(0.0f, 0.0f, -1.0f));
-					directionalLightIntensity = m_DirectionalLight.get<LightComponent>()->intensity;
-					directionalLightAmbient = m_DirectionalLight.get<DirectionalLightComponent>()->ambient;
-				}
+					const TransformComponent* transform = m_DirectionalLight.get<TransformComponent, Global>();
+					directionalLightDir = glm::rotate(transform->Rotation, glm::vec3(0.0f, 0.0f, -1.0f));
+					
+					const BaseLightComponent* baseLight = m_DirectionalLight.get<BaseLightComponent>();
+					directionalLightIntensity = baseLight->intensity;
+					directionalLightColor = baseLight->color;
 
-				std::vector<int> pointLightIntensities;
-				std::vector<glm::vec3> pointLightPositions;;
-				m_PointLightQuery.each([&](flecs::entity pointLight, LightComponent& lightComponent, PointLightComponent& pointLightComponent, flecs::pair<TransformComponent, Global> transformComponent)
+					const DirectionalLightComponent* directionalLight = m_DirectionalLight.get<DirectionalLightComponent>();
+					directionalLightAmbient = directionalLight->ambient;
+				}
+				
+				std::vector<TransformComponent> pointLightTransforms; // Transform can't be reference or pointer due to flecs::pair
+				std::vector<BaseLightComponent*> pointLightLightComponents;
+				m_PointLightQuery.each([&](flecs::entity pointLight, BaseLightComponent& lightComponent, PointLightComponent& pointLightComponent, flecs::pair<TransformComponent, Global> transformComponent)
 					{
-						pointLightIntensities.push_back(lightComponent.intensity);
-						pointLightPositions.push_back(transformComponent->Position);
+						pointLightTransforms.push_back(transformComponent);
+						pointLightLightComponents.push_back(&lightComponent);
 					});
 				
 				for (auto& primitive : meshComponent.primitives)
@@ -350,21 +355,23 @@ void Engine::InitSystems()
 						primitive.material.shader.SetVec3("directionalLight.direction", directionalLightDir);
 						primitive.material.shader.SetFloat("directionalLight.intensity", directionalLightIntensity);
 						primitive.material.shader.SetFloat("directionalLight.ambient", directionalLightAmbient);
+						primitive.material.shader.SetVec3("directionalLight.color", directionalLightColor);
 					}
 					
-					for (int i = 0; i < pointLightIntensities.size() && i < pointLightPositions.size() && i < 16; i++)
+					for (int i = 0; i < pointLightTransforms.size() && i < pointLightLightComponents.size() && i < 16; i++)
 					{
 						const std::string name = "pointLights[" + std::to_string(i) + "]";
-						primitive.material.shader.SetVec3(name + ".position", pointLightPositions[i]);
-						primitive.material.shader.SetFloat(name + ".intensity", pointLightIntensities[i]);
+						primitive.material.shader.SetVec3(name + ".position", pointLightTransforms[i].Position);
+						primitive.material.shader.SetFloat(name + ".intensity", pointLightLightComponents[i]->intensity);
+						primitive.material.shader.SetVec3(name + ".color", pointLightLightComponents[i]->color);
 					}
-					if (pointLightIntensities.size() < pointLightPositions.size())
+					if (pointLightTransforms.size() < pointLightLightComponents.size())
 					{
-						primitive.material.shader.SetInt("pointLightCount", pointLightIntensities.size());
+						primitive.material.shader.SetInt("pointLightCount", pointLightTransforms.size());
 					}
 					else
 					{
-						primitive.material.shader.SetInt("pointLightCount", pointLightPositions.size());
+						primitive.material.shader.SetInt("pointLightCount", pointLightLightComponents.size());
 					}
 					
 					primitive.material.shader.SetVec3("viewPos", cameraTransform->Position);
@@ -396,7 +403,7 @@ void Engine::InitSystems()
 				}
 			}
 		);
-
+	
 	flecs::system skyboxRenderSystem = m_World.system<SkyboxComponent>("SkyboxRenderSystem")
 		.kind(flecs::OnUpdate)
 		.each([&](flecs::iter& iter, size_t index, SkyboxComponent& skyboxComponent)
@@ -430,7 +437,7 @@ void Engine::InitSystems()
 				glDepthFunc(GL_LESS);
 			}
 		);
-
+	
 	m_RenderShutdownSystem = m_World.system<MeshComponent>("RenderShutdownSystem")
 		.kind(0)
 		.each([](MeshComponent& meshComponent)
@@ -442,7 +449,7 @@ void Engine::InitSystems()
 				}
 			}
 		);
-	
+
 	flecs::system playerMovementSystem = m_World.system<PlayerMovementComponent, flecs::pair<TransformComponent, Local>>("PlayerMovementSystem")
 		.kind(flecs::OnUpdate)
 		.each([&](flecs::iter& iter, size_t index, PlayerMovementComponent& playerMovementComponent, flecs::pair<TransformComponent, Local> transformComponent)
