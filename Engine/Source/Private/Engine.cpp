@@ -337,11 +337,13 @@ void Engine::InitSystems()
 				}
 				
 				std::vector<TransformComponent> pointLightTransforms; // Transform can't be reference or pointer due to flecs::pair
-				std::vector<BaseLightComponent*> pointLightLightComponents;
+				std::vector<BaseLightComponent*> pointBaseLightComponents;
+				std::vector<PointLightComponent*> pointLightComponents;
 				m_PointLightQuery.each([&](flecs::entity pointLight, BaseLightComponent& lightComponent, PointLightComponent& pointLightComponent, flecs::pair<TransformComponent, Global> transformComponent)
 					{
 						pointLightTransforms.push_back(transformComponent);
-						pointLightLightComponents.push_back(&lightComponent);
+						pointBaseLightComponents.push_back(&lightComponent);
+						pointLightComponents.push_back(&pointLightComponent);
 					});
 				
 				for (auto& primitive : meshComponent.primitives)
@@ -358,20 +360,23 @@ void Engine::InitSystems()
 						primitive.material.shader.SetVec3("directionalLight.color", directionalLightColor);
 					}
 					
-					for (int i = 0; i < pointLightTransforms.size() && i < pointLightLightComponents.size() && i < 16; i++)
+					for (int i = 0; i < pointLightTransforms.size() && i < pointBaseLightComponents.size() && i < pointLightComponents.size() && i < 16; i++)
 					{
 						const std::string name = "pointLights[" + std::to_string(i) + "]";
 						primitive.material.shader.SetVec3(name + ".position", pointLightTransforms[i].Position);
-						primitive.material.shader.SetFloat(name + ".intensity", pointLightLightComponents[i]->intensity);
-						primitive.material.shader.SetVec3(name + ".color", pointLightLightComponents[i]->color);
+						primitive.material.shader.SetFloat(name + ".intensity", pointBaseLightComponents[i]->intensity);
+						primitive.material.shader.SetVec3(name + ".color", pointBaseLightComponents[i]->color);
+						primitive.material.shader.SetFloat(name + ".constantAttenuation", pointLightComponents[i]->constantAttenuation);
+						primitive.material.shader.SetFloat(name + ".linearAttenuation", pointLightComponents[i]->linearAttenuation);
+						primitive.material.shader.SetFloat(name + ".quadraticAttenuation", pointLightComponents[i]->quadraticAttenuation);
 					}
-					if (pointLightTransforms.size() < pointLightLightComponents.size())
+					if (pointLightTransforms.size() < pointBaseLightComponents.size())
 					{
 						primitive.material.shader.SetInt("pointLightCount", pointLightTransforms.size());
 					}
 					else
 					{
-						primitive.material.shader.SetInt("pointLightCount", pointLightLightComponents.size());
+						primitive.material.shader.SetInt("pointLightCount", pointBaseLightComponents.size());
 					}
 					
 					primitive.material.shader.SetVec3("viewPos", cameraTransform->Position);

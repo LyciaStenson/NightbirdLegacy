@@ -15,6 +15,10 @@ struct DirectionalLightComponent
 
 struct PointLightComponent
 {
+	float constantAttenuation;
+	float linearAttenuation;
+	float quadraticAttenuation;
+	
 	// This value will be used for optimisation
 	float range;
 };
