@@ -75,7 +75,6 @@ private:
 	flecs::query<const TransformComponent, const TransformComponent*, TransformComponent> m_GlobalTransformQuery;
 
 	flecs::entity m_DirectionalLight;
-	//std::vector<flecs::entity> m_PointLights;
 
 	flecs::query<BaseLightComponent, PointLightComponent, flecs::pair<TransformComponent, Global>> m_PointLightQuery;
 
@@ -83,8 +82,8 @@ private:
 
 	unsigned int framebuffer = 0;
 
-	static TextureData LoadTexture(const char* path, bool flip);
-
+	static TextureData LoadTexture(const char* path, bool flipVertically);
+	
 	static void FramebufferSizeCallback(GLFWwindow* window, int width, int height);
 	static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
 	static void CursorEnterCallback(GLFWwindow* window, int entered);

@@ -285,7 +285,7 @@ void Engine::InitSystems()
 							stbi_image_free(textureData.data);
 
 							cubemapLoadComponent.loadedChecks[i] = true;
-
+							
 							skyboxComponent.shader.Use();
 							skyboxComponent.shader.SetInt("skybox", 0);
 							
@@ -428,6 +428,7 @@ void Engine::InitSystems()
 				skyboxComponent.shader.SetMat4("projection", projection);
 
 				glm::vec3 forward = cameraTransform->Rotation * glm::vec3(0.0f, 0.0f, -1.0f);
+				//forward.y = -forward.y;
 				glm::vec3 up = cameraTransform->Rotation * glm::vec3(0.0f, 1.0f, 0.0f);
 
 				glm::mat4 view = glm::mat4(glm::mat3(glm::lookAt(cameraTransform->Position, cameraTransform->Position + forward, up)));
@@ -587,10 +588,10 @@ ResourceManager& Engine::GetResourceManager()
 	return m_ResourceManager;
 }
 
-TextureData Engine::LoadTexture(const char* path, bool flip)
+TextureData Engine::LoadTexture(const char* path, bool flipVertically)
 {
 	int width, height, nrChannels;
-	stbi_set_flip_vertically_on_load(flip);
+	stbi_set_flip_vertically_on_load(flipVertically);
 	unsigned char* data = stbi_load(path, &width, &height, &nrChannels, 0);
 	return TextureData({ data, width, height });
 }

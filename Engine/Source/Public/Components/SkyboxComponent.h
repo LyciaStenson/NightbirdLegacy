@@ -6,7 +6,7 @@ struct SkyboxComponent
 {
     float vertices[108] =
 	{
-        // Positions
+		// Positions
 		-1.0f, -1.0f,  1.0f,
 		 1.0f, -1.0f,  1.0f,
 		 1.0f, -1.0f, -1.0f,
