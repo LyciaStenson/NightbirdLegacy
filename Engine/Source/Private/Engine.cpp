@@ -428,7 +428,6 @@ void Engine::InitSystems()
 				skyboxComponent.shader.SetMat4("projection", projection);
 
 				glm::vec3 forward = cameraTransform->Rotation * glm::vec3(0.0f, 0.0f, -1.0f);
-				//forward.y = -forward.y;
 				glm::vec3 up = cameraTransform->Rotation * glm::vec3(0.0f, 1.0f, 0.0f);
 
 				glm::mat4 view = glm::mat4(glm::mat3(glm::lookAt(cameraTransform->Position, cameraTransform->Position + forward, up)));
