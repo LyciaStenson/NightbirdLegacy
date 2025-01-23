@@ -113,7 +113,7 @@ void Engine::InitSystems()
 	
 	flecs::system meshInitSystem = m_World.system<MeshComponent>("MeshInitSystem")
 		.kind(0)
-		.each([](flecs::entity entity, MeshComponent& meshComponent)
+		.each([&](flecs::entity entity, MeshComponent& meshComponent)
 			{
 				for (auto& primitive : meshComponent.primitives)
 				{
@@ -138,7 +138,7 @@ void Engine::InitSystems()
 						primitive.material.shader.SetInt("metallicRoughnessTexture", 1);
 					}
 
-					primitive.material.shader.SetBool("hasNormalTexture", primitive.material.hasNormalTexture);
+					primitive.material.shader.SetBool("hasNormalTexture", globalNormalMapsEnabled && primitive.material.hasNormalTexture);
 					if (primitive.material.hasNormalTexture)
 					{
 						glBindTextureUnit(2, primitive.material.normalTexture);
@@ -379,6 +379,8 @@ void Engine::InitSystems()
 					{
 						primitive.material.shader.SetInt("pointLightCount", pointBaseLightComponents.size());
 					}
+
+					primitive.material.shader.SetBool("hasNormalTexture", globalNormalMapsEnabled && primitive.material.hasNormalTexture);
 					
 					primitive.material.shader.SetVec3("viewPos", cameraTransform->Position);
 

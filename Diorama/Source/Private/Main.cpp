@@ -5,9 +5,17 @@
 
 void KeyCallback(Engine* engine, int key, int scancode, int action, int mods)
 {
-	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+	if (action == GLFW_RELEASE)
 	{
-		glfwSetInputMode(engine->m_Window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+		switch (key)
+		{
+		case GLFW_KEY_ESCAPE:
+			glfwSetInputMode(engine->m_Window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+			break;
+		case GLFW_KEY_N:
+			engine->globalNormalMapsEnabled = !engine->globalNormalMapsEnabled;
+			break;
+		}
 	}
 }
 

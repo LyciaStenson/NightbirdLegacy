@@ -61,6 +61,8 @@ public:
 	double lastFrameTime = 0.0;
 	unsigned int fps = 0;
 
+	bool globalNormalMapsEnabled = true;
+
 	Engine(int width, int height, const char* name, RenderTarget* renderTarget);
 	~Engine();
 	
