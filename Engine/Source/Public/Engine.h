@@ -37,12 +37,16 @@
 #include <vector>
 #include <filesystem>
 
+#include <functional>
+
 #include <thread>
 #include <future>
 
 class Engine
 {
 public:
+	using KeyCallbackFunc = std::function<void(Engine* engine, int key, int scancode, int action, int mods)>;
+
 	GLFWwindow* m_Window;
 	
 	flecs::world m_World;
@@ -64,7 +68,9 @@ public:
 	void InitSystems();
 	void Terminate();
 	void MainLoop();
-	
+
+	void RegisterKeyCallback(KeyCallbackFunc callback);
+
 	ResourceManager& GetResourceManager();
 
 private:
@@ -80,8 +86,8 @@ private:
 
 	RenderTarget* m_RenderTarget;
 
-	unsigned int framebuffer = 0;
-
+	std::vector<KeyCallbackFunc> m_keyCallbacks;
+	
 	static TextureData LoadTexture(const char* path, bool flipVertically);
 	
 	static void FramebufferSizeCallback(GLFWwindow* window, int width, int height);

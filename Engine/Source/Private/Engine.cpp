@@ -583,6 +583,11 @@ void Engine::MainLoop()
 	}
 }
 
+void Engine::RegisterKeyCallback(KeyCallbackFunc callback)
+{
+	m_keyCallbacks.push_back(callback);
+}
+
 ResourceManager& Engine::GetResourceManager()
 {
 	return m_ResourceManager;
@@ -662,6 +667,12 @@ void Engine::HandleKey(int key, int scancode, int action, int mods)
 		case GLFW_KEY_Q:
 			input->keyQ = isPressed;
 			break;
+		case GLFW_KEY_ESCAPE:
+			break;
+		}
+		for (const auto& callback : m_keyCallbacks)
+		{
+			callback(this, key, scancode, action, mods);
 		}
 	}
 }

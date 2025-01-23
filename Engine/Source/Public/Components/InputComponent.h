@@ -9,7 +9,7 @@ struct InputComponent
 
 	bool keyE = false;
 	bool keyQ = false;
-
+	
 	float mouseX = 0.0f;
 	float mouseY = 0.0f;
 };

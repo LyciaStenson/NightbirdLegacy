@@ -3,6 +3,14 @@
 
 #include <Components/SpinComponent.h>
 
+void KeyCallback(Engine* engine, int key, int scancode, int action, int mods)
+{
+	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+	{
+		glfwSetInputMode(engine->m_Window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+	}
+}
+
 int main()
 {
 	glfwInit();
@@ -48,13 +56,13 @@ int main()
 	flecs::entity pointLight1 = engine.m_World.entity("PointLight1")
 		.add<TransformComponent, Global>()
 		.set<TransformComponent, Local>({glm::vec3(0.7f, 1.0f, 0.0f) })
-		.set<BaseLightComponent>({ 1.0f, glm::vec3(0.0f, 0.0f, 1.0f) })
+		.set<BaseLightComponent>({ 3.0f, glm::vec3(0.0f, 0.0f, 1.0f) })
 		.set<PointLightComponent>({ 1.0f, 1.0f, 0.5f });
 	
 	flecs::entity pointLight2 = engine.m_World.entity("PointLight2")
 		.add<TransformComponent, Global>()
 		.set<TransformComponent, Local>({ glm::vec3(-0.7f, 1.0f, 0.0f) })
-		.set<BaseLightComponent>({ 1.0f, glm::vec3(1.0f, 0.0f, 0.0f) })
+		.set<BaseLightComponent>({ 3.0f, glm::vec3(1.0f, 0.0f, 0.0f) })
 		.set<PointLightComponent>({ 1.0f, 1.0f, 0.5f });
 	
 	engine.GetResourceManager().LoadModel(engine.m_World, "Cube.glb", "Cube");
@@ -80,6 +88,9 @@ int main()
 		.set<TransformComponent, Local>({ glm::vec3(0.0f, 0.0f, 0.0f) })
 		.set<CameraComponent>({ 70.0f })
 		.set<PlayerPitchComponent>({ 1.0f });
+	
+	//Engine::KeyCallbackFunc TestFunc = Test;
+	engine.RegisterKeyCallback(KeyCallback);
 	
 	flecs::system spinSystem = engine.m_World.system<SpinComponent, flecs::pair<TransformComponent, Local>>("SpinSystem")
 		.kind(flecs::OnUpdate)
