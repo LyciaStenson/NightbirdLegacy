@@ -166,8 +166,8 @@ void Engine::InitSystems()
 					glEnableVertexAttribArray(1);
 
 					// Tangent Attribute
-					glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, tangent));
-					glEnableVertexAttribArray(1);
+					glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, tangent));
+					glEnableVertexAttribArray(2);
 
 					// Base Color Texture Coord Attribute
 					glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, baseColorTexCoords));
@@ -354,7 +354,7 @@ void Engine::InitSystems()
 					
 					if (m_DirectionalLight.is_valid())
 					{
-						primitive.material.shader.SetVec3("directionalLight.direction", directionalLightDir);
+						primitive.material.shader.SetVec3("directionalLightDir", directionalLightDir);
 						primitive.material.shader.SetFloat("directionalLight.intensity", directionalLightIntensity);
 						primitive.material.shader.SetFloat("directionalLight.ambient", directionalLightAmbient);
 						primitive.material.shader.SetVec3("directionalLight.color", directionalLightColor);
@@ -362,8 +362,9 @@ void Engine::InitSystems()
 					
 					for (int i = 0; i < pointLightTransforms.size() && i < pointBaseLightComponents.size() && i < pointLightComponents.size() && i < 16; i++)
 					{
+						primitive.material.shader.SetVec3("pointLightPositions[" + std::to_string(i) + "]", pointLightTransforms[i].Position);
+
 						const std::string name = "pointLights[" + std::to_string(i) + "]";
-						primitive.material.shader.SetVec3(name + ".position", pointLightTransforms[i].Position);
 						primitive.material.shader.SetFloat(name + ".intensity", pointBaseLightComponents[i]->intensity);
 						primitive.material.shader.SetVec3(name + ".color", pointBaseLightComponents[i]->color);
 						primitive.material.shader.SetFloat(name + ".constantAttenuation", pointLightComponents[i]->constantAttenuation);

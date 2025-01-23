@@ -112,7 +112,8 @@ void ResourceManager::IterateNode(flecs::world world, const fastgltf::Node& node
 
 			auto* positionIt = primitive.findAttribute("POSITION");
 			auto* normalIt = primitive.findAttribute("NORMAL");
-
+			auto* tangentIt = primitive.findAttribute("TANGENT");
+			
 			if (positionIt != primitive.attributes.end())
 			{
 				const auto& positionAccessor = asset.accessors[positionIt->accessorIndex];
@@ -130,6 +131,15 @@ void ResourceManager::IterateNode(flecs::world world, const fastgltf::Node& node
 				fastgltf::iterateAccessorWithIndex<fastgltf::math::fvec3>(asset, normalAccessor, [&](fastgltf::math::fvec3 normal, std::size_t verticeIndex)
 					{
 						vertices[verticeIndex].normal = glm::vec3(normal.x(), normal.y(), normal.z());
+					});
+			}
+
+			if (tangentIt != primitive.attributes.end())
+			{
+				auto& tangentAccessor = asset.accessors[tangentIt->accessorIndex];
+				fastgltf::iterateAccessorWithIndex<fastgltf::math::fvec4>(asset, tangentAccessor, [&](fastgltf::math::fvec4 tangent, std::size_t verticeIndex)
+					{
+						vertices[verticeIndex].tangent = glm::vec4(tangent.x(), tangent.y(), tangent.z(), tangent.w());
 					});
 			}
 

@@ -2,7 +2,7 @@
 
 layout (location = 0) in vec3 aPos;
 layout (location = 1) in vec3 aNormal;
-layout (location = 2) in vec2 aTangent;
+layout (location = 2) in vec4 aTangent;
 layout (location = 3) in vec2 aBaseColorTexCoord;
 layout (location = 4) in vec2 aMetallicRoughnessTexCoord;
 layout (location = 5) in vec2 aNormalTexCoord;
@@ -11,8 +11,25 @@ uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
 
-out vec3 Normal;
+uniform vec3 viewPos;
+
+uniform bool hasNormalTexture;
+uniform int tangentHandedness;
+
+uniform vec3 directionalLightDir;
+
+#define MAX_POINT_LIGHTS 16
+uniform vec3 pointLightPositions[MAX_POINT_LIGHTS];
+uniform int pointLightCount;
+
 out vec3 FragPos;
+out vec3 Normal;
+
+out vec3 ViewPos;
+
+out vec3 DirectionalLightDir;
+
+out vec3 PointLightPositions[MAX_POINT_LIGHTS];
 
 out vec2 baseColorTexCoord;
 out vec2 metallicRoughnessTexCoord;
@@ -20,12 +37,44 @@ out vec2 normalTexCoord;
 
 void main()
 {
+	bool hasNormalTextureTest = hasNormalTexture;
+	
+	vec3 fragPos = vec3(model * vec4(aPos, 1.0f));
+
+	mat3 normalMat = transpose(inverse(mat3(model)));
+	vec3 normal = normalize(normalMat * aNormal);
+	vec3 tangent = normalize(normalMat * aTangent.xyz);
+	tangent = normalize(tangent - dot(tangent, normal) * normal);
+	vec3 bitangent = cross(normal, tangent) * aTangent.w;
+
+	mat3 tbn = transpose(mat3(tangent, bitangent, normal));
+
+	FragPos = hasNormalTextureTest ? tbn * fragPos : fragPos;
+	//FragPos = tbn * fragPos;
+	//FragPos = fragPos;
+
+	ViewPos = hasNormalTextureTest ? tbn * viewPos : viewPos;
+
+	DirectionalLightDir = hasNormalTextureTest ? tbn * directionalLightDir : directionalLightDir;
+
+	if (hasNormalTextureTest)
+	{
+		for (int i = 0; i < pointLightCount && i < MAX_POINT_LIGHTS; i++)
+		{
+			PointLightPositions[i] = tbn * pointLightPositions[i];
+		}
+	}
+	else
+	{
+		PointLightPositions = pointLightPositions;
+	}
+	
 	Normal = mat3(transpose(inverse(model))) * aNormal;
-	FragPos = vec3(model * vec4(aPos, 1.0f));
+	//Normal = tangent;
 
 	baseColorTexCoord = vec2(aBaseColorTexCoord.x, aBaseColorTexCoord.y);
 	metallicRoughnessTexCoord = vec2(aMetallicRoughnessTexCoord.x, aMetallicRoughnessTexCoord.y);
 	normalTexCoord = vec2(aNormalTexCoord.x, aNormalTexCoord.y);
 
-	gl_Position = projection * view * vec4(FragPos, 1.0f);
+	gl_Position = projection * view * vec4(fragPos, 1.0f);
 }
