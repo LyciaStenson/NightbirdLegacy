@@ -105,9 +105,9 @@ void main()
 		finalRoughness = metallicRoughnessData.g;
 	}
 	
-	//FragColor = vec4(lighting, 1.0f) * finalBaseColor;
+	FragColor = vec4(lighting, 1.0f) * finalBaseColor;
 	//FragColor = vec4(normal, 1.0f);
-	FragColor = finalBaseColor;
+	//FragColor = finalBaseColor;
 	//FragColor = vec4(ambientOcclusion, ambientOcclusion, ambientOcclusion, 1.0f);
 	//FragColor = vec4(finalMetallic, finalMetallic, finalMetallic, 1.0f);
 	//FragColor = vec4(finalRoughness, finalRoughness, finalRoughness, 1.0f);

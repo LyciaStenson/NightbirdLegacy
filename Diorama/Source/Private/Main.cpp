@@ -73,20 +73,20 @@ int main()
 		.set<BaseLightComponent>({ 3.0f, glm::vec3(1.0f, 0.0f, 0.0f) })
 		.set<PointLightComponent>({ 1.0f, 1.0f, 0.5f });
 	
-	//engine.GetResourceManager().LoadModel(engine.m_World, "Cube.glb", "Cube");
+	engine.GetResourceManager().LoadModel(engine.m_World, "Cube.glb", "Cube");
 	//engine.GetResourceManager().LoadModel(engine.m_World, "the_great_drawing_room.glb", "GreatDrawingRoom");
 	engine.GetResourceManager().LoadModel(engine.m_World, "the_hindu_god_ganesh.glb", "God");
 	engine.GetResourceManager().LoadModel(engine.m_World, "survival_guitar_backpack.glb", "SurvivalBackpack");
 
-	//engine.GetResourceManager().InstantiateModel(engine.m_World, "Cube", glm::vec3(0.0f, -0.25f, 0.0f), glm::quat(glm::vec3(glm::radians(0.0f), glm::radians(0.0f), glm::radians(0.0f))), glm::vec3(10.0f, 0.5f, 10.0f));
+	engine.GetResourceManager().InstantiateModel(engine.m_World, "Cube", glm::vec3(0.0f, -0.25f, 0.0f), glm::quat(glm::vec3(glm::radians(0.0f), glm::radians(0.0f), glm::radians(0.0f))), glm::vec3(10.0f, 0.5f, 10.0f));
 	//engine.GetResourceManager().InstantiateModel(engine.m_World, "Cube", glm::vec3(0.7f, 1.0f, 0.0f), glm::quat(glm::vec3(glm::radians(0.0f), glm::radians(0.0f), glm::radians(0.0f))), glm::vec3(0.1f, 0.1f, 0.1f));
 	//engine.GetResourceManager().InstantiateModel(engine.m_World, "Cube", glm::vec3(-0.7f, 1.0f, 0.0f), glm::quat(glm::vec3(glm::radians(0.0f), glm::radians(0.0f), glm::radians(0.0f))), glm::vec3(0.1f, 0.1f, 0.1f));
 	//engine.GetResourceManager().InstantiateModel(engine.m_World, "GreatDrawingRoom", glm::vec3(0.0f, -2.5f, 0.0f), glm::quat(glm::vec3(0.0f, glm::radians(-42.0f), 0.0f)), glm::vec3(1.0f, 1.0f, 1.0f));
 
-	engine.GetResourceManager().InstantiateModel(engine.m_World, "SurvivalBackpack", glm::vec3(0.0f, 2.0f, 0.0f), glm::quat(glm::vec3(glm::radians(0.0f), glm::radians(0.0f), glm::radians(0.0f))), glm::vec3(0.0025f, 0.0025f, 0.0025f));
-		//.set<SpinComponent>({0.1f, glm::vec3(0.0f, 1.0f, 0.0f)});
-	engine.GetResourceManager().InstantiateModel(engine.m_World, "God", glm::vec3(1.0f, 0.5f, -1.0f), glm::quat(glm::vec3(glm::radians(0.0f), glm::radians(0.0f), glm::radians(0.0f))), glm::vec3(0.001f, 0.001f, 0.001f));
-		//.set<SpinComponent>({ 0.1f, glm::vec3(0.0f, 1.0f, 0.0f) });
+	engine.GetResourceManager().InstantiateModel(engine.m_World, "SurvivalBackpack", glm::vec3(0.0f, 1.0f, -0.5f), glm::quat(glm::vec3(glm::radians(0.0f), glm::radians(0.0f), glm::radians(0.0f))), glm::vec3(0.0025f, 0.0025f, 0.0025f))
+		.set<SpinComponent>({0.1f, glm::vec3(0.0f, 1.0f, 0.0f)});
+	engine.GetResourceManager().InstantiateModel(engine.m_World, "God", glm::vec3(0.0f, 2.0f, -0.5f), glm::quat(glm::vec3(glm::radians(0.0f), glm::radians(0.0f), glm::radians(0.0f))), glm::vec3(0.001f, 0.001f, 0.001f))
+		.set<SpinComponent>({ 0.1f, glm::vec3(0.0f, 1.0f, 0.0f) });
 	
 	flecs::entity player = engine.m_World.entity("Player")
 		.add<TransformComponent, Global>()
@@ -101,7 +101,6 @@ int main()
 		.set<CameraComponent>({ 70.0f })
 		.set<PlayerPitchComponent>({ 1.0f });
 	
-	//Engine::KeyCallbackFunc TestFunc = Test;
 	engine.RegisterKeyCallback(KeyCallback);
 	
 	flecs::system spinSystem = engine.m_World.system<SpinComponent, flecs::pair<TransformComponent, Local>>("SpinSystem")

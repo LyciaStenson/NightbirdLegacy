@@ -23,12 +23,12 @@ bool ResourceManager::LoadModel(flecs::world world, const std::filesystem::path&
 	
 	int counter = 2;
 	std::string prefabName = name;
-	while (world.lookup(prefabName.c_str()))
+	while (world.lookup((prefabName + "Prefab").c_str()))
 	{
 		prefabName = name.c_str() + std::to_string(counter);
 		counter++;
 	}
-	flecs::entity modelPrefab = world.prefab((name + "Prefab").c_str())
+	flecs::entity modelPrefab = world.prefab((prefabName + "Prefab").c_str())
 		.add<TransformComponent, Global>()
 		.set<TransformComponent, Local>({ glm::vec3(), glm::quat(), glm::vec3(1.0f) });
 	

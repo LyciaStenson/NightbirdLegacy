@@ -348,7 +348,12 @@ void Engine::InitSystems()
 				
 				for (auto& primitive : meshComponent.primitives)
 				{
-					glBindTextureUnit(0, primitive.material.baseColorTexture);
+					if (primitive.material.hasBaseColorTexture)
+						glBindTextureUnit(0, primitive.material.baseColorTexture);
+					if (primitive.material.hasMetallicRoughnessTexture)
+						glBindTextureUnit(1, primitive.material.metallicRoughnessTexture);
+					if (primitive.material.hasNormalTexture)
+						glBindTextureUnit(2, primitive.material.normalTexture);
 					
 					primitive.material.shader.Use();
 					
