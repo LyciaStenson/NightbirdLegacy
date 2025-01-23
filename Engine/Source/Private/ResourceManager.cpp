@@ -284,7 +284,7 @@ void ResourceManager::IterateNode(flecs::world world, const fastgltf::Node& node
 	}
 }
 
-bool ResourceManager::LoadImage(fastgltf::Asset& asset, fastgltf::Image& image, const char* modelName, bool sRGB)
+bool ResourceManager::LoadImage(fastgltf::Asset& asset, fastgltf::Image& image, const char* modelName, TextureType textureType, bool sRGB)
 {
 	auto GetLevelCount = [](int width, int height) -> int
 		{
@@ -326,7 +326,7 @@ bool ResourceManager::LoadImage(fastgltf::Asset& asset, fastgltf::Image& image, 
 		}, image.data);
 	
 	glGenerateTextureMipmap(texture);
-	texturesMap[modelName].push_back(Texture{ texture });
+	texturesMap[modelName].push_back(Texture{ texture, textureType });
 	
 	return true;
 }
@@ -336,15 +336,36 @@ void ResourceManager::LoadImages(fastgltf::Asset& asset, const char* modelName)
 	for (auto& image : asset.images)
 	{
 		bool sRGB = false;
+		TextureType textureType;
 		for (auto& material : asset.materials)
 		{
 			if (material.pbrData.baseColorTexture.has_value()
 				&& asset.textures[material.pbrData.baseColorTexture.value().textureIndex].imageIndex == &image - &asset.images[0])
 			{
 				sRGB = true;
+				textureType = TextureType::BaseColor;
+				break;
+			}
+			else if (material.pbrData.metallicRoughnessTexture.has_value()
+				&& asset.textures[material.pbrData.metallicRoughnessTexture.value().textureIndex].imageIndex == &image - &asset.images[0])
+			{
+				textureType = TextureType::MetallicRoughness;
+				break;
+			}
+			else if (material.occlusionTexture.has_value()
+				&& asset.textures[material.pbrData.metallicRoughnessTexture.value().textureIndex].imageIndex == &image - &asset.images[0])
+			{
+				textureType = TextureType::Occlusion;
+				break;
+			}
+			else if (material.normalTexture.has_value()
+				&& asset.textures[material.normalTexture.value().textureIndex].imageIndex == &image - &asset.images[0])
+			{
+				textureType = TextureType::Normal;
+				break;
 			}
 		}
 
-		LoadImage(asset, image, modelName, sRGB);
+		LoadImage(asset, image, modelName, textureType, sRGB);
 	}
 }

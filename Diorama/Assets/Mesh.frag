@@ -56,8 +56,7 @@ void main()
 	
 	vec3 normal;
 
-	bool hasNormalTextureTest = hasNormalTexture;
-	if (hasNormalTextureTest)
+	if (hasNormalTexture)
 	{
 		normal = texture(normalTexture, normalTexCoord).rgb;
 		normal = normalize((normal * 2.0f) - 1.0f);
@@ -93,7 +92,8 @@ void main()
 	
 	vec4 finalBaseColor = hasBaseColorTexture ? texture(baseColorTexture, baseColorTexCoord) : baseColorFactor;
 
-	float finalMetallic = metallicFactor;
+	float finalMetallic = 0.0f;
+	//float finalMetallic = metallicFactor;
 	float finalRoughness = roughnessFactor;
 	float ambientOcclusion = 1.0f;
 
@@ -105,9 +105,9 @@ void main()
 		finalRoughness = metallicRoughnessData.g;
 	}
 	
-	FragColor = vec4(lighting, 1.0f) * finalBaseColor;
+	//FragColor = vec4(lighting, 1.0f) * finalBaseColor;
 	//FragColor = vec4(normal, 1.0f);
-	//FragColor = finalBaseColor;
+	FragColor = finalBaseColor;
 	//FragColor = vec4(ambientOcclusion, ambientOcclusion, ambientOcclusion, 1.0f);
 	//FragColor = vec4(finalMetallic, finalMetallic, finalMetallic, 1.0f);
 	//FragColor = vec4(finalRoughness, finalRoughness, finalRoughness, 1.0f);

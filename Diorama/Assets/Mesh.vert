@@ -37,8 +37,6 @@ out vec2 normalTexCoord;
 
 void main()
 {
-	bool hasNormalTextureTest = hasNormalTexture;
-	
 	vec3 fragPos = vec3(model * vec4(aPos, 1.0f));
 
 	mat3 normalMat = transpose(inverse(mat3(model)));
@@ -49,15 +47,13 @@ void main()
 
 	mat3 tbn = transpose(mat3(tangent, bitangent, normal));
 
-	FragPos = hasNormalTextureTest ? tbn * fragPos : fragPos;
-	//FragPos = tbn * fragPos;
-	//FragPos = fragPos;
+	FragPos = hasNormalTexture ? tbn * fragPos : fragPos;
 
-	ViewPos = hasNormalTextureTest ? tbn * viewPos : viewPos;
+	ViewPos = hasNormalTexture ? tbn * viewPos : viewPos;
 
-	DirectionalLightDir = hasNormalTextureTest ? tbn * directionalLightDir : directionalLightDir;
+	DirectionalLightDir = hasNormalTexture ? tbn * directionalLightDir : directionalLightDir;
 
-	if (hasNormalTextureTest)
+	if (hasNormalTexture)
 	{
 		for (int i = 0; i < pointLightCount && i < MAX_POINT_LIGHTS; i++)
 		{
@@ -70,7 +66,6 @@ void main()
 	}
 	
 	Normal = mat3(transpose(inverse(model))) * aNormal;
-	//Normal = tangent;
 
 	baseColorTexCoord = vec2(aBaseColorTexCoord.x, aBaseColorTexCoord.y);
 	metallicRoughnessTexCoord = vec2(aMetallicRoughnessTexCoord.x, aMetallicRoughnessTexCoord.y);

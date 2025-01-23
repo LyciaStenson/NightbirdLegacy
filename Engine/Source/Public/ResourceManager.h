@@ -35,7 +35,7 @@ private:
 	
 	void IterateNode(flecs::world world, const fastgltf::Node& node, const fastgltf::Asset& asset, const char* modelName, flecs::entity parent);
 	
-	bool LoadImage(fastgltf::Asset& asset, fastgltf::Image& image, const char* modelName, bool sRGB);
+	bool LoadImage(fastgltf::Asset& asset, fastgltf::Image& image, const char* modelName, TextureType textureType, bool sRGB);
 
 	void LoadImages(fastgltf::Asset& asset, const char* modelName);
 };
