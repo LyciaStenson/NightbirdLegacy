@@ -6,6 +6,11 @@ struct BaseLightComponent
 {
 	float intensity;
 	glm::vec3 color;
+
+	bool shadowMappingEnabled;
+	int shadowTextureWidth, shadowTextureHeight;
+	unsigned int shadowFramebuffer;
+	unsigned int shadowTexture;
 };
 
 struct DirectionalLightComponent

@@ -29,7 +29,6 @@ uniform bool hasNormalTexture;
 
 struct DirectionalLight
 {
-	//vec3 direction;
 	float intensity;
 	float ambient;
 	vec3 color;
@@ -37,7 +36,6 @@ struct DirectionalLight
 
 struct PointLight
 {
-	//vec3 position;
 	float intensity;
 	vec3 color;
 	float constantAttenuation;

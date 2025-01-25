@@ -22,4 +22,8 @@ struct Material
 	Shader shader;
 	const char* vertexPath;
 	const char* fragmentPath;
+
+	Shader shadowShader;
+	const char* shadowVertexPath;
+	const char* shadowFragmentPath;
 };

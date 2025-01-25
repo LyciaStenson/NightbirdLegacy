@@ -36,10 +36,12 @@ void GameRenderTarget::Init(GLFWwindow* window)
 	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
 
-	m_ScreenShader.Load("ScreenShader.vert", "ScreenShader.frag");
+	//m_ScreenShader.Load("ScreenShader.vert", "ScreenShader.frag");
+	m_ScreenShader.Load("ScreenShader.vert", "ShadowScreenShader.frag");
 
 	m_ScreenShader.Use();
-	m_ScreenShader.SetInt("screenTexture", 0);
+	//m_ScreenShader.SetInt("screenTexture", 0);
+	m_ScreenShader.SetInt("depthTexture", 0);
 
 	glGenFramebuffers(1, &m_Framebuffer);
 	glBindFramebuffer(GL_FRAMEBUFFER, m_Framebuffer);

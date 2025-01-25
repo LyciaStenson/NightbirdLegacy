@@ -58,7 +58,7 @@ int main()
 	flecs::entity directionalLight = engine.m_World.entity("DirectionalLight")
 		.add<TransformComponent, Global>()
 		.set<TransformComponent, Local>({ glm::vec3(), glm::quat(glm::vec3(glm::radians(-55.0f), glm::radians(0.0f), glm::radians(0.0f))) })
-		.set<BaseLightComponent>({ 0.0f, glm::vec3(1.0f, 1.0f, 1.0f) })
+		.set<BaseLightComponent>({ 0.0f, glm::vec3(1.0f, 1.0f, 1.0f), true, 1024, 1024 })
 		.set<DirectionalLightComponent>({ 0.05f });
 
 	flecs::entity pointLight1 = engine.m_World.entity("PointLight1")
@@ -84,7 +84,7 @@ int main()
 	//engine.GetResourceManager().InstantiateModel(engine.m_World, "GreatDrawingRoom", glm::vec3(0.0f, -2.5f, 0.0f), glm::quat(glm::vec3(0.0f, glm::radians(-42.0f), 0.0f)), glm::vec3(1.0f, 1.0f, 1.0f));
 
 	engine.GetResourceManager().InstantiateModel(engine.m_World, "SurvivalBackpack", glm::vec3(0.0f, 1.0f, -0.5f), glm::quat(glm::vec3(glm::radians(0.0f), glm::radians(0.0f), glm::radians(0.0f))), glm::vec3(0.0025f, 0.0025f, 0.0025f))
-		.set<SpinComponent>({0.1f, glm::vec3(0.0f, 1.0f, 0.0f)});
+		.set<SpinComponent>({ 0.1f, glm::vec3(0.0f, 1.0f, 0.0f) });
 	engine.GetResourceManager().InstantiateModel(engine.m_World, "God", glm::vec3(0.0f, 2.0f, -0.5f), glm::quat(glm::vec3(glm::radians(0.0f), glm::radians(0.0f), glm::radians(0.0f))), glm::vec3(0.001f, 0.001f, 0.001f))
 		.set<SpinComponent>({ 0.1f, glm::vec3(0.0f, 1.0f, 0.0f) });
 	

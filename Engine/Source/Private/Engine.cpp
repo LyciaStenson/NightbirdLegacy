@@ -224,7 +224,7 @@ void Engine::InitSystems()
 			}
 		);
 	*/
-
+	
 	flecs::system skyboxInitSystem = m_World.system<SkyboxComponent>("SkyboxInitSystem")
 		.kind(0)
 		.each([](flecs::entity entity, SkyboxComponent& skyboxComponent)
@@ -312,8 +312,9 @@ void Engine::InitSystems()
 		);
 
 	flecs::system meshRenderSystem = m_World.system<flecs::pair<TransformComponent, Global>, MeshComponent>("MeshRenderSystem")
-		.kind(flecs::OnUpdate)
-		.each([&](flecs::iter& iter, size_t index, flecs::pair<TransformComponent, Global> transformComponent, MeshComponent& meshComponent)
+		//.kind(flecs::OnUpdate)
+		.kind(0)
+		.each([&](flecs::pair<TransformComponent, Global> transformComponent, MeshComponent& meshComponent)
 			{
 				const CameraComponent* camera = m_MainCamera.get<CameraComponent>();
 				const TransformComponent* cameraTransform = m_MainCamera.get<TransformComponent, Global>();
@@ -418,8 +419,9 @@ void Engine::InitSystems()
 		);
 	
 	flecs::system skyboxRenderSystem = m_World.system<SkyboxComponent>("SkyboxRenderSystem")
-		.kind(flecs::OnUpdate)
-		.each([&](flecs::iter& iter, size_t index, SkyboxComponent& skyboxComponent)
+		//.kind(flecs::OnUpdate)
+		.kind(0)
+		.each([&](SkyboxComponent& skyboxComponent)
 			{
 				const CameraComponent* camera = m_MainCamera.get<CameraComponent>();
 				const TransformComponent* cameraTransform = m_MainCamera.get<TransformComponent, Global>();
@@ -450,6 +452,80 @@ void Engine::InitSystems()
 				glDepthFunc(GL_LESS);
 			}
 		);
+
+	flecs::system directionalLightShadowMapInitSystem = m_World.system<flecs::pair<TransformComponent, Global>, BaseLightComponent, DirectionalLightComponent>("DirectionalLightShadowMapInitSystem")
+		.kind(0)
+		.each([&](flecs::pair<TransformComponent, Global> transformComponent, BaseLightComponent& lightComponent, DirectionalLightComponent directionalLightComponent)
+			{
+				if (!lightComponent.shadowMappingEnabled)
+					return;
+
+				m_World.each([&](flecs::pair<TransformComponent, Global> transformComponent, MeshComponent& meshComponent)
+					{
+						for (auto& primitive : meshComponent.primitives)
+						{
+							primitive.material.shadowShader = Shader("Shadow.vert", "Shadow.frag");
+
+							primitive.material.shadowShader.Use();
+							
+							glBindVertexArray(0);
+						}
+					}
+				);
+				
+				glGenFramebuffers(1, &lightComponent.shadowFramebuffer);
+				//glBindFramebuffer(GL_FRAMEBUFFER, lightComponent.shadowFramebuffer);
+				glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+				glGenTextures(1, &lightComponent.shadowTexture);
+				glBindTexture(GL_TEXTURE_2D, lightComponent.shadowTexture);
+				glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, lightComponent.shadowTextureWidth, lightComponent.shadowTextureHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
+
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+
+				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, lightComponent.shadowTexture, 0);
+				
+				glBindFramebuffer(GL_FRAMEBUFFER, 0);
+			}
+		);
+	directionalLightInitSystem.run();
+
+	flecs::system directionalLightShadowMapRenderSystem = m_World.system<flecs::pair<TransformComponent, Global>, BaseLightComponent, DirectionalLightComponent>("DirectionalLightShadowMapRenderSystem")
+		.kind(flecs::OnUpdate)
+		.each([&](flecs::pair<TransformComponent, Global> transformComponent, BaseLightComponent& lightComponent, DirectionalLightComponent& directionalLightComponent)
+			{
+				//glBindFramebuffer(GL_FRAMEBUFFER, lightComponent.shadowFramebuffer);
+				glBindFramebuffer(GL_FRAMEBUFFER, 0);
+				glEnable(GL_DEPTH_TEST);
+				glViewport(0, 0, 1280, 720);
+
+				glm::mat4 lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 0.01f, 1000.0f);
+				glm::vec3 lightDir = glm::rotate(transformComponent->Rotation, glm::vec3(0.0f, 0.0f, -1.0f));
+				glm::mat4 lightView = glm::lookAt(lightDir * -0.1f, glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+				
+				glm::mat4 lightSpaceMat = lightProjection * lightView;
+				
+				m_World.each([&](flecs::pair<TransformComponent, Global> transformComponent, MeshComponent& meshComponent)
+					{
+						for (auto& primitive : meshComponent.primitives)
+						{
+							primitive.material.shader.Use();
+
+							primitive.material.shader.SetMat4("lightSpaceMat", lightSpaceMat);
+
+							glBindVertexArray(primitive.VAO);
+							glDrawElements(GL_TRIANGLES, primitive.indices.size(), GL_UNSIGNED_INT, 0);
+						}
+					}
+				);
+				
+				glClear(GL_DEPTH_BUFFER_BIT);
+				glBindFramebuffer(GL_FRAMEBUFFER, 0);
+			}
+		);
 	
 	m_RenderShutdownSystem = m_World.system<MeshComponent>("RenderShutdownSystem")
 		.kind(0)
@@ -459,6 +535,7 @@ void Engine::InitSystems()
 				{
 					glDeleteVertexArrays(1, &primitive.VAO);
 					glDeleteBuffers(1, &primitive.VBO);
+					glDeleteBuffers(1, &primitive.EBO);
 				}
 			}
 		);
@@ -492,7 +569,7 @@ void Engine::InitSystems()
 
 	flecs::system playerYawSystem = m_World.system<PlayerYawComponent, flecs::pair<TransformComponent, Local>>("PlayerYawSystem")
 		.kind(flecs::OnUpdate)
-		.each([&](flecs::iter& iter, size_t index, PlayerYawComponent& playerYawComponent, flecs::pair<TransformComponent, Local> transformComponent)
+		.each([&](PlayerYawComponent& playerYawComponent, flecs::pair<TransformComponent, Local> transformComponent)
 			{
 				InputComponent* input = m_World.get_mut<InputComponent>();
 
@@ -507,7 +584,7 @@ void Engine::InitSystems()
 
 	flecs::system playerPitchSystem = m_World.system<PlayerPitchComponent, flecs::pair<TransformComponent, Local>>("PlayerPitchSystem")
 		.kind(flecs::OnUpdate)
-		.each([&](flecs::iter& iter, size_t index, PlayerPitchComponent& playerPitchComponent, flecs::pair<TransformComponent, Local> transformComponent)
+		.each([&](PlayerPitchComponent& playerPitchComponent, flecs::pair<TransformComponent, Local> transformComponent)
 			{
 				InputComponent* input = m_World.get_mut<InputComponent>();
 

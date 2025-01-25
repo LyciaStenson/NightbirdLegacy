@@ -14,7 +14,6 @@ struct MeshPrimitive
 	std::vector<Texture> textures;
 	Material material;
 
-	//unsigned int texture = 0;
 	unsigned int VBO = 0;
 	unsigned int VAO = 0;
 	unsigned int EBO = 0;
