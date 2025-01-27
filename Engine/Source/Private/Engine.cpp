@@ -70,7 +70,7 @@ bool Engine::Init()
 	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
 	glDebugMessageCallback(DebugCallback, 0);
 	
-	//m_RenderTarget->Init(m_Window);
+	m_RenderTarget->Init(m_Window);
 	
 	glEnable(GL_FRAMEBUFFER_SRGB);
 
@@ -266,11 +266,11 @@ void Engine::InitSystems()
 				glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 			}
 		);
-	//skyboxInitSystem.run();
+	skyboxInitSystem.run();
 	
 	flecs::system skyboxLateInitSystem = m_World.system<CubemapLoadComponent, SkyboxComponent>("SkyboxLateInitSystem")
-		//.kind(flecs::OnUpdate)
-		.kind(0)
+		.kind(flecs::OnUpdate)
+		//.kind(0)
 		.each([&](flecs::entity entity, CubemapLoadComponent& cubemapLoadComponent, SkyboxComponent& skyboxComponent)
 			{
 				glActiveTexture(GL_TEXTURE0);
@@ -313,10 +313,11 @@ void Engine::InitSystems()
 		);
 
 	flecs::system meshRenderSystem = m_World.system<flecs::pair<TransformComponent, Global>, MeshComponent>("MeshRenderSystem")
-		//.kind(flecs::OnUpdate)
-		.kind(0)
+		.kind(flecs::OnUpdate)
+		//.kind(0)
 		.each([&](flecs::pair<TransformComponent, Global> transformComponent, MeshComponent& meshComponent)
 			{
+				//std::cout << "MeshRenderSystem" << std::endl;
 				const CameraComponent* camera = m_MainCamera.get<CameraComponent>();
 				const TransformComponent* cameraTransform = m_MainCamera.get<TransformComponent, Global>();
 				
@@ -420,8 +421,8 @@ void Engine::InitSystems()
 		);
 	
 	flecs::system skyboxRenderSystem = m_World.system<SkyboxComponent>("SkyboxRenderSystem")
-		//.kind(flecs::OnUpdate)
-		.kind(0)
+		.kind(flecs::OnUpdate)
+		//.kind(0)
 		.each([&](SkyboxComponent& skyboxComponent)
 			{
 				const CameraComponent* camera = m_MainCamera.get<CameraComponent>();
@@ -491,7 +492,6 @@ void Engine::InitSystems()
 
 				glGenFramebuffers(1, &lightComponent.shadowFramebuffer);
 				glBindFramebuffer(GL_FRAMEBUFFER, lightComponent.shadowFramebuffer);
-				//glBindFramebuffer(GL_FRAMEBUFFER, 0);
 				
 				glActiveTexture(GL_TEXTURE0);
 				glGenTextures(1, &lightComponent.shadowTexture);
@@ -529,6 +529,7 @@ void Engine::InitSystems()
 		//.kind(0)
 		.each([&](flecs::pair<TransformComponent, Global> transformComponent, BaseLightComponent& lightComponent, DirectionalLightComponent& directionalLightComponent)
 			{
+				//std::cout << "DirectionalLightShadowMapRenderSystem" << std::endl;
 				glViewport(0, 0, lightComponent.shadowTextureWidth, lightComponent.shadowTextureHeight);
 				glBindFramebuffer(GL_FRAMEBUFFER, lightComponent.shadowFramebuffer);
 				
@@ -567,14 +568,17 @@ void Engine::InitSystems()
 
 				glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-				glViewport(0, 0, 1280, 720);
+				int width, height;
+				m_RenderTarget->GetWindowSize(width, height);
+
+				glViewport(0, 0, width, height);
 				
 				glClear(GL_DEPTH_BUFFER_BIT);
 
-				lightComponent.shadowScreenShader.Use();
-				glBindVertexArray(lightComponent.screenShadowVAO);
-				glBindTexture(GL_TEXTURE_2D, lightComponent.shadowTexture);
-				glDrawArrays(GL_TRIANGLES, 0, 6);
+				//lightComponent.shadowScreenShader.Use();
+				//glBindVertexArray(lightComponent.screenShadowVAO);
+				//glBindTexture(GL_TEXTURE_2D, lightComponent.shadowTexture);
+				//glDrawArrays(GL_TRIANGLES, 0, 6);
 			}
 		);
 	
@@ -699,7 +703,7 @@ void Engine::MainLoop()
 				}
 			);
 		
-		//m_RenderTarget->Bind();
+		m_RenderTarget->Bind();
 		
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -709,9 +713,9 @@ void Engine::MainLoop()
 			m_World.progress();
 		}
 		
-		//m_RenderTarget->Unbind();
+		m_RenderTarget->Unbind();
 		
-		//m_RenderTarget->Render();
+		m_RenderTarget->Render();
 
 		glfwSwapBuffers(m_Window);
 		glfwPollEvents();
