@@ -69,7 +69,7 @@ bool Engine::Init()
 
 	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
 	glDebugMessageCallback(DebugCallback, 0);
-
+	
 	//m_RenderTarget->Init(m_Window);
 	
 	glEnable(GL_FRAMEBUFFER_SRGB);
@@ -536,10 +536,9 @@ void Engine::InitSystems()
 
 				glClear(GL_DEPTH_BUFFER_BIT);
 				
-				glm::mat4 lightProjection = glm::ortho(-5.0f, 5.0f, -5.0f, 5.0f, 0.01f, 100.0f);
+				glm::mat4 lightProjection = glm::ortho(-15.0f, 15.0f, -15.0f, 15.0f, 0.01f, 100.0f);
 				glm::vec3 lightDir = glm::rotate(transformComponent->Rotation, glm::vec3(0.0f, 0.0f, -1.0f));
-				glm::mat4 lightView = glm::lookAt(lightDir * -5.1f, glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-				//glm::mat4 lightView = glm::lookAt(glm::vec3(0.0f, 3.0f, 3.0f), glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+				glm::mat4 lightView = glm::lookAt(lightDir * -15.0f, glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 				
 				glm::mat4 lightSpaceMat = lightProjection * lightView;
 
@@ -699,7 +698,7 @@ void Engine::MainLoop()
 					}
 				}
 			);
-
+		
 		//m_RenderTarget->Bind();
 		
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -709,9 +708,9 @@ void Engine::MainLoop()
 		{
 			m_World.progress();
 		}
-
+		
 		//m_RenderTarget->Unbind();
-
+		
 		//m_RenderTarget->Render();
 
 		glfwSwapBuffers(m_Window);
@@ -774,7 +773,7 @@ void Engine::ScrollCallback(GLFWwindow* window, double xOffset, double yOffset)
 
 void Engine::HandleFramebufferSize(int width, int height)
 {
-	//m_RenderTarget->WindowResize(width, height);
+	m_RenderTarget->WindowResize(width, height);
 }
 
 void Engine::HandleKey(int key, int scancode, int action, int mods)
