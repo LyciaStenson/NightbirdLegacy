@@ -531,15 +531,15 @@ void Engine::InitSystems()
 			{
 				glViewport(0, 0, lightComponent.shadowTextureWidth, lightComponent.shadowTextureHeight);
 				glBindFramebuffer(GL_FRAMEBUFFER, lightComponent.shadowFramebuffer);
-				//glBindFramebuffer(GL_FRAMEBUFFER, 0);
+				
 				glEnable(GL_DEPTH_TEST);
 
 				glClear(GL_DEPTH_BUFFER_BIT);
 				
 				glm::mat4 lightProjection = glm::ortho(-5.0f, 5.0f, -5.0f, 5.0f, 0.01f, 100.0f);
 				glm::vec3 lightDir = glm::rotate(transformComponent->Rotation, glm::vec3(0.0f, 0.0f, -1.0f));
-				//glm::mat4 lightView = glm::lookAt(lightDir * -0.1f, glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-				glm::mat4 lightView = glm::lookAt(glm::vec3(0.0f, 15.0f, 10.0f), glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+				glm::mat4 lightView = glm::lookAt(lightDir * -5.1f, glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+				//glm::mat4 lightView = glm::lookAt(glm::vec3(0.0f, 3.0f, 3.0f), glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 				
 				glm::mat4 lightSpaceMat = lightProjection * lightView;
 
