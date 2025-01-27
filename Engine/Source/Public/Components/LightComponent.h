@@ -9,8 +9,11 @@ struct BaseLightComponent
 
 	bool shadowMappingEnabled;
 	int shadowTextureWidth, shadowTextureHeight;
+	unsigned int screenShadowVAO;
 	unsigned int shadowFramebuffer;
 	unsigned int shadowTexture;
+
+	Shader shadowScreenShader;
 };
 
 struct DirectionalLightComponent

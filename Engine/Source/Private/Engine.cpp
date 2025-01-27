@@ -70,7 +70,7 @@ bool Engine::Init()
 	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
 	glDebugMessageCallback(DebugCallback, 0);
 
-	m_RenderTarget->Init(m_Window);
+	//m_RenderTarget->Init(m_Window);
 	
 	glEnable(GL_FRAMEBUFFER_SRGB);
 
@@ -266,10 +266,11 @@ void Engine::InitSystems()
 				glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 			}
 		);
-	skyboxInitSystem.run();
+	//skyboxInitSystem.run();
 	
 	flecs::system skyboxLateInitSystem = m_World.system<CubemapLoadComponent, SkyboxComponent>("SkyboxLateInitSystem")
-		.kind(flecs::OnUpdate)
+		//.kind(flecs::OnUpdate)
+		.kind(0)
 		.each([&](flecs::entity entity, CubemapLoadComponent& cubemapLoadComponent, SkyboxComponent& skyboxComponent)
 			{
 				glActiveTexture(GL_TEXTURE0);
@@ -459,71 +460,122 @@ void Engine::InitSystems()
 			{
 				if (!lightComponent.shadowMappingEnabled)
 					return;
-
-				m_World.each([&](flecs::pair<TransformComponent, Global> transformComponent, MeshComponent& meshComponent)
-					{
-						for (auto& primitive : meshComponent.primitives)
-						{
-							primitive.material.shadowShader = Shader("Shadow.vert", "Shadow.frag");
-
-							primitive.material.shadowShader.Use();
-							
-							glBindVertexArray(0);
-						}
-					}
-				);
 				
-				glGenFramebuffers(1, &lightComponent.shadowFramebuffer);
-				//glBindFramebuffer(GL_FRAMEBUFFER, lightComponent.shadowFramebuffer);
-				glBindFramebuffer(GL_FRAMEBUFFER, 0);
+				float screenVertices[] =
+				{
+					// Positions	// Texture Coords
+					-1.0f,  1.0f,	0.0f, 1.0f, // Top left
+					-1.0f, -1.0f,	0.0f, 0.0f, // Bottom left
+					 1.0f, -1.0f,	1.0f, 0.0f, // Bottom right
+					-1.0f,  1.0f,	0.0f, 1.0f, // Top left
+					 1.0f, -1.0f,	1.0f, 0.0f, // Bottom right
+					 1.0f,  1.0f,	1.0f, 1.0f	// Top right
+				};
 
+				unsigned int depthMapVBO;
+
+				glGenVertexArrays(1, &lightComponent.screenShadowVAO);
+				glGenBuffers(1, &depthMapVBO);
+				glBindVertexArray(lightComponent.screenShadowVAO);
+				glBindBuffer(GL_ARRAY_BUFFER, depthMapVBO);
+				glBufferData(GL_ARRAY_BUFFER, sizeof(screenVertices), &screenVertices, GL_STATIC_DRAW);
+				glEnableVertexAttribArray(0);
+				glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
+				glEnableVertexAttribArray(1);
+				glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
+
+				lightComponent.shadowScreenShader.Load("ScreenShader.vert", "ShadowScreenShader.frag");
+
+				lightComponent.shadowScreenShader.Use();
+				lightComponent.shadowScreenShader.SetInt("depthTexture", 0);
+
+				glGenFramebuffers(1, &lightComponent.shadowFramebuffer);
+				glBindFramebuffer(GL_FRAMEBUFFER, lightComponent.shadowFramebuffer);
+				//glBindFramebuffer(GL_FRAMEBUFFER, 0);
+				
+				glActiveTexture(GL_TEXTURE0);
 				glGenTextures(1, &lightComponent.shadowTexture);
 				glBindTexture(GL_TEXTURE_2D, lightComponent.shadowTexture);
-				glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, lightComponent.shadowTextureWidth, lightComponent.shadowTextureHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
+				std::cout << lightComponent.shadowTextureWidth << ", " << lightComponent.shadowTextureHeight << std::endl;
+				glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, lightComponent.shadowTextureWidth, lightComponent.shadowTextureHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
 				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, lightComponent.shadowTexture, 0);
 				
+				glDrawBuffer(GL_NONE);
+				glReadBuffer(GL_NONE);
+
 				glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+				m_World.each([&](flecs::pair<TransformComponent, Global> transformComponent, MeshComponent& meshComponent)
+					{
+						for (auto& primitive : meshComponent.primitives)
+						{
+							primitive.material.shadowShader.Load("Shadow.vert", "Shadow.frag");
+							primitive.material.shadowShader.Use();
+						}
+					}
+				);
 			}
 		);
-	directionalLightInitSystem.run();
+	directionalLightShadowMapInitSystem.run();
 
 	flecs::system directionalLightShadowMapRenderSystem = m_World.system<flecs::pair<TransformComponent, Global>, BaseLightComponent, DirectionalLightComponent>("DirectionalLightShadowMapRenderSystem")
 		.kind(flecs::OnUpdate)
+		//.kind(0)
 		.each([&](flecs::pair<TransformComponent, Global> transformComponent, BaseLightComponent& lightComponent, DirectionalLightComponent& directionalLightComponent)
 			{
-				//glBindFramebuffer(GL_FRAMEBUFFER, lightComponent.shadowFramebuffer);
-				glBindFramebuffer(GL_FRAMEBUFFER, 0);
+				glViewport(0, 0, lightComponent.shadowTextureWidth, lightComponent.shadowTextureHeight);
+				glBindFramebuffer(GL_FRAMEBUFFER, lightComponent.shadowFramebuffer);
+				//glBindFramebuffer(GL_FRAMEBUFFER, 0);
 				glEnable(GL_DEPTH_TEST);
-				glViewport(0, 0, 1280, 720);
 
-				glm::mat4 lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 0.01f, 1000.0f);
+				glClear(GL_DEPTH_BUFFER_BIT);
+				
+				glm::mat4 lightProjection = glm::ortho(-5.0f, 5.0f, -5.0f, 5.0f, 0.01f, 100.0f);
 				glm::vec3 lightDir = glm::rotate(transformComponent->Rotation, glm::vec3(0.0f, 0.0f, -1.0f));
-				glm::mat4 lightView = glm::lookAt(lightDir * -0.1f, glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+				//glm::mat4 lightView = glm::lookAt(lightDir * -0.1f, glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+				glm::mat4 lightView = glm::lookAt(glm::vec3(0.0f, 15.0f, 10.0f), glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 				
 				glm::mat4 lightSpaceMat = lightProjection * lightView;
+
+				glActiveTexture(GL_TEXTURE0);
+				glBindTexture(GL_TEXTURE_2D, lightComponent.shadowTexture);
 				
 				m_World.each([&](flecs::pair<TransformComponent, Global> transformComponent, MeshComponent& meshComponent)
 					{
 						for (auto& primitive : meshComponent.primitives)
 						{
-							primitive.material.shader.Use();
+							primitive.material.shadowShader.Use();
 
-							primitive.material.shader.SetMat4("lightSpaceMat", lightSpaceMat);
+							glm::mat4 model = glm::mat4(1.0f);
+							model = glm::translate(model, transformComponent->Position);
+							model *= glm::toMat4(transformComponent->Rotation);
+							model = glm::scale(model, transformComponent->Scale);
+							primitive.material.shadowShader.SetMat4("model", model);
+
+							primitive.material.shadowShader.SetMat4("lightSpaceMat", lightSpaceMat);
 
 							glBindVertexArray(primitive.VAO);
 							glDrawElements(GL_TRIANGLES, primitive.indices.size(), GL_UNSIGNED_INT, 0);
 						}
 					}
 				);
+
+				glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+				glViewport(0, 0, 1280, 720);
 				
 				glClear(GL_DEPTH_BUFFER_BIT);
-				glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+				lightComponent.shadowScreenShader.Use();
+				glBindVertexArray(lightComponent.screenShadowVAO);
+				glBindTexture(GL_TEXTURE_2D, lightComponent.shadowTexture);
+				glDrawArrays(GL_TRIANGLES, 0, 6);
 			}
 		);
 	
@@ -648,7 +700,7 @@ void Engine::MainLoop()
 				}
 			);
 
-		m_RenderTarget->Bind();
+		//m_RenderTarget->Bind();
 		
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -658,9 +710,9 @@ void Engine::MainLoop()
 			m_World.progress();
 		}
 
-		m_RenderTarget->Unbind();
+		//m_RenderTarget->Unbind();
 
-		m_RenderTarget->Render();
+		//m_RenderTarget->Render();
 
 		glfwSwapBuffers(m_Window);
 		glfwPollEvents();
@@ -722,7 +774,7 @@ void Engine::ScrollCallback(GLFWwindow* window, double xOffset, double yOffset)
 
 void Engine::HandleFramebufferSize(int width, int height)
 {
-	m_RenderTarget->WindowResize(width, height);
+	//m_RenderTarget->WindowResize(width, height);
 }
 
 void Engine::HandleKey(int key, int scancode, int action, int mods)
