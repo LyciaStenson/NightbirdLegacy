@@ -270,7 +270,6 @@ void Engine::InitSystems()
 	
 	flecs::system skyboxLateInitSystem = m_World.system<CubemapLoadComponent, SkyboxComponent>("SkyboxLateInitSystem")
 		.kind(flecs::OnUpdate)
-		//.kind(0)
 		.each([&](flecs::entity entity, CubemapLoadComponent& cubemapLoadComponent, SkyboxComponent& skyboxComponent)
 			{
 				glActiveTexture(GL_TEXTURE0);
@@ -314,7 +313,6 @@ void Engine::InitSystems()
 
 	flecs::system meshRenderSystem = m_World.system<flecs::pair<TransformComponent, Global>, MeshComponent>("MeshRenderSystem")
 		.kind(flecs::OnUpdate)
-		//.kind(0)
 		.each([&](flecs::pair<TransformComponent, Global> transformComponent, MeshComponent& meshComponent)
 			{
 				m_RenderTarget->Bind();
@@ -440,7 +438,6 @@ void Engine::InitSystems()
 	
 	flecs::system skyboxRenderSystem = m_World.system<SkyboxComponent>("SkyboxRenderSystem")
 		.kind(flecs::OnUpdate)
-		//.kind(0)
 		.each([&](SkyboxComponent& skyboxComponent)
 			{
 				const CameraComponent* camera = m_MainCamera.get<CameraComponent>();
@@ -479,35 +476,7 @@ void Engine::InitSystems()
 			{
 				if (!lightComponent.shadowMappingEnabled)
 					return;
-
-				//float screenVertices[] =
-				//{
-				//	// Positions	// Texture Coords
-				//	-1.0f,  1.0f,	0.0f, 1.0f, // Top left
-				//	-1.0f, -1.0f,	0.0f, 0.0f, // Bottom left
-				//	 1.0f, -1.0f,	1.0f, 0.0f, // Bottom right
-				//	-1.0f,  1.0f,	0.0f, 1.0f, // Top left
-				//	 1.0f, -1.0f,	1.0f, 0.0f, // Bottom right
-				//	 1.0f,  1.0f,	1.0f, 1.0f	// Top right
-				//};
-
-				//unsigned int depthMapVBO;
-
-				//glGenVertexArrays(1, &lightComponent.screenShadowVAO);
-				//glGenBuffers(1, &depthMapVBO);
-				//glBindVertexArray(lightComponent.screenShadowVAO);
-				//glBindBuffer(GL_ARRAY_BUFFER, depthMapVBO);
-				//glBufferData(GL_ARRAY_BUFFER, sizeof(screenVertices), &screenVertices, GL_STATIC_DRAW);
-				//glEnableVertexAttribArray(0);
-				//glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
-				//glEnableVertexAttribArray(1);
-				//glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
-
-				//lightComponent.shadowScreenShader.Load("ScreenShader.vert", "ShadowScreenShader.frag");
-
-				//lightComponent.shadowScreenShader.Use();
-				//lightComponent.shadowScreenShader.SetInt("depthTexture", 0);
-
+				
 				glGenFramebuffers(1, &lightComponent.shadowFramebuffer);
 				glBindFramebuffer(GL_FRAMEBUFFER, lightComponent.shadowFramebuffer);
 
@@ -543,7 +512,6 @@ void Engine::InitSystems()
 	
 	flecs::system directionalLightShadowMapRenderSystem = m_World.system<flecs::pair<TransformComponent, Global>, BaseLightComponent, DirectionalLightComponent>("DirectionalLightShadowMapRenderSystem")
 		.kind(flecs::PreUpdate)
-		//.kind(0)
 		.each([&](flecs::pair<TransformComponent, Global> transformComponent, BaseLightComponent& lightComponent, DirectionalLightComponent& directionalLightComponent)
 			{
 				glViewport(0, 0, lightComponent.shadowTextureWidth, lightComponent.shadowTextureHeight);
@@ -557,7 +525,6 @@ void Engine::InitSystems()
 				glm::vec3 lightDir = glm::rotate(transformComponent->Rotation, glm::vec3(0.0f, 0.0f, -1.0f));
 				glm::mat4 lightView = glm::lookAt(lightDir * -5.0f, glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 				
-				//glm::mat4 lightSpaceMat = lightProjection * lightView;
 				lightComponent.lightSpaceMat = lightProjection * lightView;
 
 				glActiveTexture(GL_TEXTURE0);
@@ -582,9 +549,7 @@ void Engine::InitSystems()
 						}
 					}
 				);
-
-				//glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
+				
 				m_RenderTarget->Bind();
 
 				int width, height;
@@ -593,11 +558,6 @@ void Engine::InitSystems()
 				glViewport(0, 0, width, height);
 				
 				glClear(GL_DEPTH_BUFFER_BIT);
-
-				//lightComponent.shadowScreenShader.Use();
-				//glBindVertexArray(lightComponent.screenShadowVAO);
-				//glBindTexture(GL_TEXTURE_2D, lightComponent.shadowTexture);
-				//glDrawArrays(GL_TRIANGLES, 0, 6);
 			}
 		);
 	
