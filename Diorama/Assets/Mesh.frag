@@ -7,7 +7,7 @@ in vec3 Normal;
 in vec3 ViewPos;
 
 in vec3 DirectionalLightDir;
-out vec4 FragPosLightSpace;
+in vec4 FragPosLightSpace;
 
 #define MAX_POINT_LIGHTS 16
 in vec3 PointLightPositions[MAX_POINT_LIGHTS];
@@ -45,6 +45,7 @@ struct PointLight
 };
 
 uniform DirectionalLight directionalLight;
+uniform sampler2D directionalLightShadowMap;
 
 uniform PointLight pointLights[MAX_POINT_LIGHTS];
 uniform int pointLightCount;
@@ -53,11 +54,12 @@ float CalculateShadow(vec4 fragPosLightSpace)
 {
 	vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
 	projCoords = projCoords * 0.5f + 0.5f;
-
-	float closestDepth = texture(directionalLightShadowMap).r;
+	
+	float closestDepth = texture(directionalLightShadowMap, projCoords.xy).r;
 	float currentDepth = projCoords.z;
-
-	float shadow = currentDepth > closestDepth ? 1.0f : 0.0f;
+	
+	float bias = 0.005f;
+	float shadow = currentDepth - bias > closestDepth ? 1.0f : 0.0f;
 	return shadow;
 }
 
@@ -113,10 +115,12 @@ void main()
 		finalMetallic = metallicRoughnessData.b;
 		finalRoughness = metallicRoughnessData.g;
 	}
-
+	
 	float directionalLightShadow = CalculateShadow(FragPosLightSpace);
-
-	vec3 lighting = ambient + ((1.0f - shadow) * diffuse);
+	
+	//vec3 lighting = ambient + ((1.0f - 0.0f) * diffuse);
+	vec3 lighting = ambient + ((1.0f - directionalLightShadow) * diffuse);
+	//vec3 lighting = ambient + diffuse;
 	
 	FragColor = vec4(lighting, 1.0f) * finalBaseColor;
 	//FragColor = vec4(normal, 1.0f);

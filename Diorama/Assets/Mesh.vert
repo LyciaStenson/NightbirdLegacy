@@ -16,9 +16,8 @@ uniform vec3 viewPos;
 uniform bool hasNormalTexture;
 uniform int tangentHandedness;
 
-uniform sampler2D directionalLightShadowMap;
 uniform vec3 directionalLightDir;
-uniform mat4 lightSpaceMat;
+uniform mat4 directionalLightSpaceMat;
 
 #define MAX_POINT_LIGHTS 16
 uniform vec3 pointLightPositions[MAX_POINT_LIGHTS];
@@ -74,7 +73,7 @@ void main()
 	metallicRoughnessTexCoord = vec2(aMetallicRoughnessTexCoord.x, aMetallicRoughnessTexCoord.y);
 	normalTexCoord = vec2(aNormalTexCoord.x, aNormalTexCoord.y);
 	
-	FragPosLightSpace = lightSpaceMat * vec4(fragPos, 1.0f);
+	FragPosLightSpace = directionalLightSpaceMat * vec4(fragPos, 1.0f);
 
 	gl_Position = projection * view * vec4(fragPos, 1.0f);
 }

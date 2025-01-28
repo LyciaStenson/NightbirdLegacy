@@ -12,6 +12,7 @@ struct BaseLightComponent
 	unsigned int screenShadowVAO;
 	unsigned int shadowFramebuffer;
 	unsigned int shadowTexture;
+	glm::mat4 lightSpaceMat;
 
 	Shader shadowScreenShader;
 };

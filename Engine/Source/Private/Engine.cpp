@@ -317,7 +317,8 @@ void Engine::InitSystems()
 		//.kind(0)
 		.each([&](flecs::pair<TransformComponent, Global> transformComponent, MeshComponent& meshComponent)
 			{
-				//std::cout << "MeshRenderSystem" << std::endl;
+				m_RenderTarget->Bind();
+
 				const CameraComponent* camera = m_MainCamera.get<CameraComponent>();
 				const TransformComponent* cameraTransform = m_MainCamera.get<TransformComponent, Global>();
 				
@@ -325,6 +326,10 @@ void Engine::InitSystems()
 				float directionalLightIntensity = 0.0f;
 				float directionalLightAmbient = 0.0f;
 				glm::vec3 directionalLightColor = glm::vec3(1.0f, 1.0f, 1.0f);
+
+				bool usingShadowMapping = false;
+				unsigned int directionalShadowTexture;
+				glm::mat4 directionalLightSpaceMat;
 
 				if (m_DirectionalLight.is_valid())
 				{
@@ -337,6 +342,13 @@ void Engine::InitSystems()
 
 					const DirectionalLightComponent* directionalLight = m_DirectionalLight.get<DirectionalLightComponent>();
 					directionalLightAmbient = directionalLight->ambient;
+
+					if (baseLight->shadowMappingEnabled)
+					{
+						usingShadowMapping = true;
+						directionalShadowTexture = baseLight->shadowTexture;
+						directionalLightSpaceMat = baseLight->lightSpaceMat;
+					}
 				}
 				
 				std::vector<TransformComponent> pointLightTransforms; // Transform can't be reference or pointer due to flecs::pair
@@ -357,8 +369,14 @@ void Engine::InitSystems()
 						glBindTextureUnit(1, primitive.material.metallicRoughnessTexture);
 					if (primitive.material.hasNormalTexture)
 						glBindTextureUnit(2, primitive.material.normalTexture);
-					
+
 					primitive.material.shader.Use();
+
+					if (usingShadowMapping)
+					{
+						glBindTextureUnit(3, directionalShadowTexture);
+						primitive.material.shader.SetMat4("directionalLightSpaceMat", directionalLightSpaceMat);
+					}
 					
 					if (m_DirectionalLight.is_valid())
 					{
@@ -461,42 +479,41 @@ void Engine::InitSystems()
 			{
 				if (!lightComponent.shadowMappingEnabled)
 					return;
-				
-				float screenVertices[] =
-				{
-					// Positions	// Texture Coords
-					-1.0f,  1.0f,	0.0f, 1.0f, // Top left
-					-1.0f, -1.0f,	0.0f, 0.0f, // Bottom left
-					 1.0f, -1.0f,	1.0f, 0.0f, // Bottom right
-					-1.0f,  1.0f,	0.0f, 1.0f, // Top left
-					 1.0f, -1.0f,	1.0f, 0.0f, // Bottom right
-					 1.0f,  1.0f,	1.0f, 1.0f	// Top right
-				};
 
-				unsigned int depthMapVBO;
+				//float screenVertices[] =
+				//{
+				//	// Positions	// Texture Coords
+				//	-1.0f,  1.0f,	0.0f, 1.0f, // Top left
+				//	-1.0f, -1.0f,	0.0f, 0.0f, // Bottom left
+				//	 1.0f, -1.0f,	1.0f, 0.0f, // Bottom right
+				//	-1.0f,  1.0f,	0.0f, 1.0f, // Top left
+				//	 1.0f, -1.0f,	1.0f, 0.0f, // Bottom right
+				//	 1.0f,  1.0f,	1.0f, 1.0f	// Top right
+				//};
 
-				glGenVertexArrays(1, &lightComponent.screenShadowVAO);
-				glGenBuffers(1, &depthMapVBO);
-				glBindVertexArray(lightComponent.screenShadowVAO);
-				glBindBuffer(GL_ARRAY_BUFFER, depthMapVBO);
-				glBufferData(GL_ARRAY_BUFFER, sizeof(screenVertices), &screenVertices, GL_STATIC_DRAW);
-				glEnableVertexAttribArray(0);
-				glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
-				glEnableVertexAttribArray(1);
-				glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
+				//unsigned int depthMapVBO;
 
-				lightComponent.shadowScreenShader.Load("ScreenShader.vert", "ShadowScreenShader.frag");
+				//glGenVertexArrays(1, &lightComponent.screenShadowVAO);
+				//glGenBuffers(1, &depthMapVBO);
+				//glBindVertexArray(lightComponent.screenShadowVAO);
+				//glBindBuffer(GL_ARRAY_BUFFER, depthMapVBO);
+				//glBufferData(GL_ARRAY_BUFFER, sizeof(screenVertices), &screenVertices, GL_STATIC_DRAW);
+				//glEnableVertexAttribArray(0);
+				//glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
+				//glEnableVertexAttribArray(1);
+				//glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
 
-				lightComponent.shadowScreenShader.Use();
-				lightComponent.shadowScreenShader.SetInt("depthTexture", 0);
+				//lightComponent.shadowScreenShader.Load("ScreenShader.vert", "ShadowScreenShader.frag");
+
+				//lightComponent.shadowScreenShader.Use();
+				//lightComponent.shadowScreenShader.SetInt("depthTexture", 0);
 
 				glGenFramebuffers(1, &lightComponent.shadowFramebuffer);
 				glBindFramebuffer(GL_FRAMEBUFFER, lightComponent.shadowFramebuffer);
-				
+
 				glActiveTexture(GL_TEXTURE0);
 				glGenTextures(1, &lightComponent.shadowTexture);
 				glBindTexture(GL_TEXTURE_2D, lightComponent.shadowTexture);
-				std::cout << lightComponent.shadowTextureWidth << ", " << lightComponent.shadowTextureHeight << std::endl;
 				glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, lightComponent.shadowTextureWidth, lightComponent.shadowTextureHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -505,7 +522,7 @@ void Engine::InitSystems()
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
 				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, lightComponent.shadowTexture, 0);
-				
+
 				glDrawBuffer(GL_NONE);
 				glReadBuffer(GL_NONE);
 
@@ -523,13 +540,12 @@ void Engine::InitSystems()
 			}
 		);
 	directionalLightShadowMapInitSystem.run();
-
+	
 	flecs::system directionalLightShadowMapRenderSystem = m_World.system<flecs::pair<TransformComponent, Global>, BaseLightComponent, DirectionalLightComponent>("DirectionalLightShadowMapRenderSystem")
-		.kind(flecs::OnUpdate)
+		.kind(flecs::PreUpdate)
 		//.kind(0)
 		.each([&](flecs::pair<TransformComponent, Global> transformComponent, BaseLightComponent& lightComponent, DirectionalLightComponent& directionalLightComponent)
 			{
-				//std::cout << "DirectionalLightShadowMapRenderSystem" << std::endl;
 				glViewport(0, 0, lightComponent.shadowTextureWidth, lightComponent.shadowTextureHeight);
 				glBindFramebuffer(GL_FRAMEBUFFER, lightComponent.shadowFramebuffer);
 				
@@ -539,9 +555,10 @@ void Engine::InitSystems()
 				
 				glm::mat4 lightProjection = glm::ortho(-15.0f, 15.0f, -15.0f, 15.0f, 0.01f, 100.0f);
 				glm::vec3 lightDir = glm::rotate(transformComponent->Rotation, glm::vec3(0.0f, 0.0f, -1.0f));
-				glm::mat4 lightView = glm::lookAt(lightDir * -15.0f, glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+				glm::mat4 lightView = glm::lookAt(lightDir * -5.0f, glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 				
-				glm::mat4 lightSpaceMat = lightProjection * lightView;
+				//glm::mat4 lightSpaceMat = lightProjection * lightView;
+				lightComponent.lightSpaceMat = lightProjection * lightView;
 
 				glActiveTexture(GL_TEXTURE0);
 				glBindTexture(GL_TEXTURE_2D, lightComponent.shadowTexture);
@@ -558,7 +575,7 @@ void Engine::InitSystems()
 							model = glm::scale(model, transformComponent->Scale);
 							primitive.material.shadowShader.SetMat4("model", model);
 
-							primitive.material.shadowShader.SetMat4("lightSpaceMat", lightSpaceMat);
+							primitive.material.shadowShader.SetMat4("lightSpaceMat", lightComponent.lightSpaceMat);
 
 							glBindVertexArray(primitive.VAO);
 							glDrawElements(GL_TRIANGLES, primitive.indices.size(), GL_UNSIGNED_INT, 0);
@@ -566,7 +583,9 @@ void Engine::InitSystems()
 					}
 				);
 
-				glBindFramebuffer(GL_FRAMEBUFFER, 0);
+				//glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+				m_RenderTarget->Bind();
 
 				int width, height;
 				m_RenderTarget->GetWindowSize(width, height);
@@ -702,8 +721,6 @@ void Engine::MainLoop()
 					}
 				}
 			);
-		
-		m_RenderTarget->Bind();
 		
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
