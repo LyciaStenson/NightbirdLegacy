@@ -98,8 +98,6 @@ void main()
 		float attenuation = 1.0f / (pointLights[i].constantAttenuation + pointLights[i].linearAttenuation * dist + pointLights[i].quadraticAttenuation * dist * dist);
 		pointDiffuse += pointLights[i].color * max(dot(normal, pointLightDir), 0.0f) * pointLights[i].intensity * attenuation;
 	}
-
-	vec3 diffuse = (directionalDiffuse + pointDiffuse);
 	
 	vec4 finalBaseColor = hasBaseColorTexture ? texture(baseColorTexture, baseColorTexCoord) : baseColorFactor;
 
@@ -117,10 +115,14 @@ void main()
 	}
 	
 	float directionalLightShadow = CalculateShadow(FragPosLightSpace);
+
+	directionalDiffuse *= (1.0f - directionalLightShadow);
+	
+	vec3 diffuse = (directionalDiffuse + pointDiffuse);
 	
 	//vec3 lighting = ambient + ((1.0f - 0.0f) * diffuse);
-	vec3 lighting = ambient + ((1.0f - directionalLightShadow) * diffuse);
-	//vec3 lighting = ambient + diffuse;
+	//vec3 lighting = ambient + ((1.0f - directionalLightShadow) * diffuse);
+	vec3 lighting = ambient + diffuse;
 	
 	FragColor = vec4(lighting, 1.0f) * finalBaseColor;
 	//FragColor = vec4(normal, 1.0f);
