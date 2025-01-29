@@ -530,9 +530,9 @@ void Engine::InitSystems()
 				
 				glClear(GL_DEPTH_BUFFER_BIT);
 				
-				glm::mat4 lightProjection = glm::ortho(-15.0f, 15.0f, -15.0f, 15.0f, 0.01f, 100.0f);
+				glm::mat4 lightProjection = glm::ortho(-30.0f, 30.0f, -30.0f, 30.0f, 0.01f, 100.0f);
 				glm::vec3 lightDir = glm::rotate(transformComponent->Rotation, glm::vec3(0.0f, 0.0f, -1.0f));
-				glm::mat4 lightView = glm::lookAt(lightDir * -5.0f, glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+				glm::mat4 lightView = glm::lookAt(lightDir * -10.0f, glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 				
 				lightComponent.lightSpaceMat = lightProjection * lightView;
 
