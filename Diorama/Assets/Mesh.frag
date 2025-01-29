@@ -52,15 +52,17 @@ uniform int pointLightCount;
 
 uniform bool useShadowMapping;
 
-float CalculateShadow(vec4 fragPosLightSpace)
+float CalculateShadow(vec4 fragPosLightSpace, vec3 normal, vec3 lightDir)
 {
 	vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
 	projCoords = projCoords * 0.5f + 0.5f;
+	if (projCoords.z > 1.0f)
+		return 0.0f;
 	
 	float closestDepth = texture(directionalLightShadowMap, projCoords.xy).r;
 	float currentDepth = projCoords.z;
 	
-	float bias = 0.005f;
+	float bias = max(0.0005 * (1.0f - dot(normal, lightDir)), 0.0005f);
 	float shadow = currentDepth - bias > closestDepth ? 1.0f : 0.0f;
 	return shadow;
 }
@@ -118,7 +120,7 @@ void main()
 	
 	if (useShadowMapping)
 	{
-		float directionalLightShadow = CalculateShadow(FragPosLightSpace);
+		float directionalLightShadow = CalculateShadow(FragPosLightSpace, normal, directionalLightDir);
 		directionalDiffuse *= (1.0f - directionalLightShadow);
 	}
 	
