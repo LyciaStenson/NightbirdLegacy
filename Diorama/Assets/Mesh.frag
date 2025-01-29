@@ -79,6 +79,12 @@ float CalculateDirectionalShadow(vec4 fragPosLightSpace, vec3 normal, vec3 light
 
 void main()
 {
+	vec4 finalBaseColor = hasBaseColorTexture ? texture(baseColorTexture, baseColorTexCoord) : baseColorFactor;
+	if (finalBaseColor.a < 0.1)
+	{
+		discard;
+	}
+
 	vec3 ambient = vec3(1.0f, 1.0f, 1.0f) * directionalLight.ambient;
 	
 	vec3 normal;
@@ -113,8 +119,6 @@ void main()
 		pointDiffuse += pointLights[i].color * max(dot(normal, pointLightDir), 0.0f) * pointLights[i].intensity * attenuation;
 	}
 	
-	vec4 finalBaseColor = hasBaseColorTexture ? texture(baseColorTexture, baseColorTexCoord) : baseColorFactor;
-
 	float finalMetallic = 0.0f;
 	//float finalMetallic = metallicFactor;
 	float finalRoughness = roughnessFactor;
