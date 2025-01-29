@@ -18,6 +18,18 @@ void KeyCallback(Engine* engine, int key, int scancode, int action, int mods)
 		case GLFW_KEY_M:
 			engine->globalShadowMapsEnabled = !engine->globalShadowMapsEnabled;
 			break;
+		case GLFW_KEY_F11:
+			if (glfwGetWindowMonitor(engine->m_Window))
+			{
+				glfwSetWindowMonitor(engine->m_Window, NULL, 100, 100, 1280, 720, GLFW_DONT_CARE);
+			}
+			else
+			{
+				GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+				const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+				glfwSetWindowMonitor(engine->m_Window, monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
+			}
+			break;
 		}
 	}
 }
