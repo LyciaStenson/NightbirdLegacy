@@ -15,6 +15,9 @@ void KeyCallback(Engine* engine, int key, int scancode, int action, int mods)
 		case GLFW_KEY_N:
 			engine->globalNormalMapsEnabled = !engine->globalNormalMapsEnabled;
 			break;
+		case GLFW_KEY_M:
+			engine->globalShadowMapsEnabled = !engine->globalShadowMapsEnabled;
+			break;
 		}
 	}
 }
@@ -57,7 +60,7 @@ int main()
 	
 	flecs::entity directionalLight = engine.m_World.entity("DirectionalLight")
 		.add<TransformComponent, Global>()
-		.set<TransformComponent, Local>({ glm::vec3(), glm::quat(glm::vec3(glm::radians(-55.0f), glm::radians(135.0f), glm::radians(0.0f))) })
+		.set<TransformComponent, Local>({ glm::vec3(), glm::quat(glm::vec3(glm::radians(-45.0f), glm::radians(135.0f), glm::radians(0.0f))) })
 		.set<BaseLightComponent>({ 0.1f, glm::vec3(1.0f, 1.0f, 1.0f), true, 4096, 4096 })
 		.set<DirectionalLightComponent>({ 0.02f });
 

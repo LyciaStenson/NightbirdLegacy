@@ -50,6 +50,8 @@ uniform sampler2D directionalLightShadowMap;
 uniform PointLight pointLights[MAX_POINT_LIGHTS];
 uniform int pointLightCount;
 
+uniform bool useShadowMapping;
+
 float CalculateShadow(vec4 fragPosLightSpace)
 {
 	vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
@@ -114,14 +116,14 @@ void main()
 		finalRoughness = metallicRoughnessData.g;
 	}
 	
-	float directionalLightShadow = CalculateShadow(FragPosLightSpace);
-
-	directionalDiffuse *= (1.0f - directionalLightShadow);
+	if (useShadowMapping)
+	{
+		float directionalLightShadow = CalculateShadow(FragPosLightSpace);
+		directionalDiffuse *= (1.0f - directionalLightShadow);
+	}
 	
 	vec3 diffuse = (directionalDiffuse + pointDiffuse);
 	
-	//vec3 lighting = ambient + ((1.0f - 0.0f) * diffuse);
-	//vec3 lighting = ambient + ((1.0f - directionalLightShadow) * diffuse);
 	vec3 lighting = ambient + diffuse;
 	
 	FragColor = vec4(lighting, 1.0f) * finalBaseColor;

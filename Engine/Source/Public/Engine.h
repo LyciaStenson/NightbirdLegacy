@@ -62,6 +62,7 @@ public:
 	unsigned int fps = 0;
 
 	bool globalNormalMapsEnabled = true;
+	bool globalShadowMapsEnabled = true;
 
 	Engine(int width, int height, const char* name, RenderTarget* renderTarget);
 	~Engine();

@@ -324,8 +324,8 @@ void Engine::InitSystems()
 				float directionalLightIntensity = 0.0f;
 				float directionalLightAmbient = 0.0f;
 				glm::vec3 directionalLightColor = glm::vec3(1.0f, 1.0f, 1.0f);
-
-				bool usingShadowMapping = false;
+				
+				bool useShadowMapping = false;
 				unsigned int directionalShadowTexture;
 				glm::mat4 directionalLightSpaceMat;
 
@@ -341,13 +341,15 @@ void Engine::InitSystems()
 					const DirectionalLightComponent* directionalLight = m_DirectionalLight.get<DirectionalLightComponent>();
 					directionalLightAmbient = directionalLight->ambient;
 
-					if (baseLight->shadowMappingEnabled)
+					if (baseLight->shadowMappingEnabled && globalShadowMapsEnabled)
 					{
-						usingShadowMapping = true;
+						useShadowMapping = true;
 						directionalShadowTexture = baseLight->shadowTexture;
 						directionalLightSpaceMat = baseLight->lightSpaceMat;
 					}
 				}
+				
+				//std::cout << "Using shadow mapping: " << useShadowMapping << std::endl;
 				
 				std::vector<TransformComponent> pointLightTransforms; // Transform can't be reference or pointer due to flecs::pair
 				std::vector<BaseLightComponent*> pointBaseLightComponents;
@@ -370,7 +372,8 @@ void Engine::InitSystems()
 
 					primitive.material.shader.Use();
 
-					if (usingShadowMapping)
+					primitive.material.shader.SetBool("useShadowMapping", useShadowMapping);
+					if (useShadowMapping)
 					{
 						glBindTextureUnit(3, directionalShadowTexture);
 						primitive.material.shader.SetMat4("directionalLightSpaceMat", directionalLightSpaceMat);
@@ -440,6 +443,8 @@ void Engine::InitSystems()
 		.kind(flecs::OnUpdate)
 		.each([&](SkyboxComponent& skyboxComponent)
 			{
+				m_RenderTarget->Bind();
+
 				const CameraComponent* camera = m_MainCamera.get<CameraComponent>();
 				const TransformComponent* cameraTransform = m_MainCamera.get<TransformComponent, Global>();
 
@@ -514,11 +519,14 @@ void Engine::InitSystems()
 		.kind(flecs::PreUpdate)
 		.each([&](flecs::pair<TransformComponent, Global> transformComponent, BaseLightComponent& lightComponent, DirectionalLightComponent& directionalLightComponent)
 			{
+				if (!lightComponent.shadowMappingEnabled || !globalShadowMapsEnabled)
+					return;
+
 				glViewport(0, 0, lightComponent.shadowTextureWidth, lightComponent.shadowTextureHeight);
 				glBindFramebuffer(GL_FRAMEBUFFER, lightComponent.shadowFramebuffer);
 				
 				glEnable(GL_DEPTH_TEST);
-
+				
 				glClear(GL_DEPTH_BUFFER_BIT);
 				
 				glm::mat4 lightProjection = glm::ortho(-15.0f, 15.0f, -15.0f, 15.0f, 0.01f, 100.0f);
@@ -681,6 +689,8 @@ void Engine::MainLoop()
 					}
 				}
 			);
+		
+		m_RenderTarget->Bind();
 		
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
