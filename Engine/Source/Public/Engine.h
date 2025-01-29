@@ -46,6 +46,7 @@ class Engine
 {
 public:
 	using KeyCallbackFunc = std::function<void(Engine* engine, int key, int scancode, int action, int mods)>;
+	using MouseButtonCallbackFunc = std::function<void(Engine* engine, int button, int action, int mods)>;
 
 	GLFWwindow* m_Window;
 	
@@ -73,6 +74,7 @@ public:
 	void MainLoop();
 
 	void RegisterKeyCallback(KeyCallbackFunc callback);
+	void RegisterMouseButtonCallback(MouseButtonCallbackFunc callback);
 
 	ResourceManager& GetResourceManager();
 
@@ -90,19 +92,22 @@ private:
 	RenderTarget* m_RenderTarget;
 
 	std::vector<KeyCallbackFunc> m_keyCallbacks;
+	std::vector<MouseButtonCallbackFunc> m_mouseButtonCallbacks;
 	
 	static TextureData LoadTexture(const char* path, bool flipVertically);
 	
 	static void FramebufferSizeCallback(GLFWwindow* window, int width, int height);
 	static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
-	static void CursorEnterCallback(GLFWwindow* window, int entered);
+	static void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods);
 	static void MouseMoveCallback(GLFWwindow* window, double xPos, double yPos);
+	static void CursorEnterCallback(GLFWwindow* window, int entered);
 	static void ScrollCallback(GLFWwindow* window, double xOffset, double yOffset);
 
 	void HandleFramebufferSize(int width, int height);
 	void HandleKey(int key, int scancode, int action, int mods);
-	void HandleCursorEnter();
+	void HandleMouseButton(int button, int action, int mods);
 	void HandleMouseMove(GLFWwindow* window, double xPos, double yPos);
+	void HandleCursorEnter();
 	void HandleScroll();
 };
 

@@ -25,7 +25,7 @@ Engine::Engine(int width, int height, const char* name, RenderTarget* renderTarg
 		glfwTerminate();
 	}
 	glfwMakeContextCurrent(m_Window);
-	glfwSwapInterval(0);
+	//glfwSwapInterval(0);
 
 	m_RenderTarget = renderTarget;
 	
@@ -45,6 +45,7 @@ bool Engine::Init()
 
 	glfwSetFramebufferSizeCallback(m_Window, FramebufferSizeCallback);
 	glfwSetKeyCallback(m_Window, KeyCallback);
+	glfwSetMouseButtonCallback(m_Window, MouseButtonCallback);
 	glfwSetCursorEnterCallback(m_Window, CursorEnterCallback);
 	glfwSetCursorPosCallback(m_Window, MouseMoveCallback);
 
@@ -714,6 +715,11 @@ void Engine::RegisterKeyCallback(KeyCallbackFunc callback)
 	m_keyCallbacks.push_back(callback);
 }
 
+void Engine::RegisterMouseButtonCallback(MouseButtonCallbackFunc callback)
+{
+	m_mouseButtonCallbacks.push_back(callback);
+}
+
 ResourceManager& Engine::GetResourceManager()
 {
 	return m_ResourceManager;
@@ -749,6 +755,12 @@ void Engine::KeyCallback(GLFWwindow* window, int key, int scancode, int action, 
 {
 	Engine* engine = (Engine*)glfwGetWindowUserPointer(window);
 	engine->HandleKey(key, scancode, action, mods);
+}
+
+void Engine::MouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
+{
+	Engine* engine = (Engine*)glfwGetWindowUserPointer(window);
+	engine->HandleMouseButton(button, action, mods);
 }
 
 void Engine::MouseMoveCallback(GLFWwindow* window, double xPosIn, double yPosIn)
@@ -800,6 +812,14 @@ void Engine::HandleKey(int key, int scancode, int action, int mods)
 		{
 			callback(this, key, scancode, action, mods);
 		}
+	}
+}
+
+void Engine::HandleMouseButton(int button, int action, int mods)
+{
+	for (const auto& callback : m_mouseButtonCallbacks)
+	{
+		callback(this, button, action, mods);
 	}
 }
 

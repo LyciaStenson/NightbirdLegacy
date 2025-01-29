@@ -34,6 +34,19 @@ void KeyCallback(Engine* engine, int key, int scancode, int action, int mods)
 	}
 }
 
+void MouseButtonCallback(Engine* engine, int button, int action, int mods)
+{
+	if (action == GLFW_PRESS)
+	{
+		switch (button)
+		{
+		case GLFW_MOUSE_BUTTON_1:
+			glfwSetInputMode(engine->m_Window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+			break;
+		}
+	}
+}
+
 int main()
 {
 	glfwInit();
@@ -72,21 +85,21 @@ int main()
 	
 	flecs::entity directionalLight = engine.m_World.entity("DirectionalLight")
 		.add<TransformComponent, Global>()
-		.set<TransformComponent, Local>({ glm::vec3(), glm::quat(glm::vec3(glm::radians(-45.0f), glm::radians(135.0f), glm::radians(0.0f))) })
-		.set<BaseLightComponent>({ 0.1f, glm::vec3(1.0f, 1.0f, 1.0f), true, 4096, 4096 })
-		.set<DirectionalLightComponent>({ 0.02f });
+		.set<TransformComponent, Local>({ glm::vec3(), glm::quat(glm::vec3(glm::radians(-60.0f), glm::radians(135.0f), glm::radians(0.0f))) })
+		.set<BaseLightComponent>({ 0.6f, glm::vec3(1.0f, 1.0f, 1.0f), true, 4096, 4096 })
+		.set<DirectionalLightComponent>({ 0.05f });
 
-	flecs::entity pointLight1 = engine.m_World.entity("PointLight1")
-		.add<TransformComponent, Global>()
-		.set<TransformComponent, Local>({glm::vec3(0.7f, 1.0f, 0.0f) })
-		.set<BaseLightComponent>({ 3.0f, glm::vec3(0.0f, 0.0f, 1.0f) })
-		.set<PointLightComponent>({ 1.0f, 1.0f, 0.5f });
-	
-	flecs::entity pointLight2 = engine.m_World.entity("PointLight2")
-		.add<TransformComponent, Global>()
-		.set<TransformComponent, Local>({ glm::vec3(-0.7f, 1.0f, 0.0f) })
-		.set<BaseLightComponent>({ 3.0f, glm::vec3(1.0f, 0.0f, 0.0f) })
-		.set<PointLightComponent>({ 1.0f, 1.0f, 0.5f });
+	//flecs::entity pointLight1 = engine.m_World.entity("PointLight1")
+	//	.add<TransformComponent, Global>()
+	//	.set<TransformComponent, Local>({glm::vec3(0.7f, 1.0f, 0.0f) })
+	//	.set<BaseLightComponent>({ 3.0f, glm::vec3(0.0f, 0.0f, 1.0f) })
+	//	.set<PointLightComponent>({ 1.0f, 1.0f, 0.5f });
+	//
+	//flecs::entity pointLight2 = engine.m_World.entity("PointLight2")
+	//	.add<TransformComponent, Global>()
+	//	.set<TransformComponent, Local>({ glm::vec3(-0.7f, 1.0f, 0.0f) })
+	//	.set<BaseLightComponent>({ 3.0f, glm::vec3(1.0f, 0.0f, 0.0f) })
+	//	.set<PointLightComponent>({ 1.0f, 1.0f, 0.5f });
 	
 	engine.GetResourceManager().LoadModel(engine.m_World, "Cube.glb", "Cube");
 	//engine.GetResourceManager().LoadModel(engine.m_World, "the_great_drawing_room.glb", "GreatDrawingRoom");
@@ -117,6 +130,7 @@ int main()
 		.set<PlayerPitchComponent>({ 1.0f });
 	
 	engine.RegisterKeyCallback(KeyCallback);
+	engine.RegisterMouseButtonCallback(MouseButtonCallback);
 	
 	flecs::system spinSystem = engine.m_World.system<SpinComponent, flecs::pair<TransformComponent, Local>>("SpinSystem")
 		.kind(flecs::OnUpdate)
