@@ -158,7 +158,7 @@ void ResourceManager::IterateNode(flecs::world world, const fastgltf::Node& node
 			if (primitive.materialIndex.has_value())
 			{
 				auto& material = asset.materials[primitive.materialIndex.value()];
-
+				
 				auto& baseColorFactor = material.pbrData.baseColorFactor;
 				meshPrimitive.material.baseColorFactor = glm::vec4(baseColorFactor.x(), baseColorFactor.y(), baseColorFactor.z(), baseColorFactor.w());
 				meshPrimitive.material.hasBaseColorTexture = false;
@@ -284,7 +284,7 @@ void ResourceManager::IterateNode(flecs::world world, const fastgltf::Node& node
 	}
 }
 
-bool ResourceManager::LoadImage(fastgltf::Asset& asset, fastgltf::Image& image, const char* modelName, TextureType textureType, bool sRGB)
+bool ResourceManager::LoadImage(fastgltf::Asset& asset, fastgltf::Image& image, const char* modelName, size_t textureIndex, TextureType textureType, bool sRGB)
 {
 	auto GetLevelCount = [](int width, int height) -> int
 		{
@@ -326,51 +326,66 @@ bool ResourceManager::LoadImage(fastgltf::Asset& asset, fastgltf::Image& image, 
 		}, image.data);
 	
 	glGenerateTextureMipmap(texture);
-	texturesMap[modelName].push_back(Texture{ texture, textureType });
+	texturesMap[modelName][textureIndex] = Texture{ texture, textureType };
 	
 	return true;
 }
 
 void ResourceManager::LoadImages(fastgltf::Asset& asset, const char* modelName)
 {
-	std::cout << "LoadImages " << asset.images.size() << std::endl;
+	int imagesNum = 0;
+	std::cout << "Iterate " << asset.images.size() << " images" << std::endl;
 	for (auto& image : asset.images)
 	{
+		std::cout << "Iterating image " << imagesNum << std::endl;
 		bool sRGB = false;
 		TextureType textureType = TextureType::Unknown;
-		for (auto& material : asset.materials)
+		size_t textureIndex = -1;
+		//int materialsNum = 0;
+		std::cout << "Iterate " << asset.materials.size() << " materials" << std::endl;
+		for (size_t materialIndex = 0; materialIndex < asset.materials.size(); ++materialIndex)
 		{
+			std::cout << "Iterating material " << materialIndex << std::endl;
+			auto& material = asset.materials[materialIndex];
 			if (material.pbrData.baseColorTexture.has_value()
 				&& asset.textures[material.pbrData.baseColorTexture.value().textureIndex].imageIndex == &image - &asset.images[0])
 			{
 				sRGB = true;
 				textureType = TextureType::BaseColor;
-				break;
+				textureIndex = material.pbrData.baseColorTexture.value().textureIndex;
+				//break;
 			}
 			else if (material.pbrData.metallicRoughnessTexture.has_value()
 				&& asset.textures[material.pbrData.metallicRoughnessTexture.value().textureIndex].imageIndex == &image - &asset.images[0])
 			{
 				textureType = TextureType::MetallicRoughness;
-				break;
+				textureIndex = material.pbrData.metallicRoughnessTexture.value().textureIndex;
+				//break;
 			}
 			else if (material.occlusionTexture.has_value()
 				&& asset.textures[material.pbrData.metallicRoughnessTexture.value().textureIndex].imageIndex == &image - &asset.images[0])
 			{
 				textureType = TextureType::Occlusion;
-				break;
+				textureIndex = material.pbrData.metallicRoughnessTexture.value().textureIndex;
+				//break;
 			}
 			else if (material.normalTexture.has_value()
 				&& asset.textures[material.normalTexture.value().textureIndex].imageIndex == &image - &asset.images[0])
 			{
 				textureType = TextureType::Normal;
+				textureIndex = material.normalTexture.value().textureIndex;
+				//break;
+			}
+			if (textureType != TextureType::Unknown && textureIndex != -1)
+			{
+				//imagesNum++;
+				LoadImage(asset, image, modelName, textureIndex, textureType, sRGB);
+				//std::cout << imagesNum << " LoadImage type " << (int)textureType << std::endl;
+				std::cout << "IMAGE FOUND" << std::endl;
 				break;
 			}
 		}
-		if (textureType != TextureType::Unknown)
-		{
-			LoadImage(asset, image, modelName, textureType, sRGB);
-			std::cout << "LoadImage " << (int)textureType << std::endl;
-		}
+		imagesNum++;
 	}
 	std::cout << "Images Loaded" << std::endl;
 }
