@@ -2,6 +2,7 @@
 
 enum class TextureType
 {
+	Unknown,
 	BaseColor,
 	Normal,
 	MetallicRoughness,

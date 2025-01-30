@@ -112,6 +112,7 @@ void Engine::InitSystems()
 		);
 	directionalLightInitSystem.run();
 	
+	// This system initialises the shader and parameters of each primitive of each MeshComponent
 	flecs::system meshInitSystem = m_World.system<MeshComponent>("MeshInitSystem")
 		.kind(0)
 		.each([&](flecs::entity entity, MeshComponent& meshComponent)
@@ -185,11 +186,15 @@ void Engine::InitSystems()
 					glBindVertexArray(0);
 				}
 
+				// This is legacy code from a threaded implementation of texture loading before model importing.
+				// The same method is still used for skybox cube map loading.
 				//entity.set<TextureLoadComponent>({ std::async(LoadTexture, meshComponent.texturePath, false) });
 			}
 		);
 	meshInitSystem.run();
-
+	
+	// This is legacy code from a threaded implementation of texture loading before model importing.
+	// The same method is still used for skybox cube map loading.
 	/*
 	flecs::system meshLateInitSystem = m_World.system<MeshComponent, TextureLoadComponent>("MeshLateInitSystem")
 		.kind(flecs::OnUpdate)

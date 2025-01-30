@@ -333,10 +333,11 @@ bool ResourceManager::LoadImage(fastgltf::Asset& asset, fastgltf::Image& image, 
 
 void ResourceManager::LoadImages(fastgltf::Asset& asset, const char* modelName)
 {
+	std::cout << "LoadImages " << asset.images.size() << std::endl;
 	for (auto& image : asset.images)
 	{
 		bool sRGB = false;
-		TextureType textureType;
+		TextureType textureType = TextureType::Unknown;
 		for (auto& material : asset.materials)
 		{
 			if (material.pbrData.baseColorTexture.has_value()
@@ -365,7 +366,11 @@ void ResourceManager::LoadImages(fastgltf::Asset& asset, const char* modelName)
 				break;
 			}
 		}
-
-		LoadImage(asset, image, modelName, textureType, sRGB);
+		if (textureType != TextureType::Unknown)
+		{
+			LoadImage(asset, image, modelName, textureType, sRGB);
+			std::cout << "LoadImage " << (int)textureType << std::endl;
+		}
 	}
+	std::cout << "Images Loaded" << std::endl;
 }
