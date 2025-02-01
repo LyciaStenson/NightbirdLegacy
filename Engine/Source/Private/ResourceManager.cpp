@@ -333,19 +333,13 @@ bool ResourceManager::LoadImage(fastgltf::Asset& asset, fastgltf::Image& image, 
 
 void ResourceManager::LoadImages(fastgltf::Asset& asset, const char* modelName)
 {
-	int imagesNum = 0;
-	std::cout << "Iterate " << asset.images.size() << " images" << std::endl;
 	for (auto& image : asset.images)
 	{
-		std::cout << "Iterating image " << imagesNum << std::endl;
 		bool sRGB = false;
 		TextureType textureType = TextureType::Unknown;
 		size_t textureIndex = -1;
-		//int materialsNum = 0;
-		std::cout << "Iterate " << asset.materials.size() << " materials" << std::endl;
 		for (size_t materialIndex = 0; materialIndex < asset.materials.size(); ++materialIndex)
 		{
-			std::cout << "Iterating material " << materialIndex << std::endl;
 			auto& material = asset.materials[materialIndex];
 			if (material.pbrData.baseColorTexture.has_value()
 				&& asset.textures[material.pbrData.baseColorTexture.value().textureIndex].imageIndex == &image - &asset.images[0])
@@ -353,39 +347,30 @@ void ResourceManager::LoadImages(fastgltf::Asset& asset, const char* modelName)
 				sRGB = true;
 				textureType = TextureType::BaseColor;
 				textureIndex = material.pbrData.baseColorTexture.value().textureIndex;
-				//break;
 			}
 			else if (material.pbrData.metallicRoughnessTexture.has_value()
 				&& asset.textures[material.pbrData.metallicRoughnessTexture.value().textureIndex].imageIndex == &image - &asset.images[0])
 			{
 				textureType = TextureType::MetallicRoughness;
 				textureIndex = material.pbrData.metallicRoughnessTexture.value().textureIndex;
-				//break;
 			}
 			else if (material.occlusionTexture.has_value()
 				&& asset.textures[material.pbrData.metallicRoughnessTexture.value().textureIndex].imageIndex == &image - &asset.images[0])
 			{
 				textureType = TextureType::Occlusion;
 				textureIndex = material.pbrData.metallicRoughnessTexture.value().textureIndex;
-				//break;
 			}
 			else if (material.normalTexture.has_value()
 				&& asset.textures[material.normalTexture.value().textureIndex].imageIndex == &image - &asset.images[0])
 			{
 				textureType = TextureType::Normal;
 				textureIndex = material.normalTexture.value().textureIndex;
-				//break;
 			}
 			if (textureType != TextureType::Unknown && textureIndex != -1)
 			{
-				//imagesNum++;
 				LoadImage(asset, image, modelName, textureIndex, textureType, sRGB);
-				//std::cout << imagesNum << " LoadImage type " << (int)textureType << std::endl;
-				std::cout << "IMAGE FOUND" << std::endl;
 				break;
 			}
 		}
-		imagesNum++;
 	}
-	std::cout << "Images Loaded" << std::endl;
 }

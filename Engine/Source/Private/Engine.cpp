@@ -494,7 +494,7 @@ void Engine::InitSystems()
 				glActiveTexture(GL_TEXTURE0);
 				glGenTextures(1, &lightComponent.shadowTexture);
 				glBindTexture(GL_TEXTURE_2D, lightComponent.shadowTexture);
-				glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, lightComponent.shadowTextureWidth, lightComponent.shadowTextureHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+				glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, lightComponent.shadowTextureWidth, lightComponent.shadowTextureHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -503,6 +503,9 @@ void Engine::InitSystems()
 
 				float borderColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 				glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
+
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
 				
 				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, lightComponent.shadowTexture, 0);
 
@@ -533,16 +536,16 @@ void Engine::InitSystems()
 
 				glViewport(0, 0, lightComponent.shadowTextureWidth, lightComponent.shadowTextureHeight);
 				glBindFramebuffer(GL_FRAMEBUFFER, lightComponent.shadowFramebuffer);
-
-				//glCullFace(GL_FRONT);
+				
+				glCullFace(GL_FRONT);
 				
 				glEnable(GL_DEPTH_TEST);
 				
 				glClear(GL_DEPTH_BUFFER_BIT);
 				
-				glm::mat4 lightProjection = glm::ortho(-25.0f, 25.0f, -25.0f, 25.0f, 0.01f, 100.0f);
+				glm::mat4 lightProjection = glm::ortho(-15.0f, 15.0f, -15.0f, 15.0f, 0.1f, 35.0f);
 				glm::vec3 lightDir = glm::rotate(transformComponent->Rotation, glm::vec3(0.0f, 0.0f, -1.0f));
-				glm::mat4 lightView = glm::lookAt(lightDir * -10.0f, glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+				glm::mat4 lightView = glm::lookAt(lightDir * -15.0f, glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 				
 				lightComponent.lightSpaceMat = lightProjection * lightView;
 
@@ -573,8 +576,8 @@ void Engine::InitSystems()
 
 				int width, height;
 				m_RenderTarget->GetWindowSize(width, height);
-
-				//glCullFace(GL_BACK);
+				
+				glCullFace(GL_BACK);
 
 				glViewport(0, 0, width, height);
 				
