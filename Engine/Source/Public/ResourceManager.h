@@ -28,7 +28,7 @@ public:
 
 	bool LoadModel(flecs::world world, const std::filesystem::path& path, const std::string& name);
 	
-	flecs::entity InstantiateModel(flecs::world world, const std::string& name, const glm::vec3& rootPosition, const glm::quat& rootRotation, const glm::vec3& rootScale);
+	flecs::entity InstantiateModel(flecs::world world, const std::string& name, const glm::vec3& rootPosition = glm::vec3(), const glm::quat& rootRotation = glm::quat(), const glm::vec3& rootScale = glm::vec3(1.0f));
 
 private:
 	std::unordered_map<const char*, std::unordered_map<size_t, Texture>> texturesMap;

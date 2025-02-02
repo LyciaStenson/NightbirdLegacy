@@ -18,6 +18,8 @@ struct Material
 	bool hasBaseColorTexture = false;
 	bool hasMetallicRoughnessTexture = false;
 	bool hasNormalTexture = false;
+
+	bool doubleSided = false;
 	
 	Shader shader;
 	const char* vertexPath;

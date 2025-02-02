@@ -158,6 +158,8 @@ void ResourceManager::IterateNode(flecs::world world, const fastgltf::Node& node
 			if (primitive.materialIndex.has_value())
 			{
 				auto& material = asset.materials[primitive.materialIndex.value()];
+
+				meshPrimitive.material.doubleSided = material.doubleSided;
 				
 				auto& baseColorFactor = material.pbrData.baseColorFactor;
 				meshPrimitive.material.baseColorFactor = glm::vec4(baseColorFactor.x(), baseColorFactor.y(), baseColorFactor.z(), baseColorFactor.w());

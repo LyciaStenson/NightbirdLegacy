@@ -1,0 +1,12 @@
+#version 460 core
+
+layout (quads, fractional_odd_spacing) in;
+
+uniform float time;
+
+void main()
+{
+	gl_Position = mix(min(gl_in[0].gl_Position, gl_in[1].gl_Position, gl_TessCoord.x),
+					  mix(gl_in[2].gl_Position, gl_in[3].gl_Position, gl_TessCoord.x),
+					  gl_TessCoord.y);
+}

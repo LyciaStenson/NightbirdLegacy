@@ -323,6 +323,10 @@ void Engine::InitSystems()
 			{
 				m_RenderTarget->Bind();
 
+				int width;
+				int height;
+				m_RenderTarget->GetWindowSize(width, height);
+
 				const CameraComponent* camera = m_MainCamera.get<CameraComponent>();
 				const TransformComponent* cameraTransform = m_MainCamera.get<TransformComponent, Global>();
 				
@@ -367,6 +371,16 @@ void Engine::InitSystems()
 				
 				for (auto& primitive : meshComponent.primitives)
 				{
+					if (primitive.material.doubleSided)
+					{
+						glDisable(GL_CULL_FACE);
+					}
+					else
+					{
+						glEnable(GL_CULL_FACE);
+						glCullFace(GL_FRONT);
+					}
+
 					if (primitive.material.hasBaseColorTexture)
 						glBindTextureUnit(0, primitive.material.baseColorTexture);
 					if (primitive.material.hasMetallicRoughnessTexture)
@@ -416,10 +430,6 @@ void Engine::InitSystems()
 					
 					primitive.material.shader.SetVec3("viewPos", cameraTransform->Position);
 
-					int width;
-					int height;
-					m_RenderTarget->GetWindowSize(width, height);
-
 					glm::mat4 projection = glm::perspective(glm::radians(camera->Fov), (float)width / (float)height, 0.01f, 1000.0f);
 					primitive.material.shader.SetMat4("projection", projection);
 
@@ -428,14 +438,14 @@ void Engine::InitSystems()
 
 					glm::mat4 view = glm::lookAt(cameraTransform->Position, cameraTransform->Position + forward, up);
 					primitive.material.shader.SetMat4("view", view);
-
-					glBindVertexArray(primitive.VAO);
 					
 					glm::mat4 model = glm::mat4(1.0f);
 					model = glm::translate(model, transformComponent->Position);
 					model *= glm::toMat4(transformComponent->Rotation);
 					model = glm::scale(model, transformComponent->Scale);
 					primitive.material.shader.SetMat4("model", model);
+
+					glBindVertexArray(primitive.VAO);
 
 					glDrawElements(GL_TRIANGLES, primitive.indices.size(), GL_UNSIGNED_INT, 0);
 
@@ -542,7 +552,7 @@ void Engine::InitSystems()
 				
 				glClear(GL_DEPTH_BUFFER_BIT);
 				
-				glm::mat4 lightProjection = glm::ortho(-35.0f, 35.0f, -35.0f, 35.0f, 0.1f, 75.0f);
+				glm::mat4 lightProjection = glm::ortho(-35.0f, 35.0f, -35.0f, 35.0f, 0.1f, 90.0f);
 				glm::vec3 lightDir = glm::rotate(transformComponent->Rotation, glm::vec3(0.0f, 0.0f, -1.0f));
 				glm::mat4 lightView = glm::lookAt(lightDir * -70.0f, glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 				

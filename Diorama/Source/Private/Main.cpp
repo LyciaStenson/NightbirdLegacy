@@ -1,6 +1,7 @@
 #include <Engine.h>
 #include <GameRenderTarget.h>
 
+#include <Components/OceanComponent.h>
 #include <Components/SpinComponent.h>
 
 void KeyCallback(Engine* engine, int key, int scancode, int action, int mods)
@@ -106,29 +107,21 @@ int main()
 	//engine.GetResourceManager().LoadModel(engine.m_World, "the_hindu_god_ganesh.glb", "God");
 	//engine.GetResourceManager().LoadModel(engine.m_World, "survival_guitar_backpack.glb", "SurvivalBackpack");
 	engine.GetResourceManager().LoadModel(engine.m_World, "witch_treehouse.glb", "WitchTreehouse");
-	
-	//engine.GetResourceManager().InstantiateModel(engine.m_World, "Cube", glm::vec3(0.0f, -0.25f, 0.0f), glm::quat(glm::vec3(glm::radians(0.0f), glm::radians(0.0f), glm::radians(0.0f))), glm::vec3(10.0f, 0.5f, 10.0f));
-	//engine.GetResourceManager().InstantiateModel(engine.m_World, "Cube", glm::vec3(3.0f, 3.25f, 3.0f), glm::quat(glm::vec3(glm::radians(0.0f), glm::radians(0.0f), glm::radians(0.0f))), glm::vec3(2.0f, 1.0f, 1.0f))
-		//.set<SpinComponent>({ 0.75f, glm::normalize(glm::vec3(1.0f, 1.0f, 0.0f)) });
-	//engine.GetResourceManager().InstantiateModel(engine.m_World, "Cube", glm::vec3(3.0f, 2.75f, -3.0f), glm::quat(glm::vec3(glm::radians(0.0f), glm::radians(0.0f), glm::radians(0.0f))), glm::vec3(1.0f, 2.5f, 1.0f))
-		//.set<SpinComponent>({ 0.75f, glm::normalize(glm::vec3(1.0f, 1.0f, 0.0f)) });
-	//engine.GetResourceManager().InstantiateModel(engine.m_World, "Cube", glm::vec3(-3.0f, 3.25f, 3.0f), glm::quat(glm::vec3(glm::radians(0.0f), glm::radians(0.0f), glm::radians(0.0f))), glm::vec3(1.5f, 1.0f, 3.0f))
-		//.set<SpinComponent>({ 0.75f, glm::normalize(glm::vec3(1.0f, 1.0f, 0.0f)) });
-	//engine.GetResourceManager().InstantiateModel(engine.m_World, "Cube", glm::vec3(-3.0f, 2.75f, -3.0f), glm::quat(glm::vec3(glm::radians(0.0f), glm::radians(0.0f), glm::radians(0.0f))), glm::vec3(2.5f, 0.5f, 1.25f))
-		//.set<SpinComponent>({ 0.75f, glm::normalize(glm::vec3(1.0f, 1.0f, 0.0f)) });
-	//engine.GetResourceManager().InstantiateModel(engine.m_World, "Cube", glm::vec3(0.0f, 3.0f, 0.0f), glm::quat(glm::vec3(glm::radians(0.0f), glm::radians(0.0f), glm::radians(0.0f))), glm::vec3(1.0f, 1.0f, 1.0f))
-		//.set<SpinComponent>({ 0.75f, glm::normalize(glm::vec3(1.0f, 1.0f, 0.0f)) });
-	//engine.GetResourceManager().InstantiateModel(engine.m_World, "Cube", glm::vec3(0.7f, 1.0f, 0.0f), glm::quat(glm::vec3(glm::radians(0.0f), glm::radians(0.0f), glm::radians(0.0f))), glm::vec3(0.1f, 0.1f, 0.1f));
-	//engine.GetResourceManager().InstantiateModel(engine.m_World, "Cube", glm::vec3(-0.7f, 1.0f, 0.0f), glm::quat(glm::vec3(glm::radians(0.0f), glm::radians(0.0f), glm::radians(0.0f))), glm::vec3(0.1f, 0.1f, 0.1f));
-	//engine.GetResourceManager().InstantiateModel(engine.m_World, "GreatDrawingRoom", glm::vec3(0.0f, -2.5f, 0.0f), glm::quat(glm::vec3(0.0f, glm::radians(-42.0f), 0.0f)), glm::vec3(1.0f, 1.0f, 1.0f));
 
 	//engine.GetResourceManager().InstantiateModel(engine.m_World, "SurvivalBackpack", glm::vec3(0.0f, 3.0f, 0.0f), glm::quat(glm::vec3(glm::radians(0.0f), glm::radians(0.0f), glm::radians(90.0f))), glm::vec3(0.0025f, 0.0025f, 0.0025f))
 		//.set<SpinComponent>({ 0.75f, glm::normalize(glm::vec3(1.0f, 1.0f, 0.0f)) });
 	//engine.GetResourceManager().InstantiateModel(engine.m_World, "God", glm::vec3(0.0f, 3.0f, -0.5f), glm::quat(glm::vec3(glm::radians(0.0f), glm::radians(0.0f), glm::radians(0.0f))), glm::vec3(0.001f, 0.001f, 0.001f))
 		//.set<SpinComponent>({ 0.1f, glm::vec3(0.0f, 1.0f, 0.0f) });
 	
+	engine.GetResourceManager().InstantiateModel(engine.m_World, "Cube", glm::vec3(), glm::quat(), glm::vec3(1000.0f, 1.0f, 1000.0f));
+
 	engine.GetResourceManager().InstantiateModel(engine.m_World, "WitchTreehouse", glm::vec3(0.0f, 0.0f, 0.0f), glm::quat(glm::vec3(glm::radians(0.0f), glm::radians(0.0f), glm::radians(0.0f))), glm::vec3(0.01f, 0.01f, 0.01f));
 		//.set<SpinComponent>({0.75f, glm::normalize(glm::vec3(0.0f, 1.0f, 0.0f))});
+	
+	flecs::entity ocean = engine.m_World.entity("Ocean")
+		.add<TransformComponent, Global>()
+		.add<TransformComponent, Local>()
+		.add<OceanComponent>();
 	
 	flecs::entity player = engine.m_World.entity("Player")
 		.add<TransformComponent, Global>()
@@ -145,12 +138,72 @@ int main()
 	
 	engine.RegisterKeyCallback(KeyCallback);
 	engine.RegisterMouseButtonCallback(MouseButtonCallback);
+
+	flecs::system oceanInitSystem = engine.m_World.system<OceanComponent>("OceanInitSystem")
+		.kind(0)
+		.each([](OceanComponent& oceanComponent)
+			{
+				oceanComponent.shader.Load("Ocean.vert", "Ocean.frag");// , "Ocean.tcs", "Ocean.tes");
+
+				glGenVertexArrays(1, &oceanComponent.VAO);
+				glGenBuffers(1, &oceanComponent.VBO);
+
+				glBindVertexArray(oceanComponent.VAO);
+				glBindBuffer(GL_ARRAY_BUFFER, oceanComponent.VBO);
+
+				glBufferData(GL_ARRAY_BUFFER, sizeof(oceanComponent.vertices), oceanComponent.vertices, GL_STATIC_DRAW);
+
+				glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+				glDisableVertexAttribArray(0);
+
+				glBindVertexArray(0);
+			}
+		);
+	oceanInitSystem.run();
+	
+	flecs::system oceanRenderSystem = engine.m_World.system<OceanComponent, flecs::pair<TransformComponent, Global>>("OceanRenderSystem")
+		.kind(flecs::OnUpdate)
+		.each([&](flecs::iter& iter, size_t, OceanComponent& oceanComponent, flecs::pair<TransformComponent, Global> transformComponent)
+			{
+				int width;
+				int height;
+				renderTarget->GetWindowSize(width, height);
+
+				const CameraComponent* camera = engine.m_MainCamera.get<CameraComponent>();
+				const TransformComponent* cameraTransform = engine.m_MainCamera.get<TransformComponent, Global>();
+
+				oceanComponent.shader.Use();
+
+				oceanComponent.shader.SetFloat("time", glfwGetTime());
+
+				glm::mat4 projection = glm::perspective(glm::radians(camera->Fov), (float)width / (float)height, 0.01f, 1000.0f);
+				oceanComponent.shader.SetMat4("projection", projection);
+
+				glm::vec3 forward = cameraTransform->Rotation * glm::vec3(0.0f, 0.0f, -1.0f);
+				glm::vec3 up = glm::rotate(cameraTransform->Rotation, glm::vec3(0.0f, 1.0f, 0.0f));
+
+				glm::mat4 view = glm::lookAt(cameraTransform->Position, cameraTransform->Position + forward, up);
+				oceanComponent.shader.SetMat4("view", view);
+				
+				glm::mat4 model = glm::mat4(1.0f);
+				model = glm::translate(model, transformComponent->Position);
+				model *= glm::toMat4(transformComponent->Rotation);
+				model = glm::scale(model, transformComponent->Scale);
+				oceanComponent.shader.SetMat4("model", model);
+
+				glBindVertexArray(oceanComponent.VAO);
+
+				glDrawArrays(GL_TRIANGLES, 0, 4);
+
+				glBindVertexArray(0);
+			}
+		);
 	
 	flecs::system spinSystem = engine.m_World.system<SpinComponent, flecs::pair<TransformComponent, Local>>("SpinSystem")
 		.kind(flecs::OnUpdate)
-		.each([](flecs::iter& it, size_t, SpinComponent& spinComponent, flecs::pair<TransformComponent, Local> transformComponent)
+		.each([](flecs::iter& iter, size_t, SpinComponent& spinComponent, flecs::pair<TransformComponent, Local> transformComponent)
 			{
-				transformComponent->Rotation *= glm::angleAxis(spinComponent.speed * it.delta_time(), spinComponent.axis);
+				transformComponent->Rotation *= glm::angleAxis(spinComponent.speed * iter.delta_time(), spinComponent.axis);
 			}
 		);
 
