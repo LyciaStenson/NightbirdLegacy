@@ -85,8 +85,8 @@ int main()
 	
 	flecs::entity directionalLight = engine.m_World.entity("DirectionalLight")
 		.add<TransformComponent, Global>()
-		.set<TransformComponent, Local>({ glm::vec3(), glm::quat(glm::vec3(glm::radians(-90.0f), glm::radians(0.0f), glm::radians(0.0f))) })
-		.set<BaseLightComponent>({ 0.6f, glm::vec3(1.0f, 1.0f, 1.0f), true, 16384, 16384 })
+		.set<TransformComponent, Local>({ glm::vec3(), glm::quat(glm::vec3(glm::radians(-60.0f), glm::radians(135.0f), glm::radians(0.0f))) })
+		.set<BaseLightComponent>({ 0.5f, glm::vec3(1.0f, 1.0f, 1.0f), true, 4096, 4096 })
 		.set<DirectionalLightComponent>({ 0.05f });
 	
 	//flecs::entity pointLight1 = engine.m_World.entity("PointLight1")
@@ -94,7 +94,7 @@ int main()
 	//	.set<TransformComponent, Local>({glm::vec3(0.7f, 1.0f, 0.0f) })
 	//	.set<BaseLightComponent>({ 3.0f, glm::vec3(0.0f, 0.0f, 1.0f) })
 	//	.set<PointLightComponent>({ 1.0f, 1.0f, 0.5f });
-	//
+	
 	//flecs::entity pointLight2 = engine.m_World.entity("PointLight2")
 	//	.add<TransformComponent, Global>()
 	//	.set<TransformComponent, Local>({ glm::vec3(-0.7f, 1.0f, 0.0f) })
@@ -105,9 +105,8 @@ int main()
 	//engine.GetResourceManager().LoadModel(engine.m_World, "the_great_drawing_room.glb", "GreatDrawingRoom");
 	//engine.GetResourceManager().LoadModel(engine.m_World, "the_hindu_god_ganesh.glb", "God");
 	//engine.GetResourceManager().LoadModel(engine.m_World, "survival_guitar_backpack.glb", "SurvivalBackpack");
-	//engine.GetResourceManager().LoadModel(engine.m_World, "witch_treehouse.glb", "WitchTreehouse");
-	engine.GetResourceManager().LoadModel(engine.m_World, "WitchTreehouse.glb", "WitchTreehouse");
-
+	engine.GetResourceManager().LoadModel(engine.m_World, "witch_treehouse.glb", "WitchTreehouse");
+	
 	engine.GetResourceManager().InstantiateModel(engine.m_World, "Cube", glm::vec3(0.0f, -0.25f, 0.0f), glm::quat(glm::vec3(glm::radians(0.0f), glm::radians(0.0f), glm::radians(0.0f))), glm::vec3(10.0f, 0.5f, 10.0f));
 	engine.GetResourceManager().InstantiateModel(engine.m_World, "Cube", glm::vec3(3.0f, 3.25f, 3.0f), glm::quat(glm::vec3(glm::radians(0.0f), glm::radians(0.0f), glm::radians(0.0f))), glm::vec3(2.0f, 1.0f, 1.0f))
 		.set<SpinComponent>({ 0.75f, glm::normalize(glm::vec3(1.0f, 1.0f, 0.0f)) });

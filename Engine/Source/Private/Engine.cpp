@@ -355,8 +355,6 @@ void Engine::InitSystems()
 					}
 				}
 				
-				//std::cout << "Using shadow mapping: " << useShadowMapping << std::endl;
-				
 				std::vector<TransformComponent> pointLightTransforms; // Transform can't be reference or pointer due to flecs::pair
 				std::vector<BaseLightComponent*> pointBaseLightComponents;
 				std::vector<PointLightComponent*> pointLightComponents;
@@ -382,6 +380,7 @@ void Engine::InitSystems()
 					if (useShadowMapping)
 					{
 						glBindTextureUnit(3, directionalShadowTexture);
+						primitive.material.shader.SetInt("directionalLightShadowMap", 3);
 						primitive.material.shader.SetMat4("directionalLightSpaceMat", directionalLightSpaceMat);
 					}
 					
@@ -543,7 +542,7 @@ void Engine::InitSystems()
 				
 				glClear(GL_DEPTH_BUFFER_BIT);
 				
-				glm::mat4 lightProjection = glm::ortho(-15.0f, 15.0f, -15.0f, 15.0f, 0.1f, 35.0f);
+				glm::mat4 lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 0.1f, 25.0f);
 				glm::vec3 lightDir = glm::rotate(transformComponent->Rotation, glm::vec3(0.0f, 0.0f, -1.0f));
 				glm::mat4 lightView = glm::lookAt(lightDir * -15.0f, glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 				

@@ -46,6 +46,7 @@ struct PointLight
 
 uniform DirectionalLight directionalLight;
 uniform sampler2DShadow directionalLightShadowMap;
+//uniform sampler2D directionalLightShadowMap;
 
 uniform PointLight pointLights[MAX_POINT_LIGHTS];
 uniform int pointLightCount;
@@ -62,7 +63,7 @@ float CalculateDirectionalShadow(vec4 fragPosLightSpace, vec3 normal, vec3 light
 	//float closestDepth = texture(directionalLightShadowMap, projCoords.xy).r;
 	//float currentDepth = projCoords.z;
 	
-	//float bias = max(0.05 * (1.0f - dot(normal, lightDir)), 0.005f);
+	float bias = max(0.01 * (1.0f - dot(normal, lightDir)), 0.001f);
 	//float shadow = 0.0f;
 	//vec2 texelSize = 1.0f / textureSize(directionalLightShadowMap, 0);
 	//for (int x = -3; x <= 3; ++x)
@@ -76,8 +77,8 @@ float CalculateDirectionalShadow(vec4 fragPosLightSpace, vec3 normal, vec3 light
 	//shadow /= 49.0f;
 	//float shadow = (currentDepth - bias) > closestDepth ? 1.0 : 0.0;
 	//float shadow = currentDepth > closestDepth ? 1.0 : 0.0;
-	float shadow = 1.0f - texture(directionalLightShadowMap, projCoords.xyz);
-	//float shadow = 1.0f - texture(directionalLightShadowMap, vec3(projCoords.xy, projCoords.z - bias));
+	//float shadow = 1.0f - texture(directionalLightShadowMap, projCoords.xyz);
+	float shadow = 1.0f - texture(directionalLightShadowMap, vec3(projCoords.xy, projCoords.z - bias));
 	return shadow;
 }
 
@@ -92,7 +93,6 @@ void main()
 	vec3 ambient = vec3(1.0f, 1.0f, 1.0f) * directionalLight.ambient;
 	
 	vec3 normal;
-
 	if (hasNormalTexture)
 	{
 		normal = texture(normalTexture, normalTexCoord).rgb;
@@ -123,8 +123,7 @@ void main()
 		pointDiffuse += pointLights[i].color * max(dot(normal, pointLightDir), 0.0f) * pointLights[i].intensity * attenuation;
 	}
 	
-	float finalMetallic = 0.0f;
-	//float finalMetallic = metallicFactor;
+	float finalMetallic = metallicFactor;
 	float finalRoughness = roughnessFactor;
 	float ambientOcclusion = 1.0f;
 
