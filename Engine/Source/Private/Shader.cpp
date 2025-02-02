@@ -7,18 +7,16 @@ Shader::Shader()
 	ID = -1;
 }
 
-Shader::Shader(const char* vertexPath, const char* fragmentPath)
+Shader::Shader(const char* vertexPath, const char* fragmentPath, const char* tessellationControlPath, const char* tessellationEvaluationPath)
 {
-	Load(vertexPath, fragmentPath);
+	Load(vertexPath, fragmentPath, tessellationControlPath, tessellationEvaluationPath);
 }
 
-void Shader::Load(const char* vertexPath, const char* fragmentPath)
+void Shader::Load(const char* vertexPath, const char* fragmentPath, const char* tessellationControlPath, const char* tessellationEvaluationPath)
 {
-	std::string vertexCode;
-	std::string fragmentCode;
-	std::ifstream vShaderFile;
-	std::ifstream fShaderFile;
-
+	std::string vertexCode, fragmentCode, tessellationControlCode, tessellationEvaluationCode;
+	std::ifstream vShaderFile, fShaderFile, tcShaderFile, teShaderFile;
+	
 	vShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
 	fShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
 	try
@@ -27,7 +25,6 @@ void Shader::Load(const char* vertexPath, const char* fragmentPath)
 		fShaderFile.open(fragmentPath);
 
 		std::stringstream vShaderStream, fShaderStream;
-
 		vShaderStream << vShaderFile.rdbuf();
 		fShaderStream << fShaderFile.rdbuf();
 
@@ -36,6 +33,23 @@ void Shader::Load(const char* vertexPath, const char* fragmentPath)
 
 		vertexCode = vShaderStream.str();
 		fragmentCode = fShaderStream.str();
+
+		if (tessellationControlPath)
+		{
+			tcShaderFile.open(tessellationControlPath);
+			std::stringstream tcShaderStream;
+			tcShaderStream << tcShaderFile.rdbuf();
+			tcShaderFile.close();
+			tessellationControlCode = tcShaderStream.str();
+		}
+		if (tessellationEvaluationPath)
+		{
+			teShaderFile.open(tessellationEvaluationCode);
+			std::stringstream teShaderStream;
+			teShaderStream << teShaderFile.rdbuf();
+			teShaderFile.close();
+			tessellationEvaluationCode = teShaderStream.str();
+		}
 	}
 	catch (std::ifstream::failure& e)
 	{
@@ -45,7 +59,10 @@ void Shader::Load(const char* vertexPath, const char* fragmentPath)
 	const char* vShaderCode = vertexCode.c_str();
 	const char* fShaderCode = fragmentCode.c_str();
 
-	unsigned int vertex, fragment;
+	const char* tcShaderCode = tessellationControlPath ? tessellationControlCode.c_str() : nullptr;
+	const char* teShaderCode = tessellationEvaluationPath ? tessellationEvaluationCode.c_str() : nullptr;
+
+	unsigned int vertex, fragment, tessellationControl, tessellationEvaluation;
 
 	vertex = glCreateShader(GL_VERTEX_SHADER);
 	glShaderSource(vertex, 1, &vShaderCode, NULL);
@@ -57,14 +74,38 @@ void Shader::Load(const char* vertexPath, const char* fragmentPath)
 	glCompileShader(fragment);
 	CheckCompileErrors(fragment, "FRAGMENT");
 
+	if (tessellationControlPath)
+	{
+		tessellationControl = glCreateShader(GL_TESS_CONTROL_SHADER);
+		glShaderSource(tessellationControl, 1, &tcShaderCode, NULL);
+		glCompileShader(tessellationControl);
+		CheckCompileErrors(tessellationControl, "TESS_CONTROL");
+	}
+
+	if (tessellationEvaluationPath)
+	{
+		tessellationEvaluation = glCreateShader(GL_TESS_EVALUATION_SHADER);
+		glShaderSource(tessellationEvaluation, 1, &teShaderCode, NULL);
+		glCompileShader(tessellationEvaluation);
+		CheckCompileErrors(tessellationEvaluation, "TESS_EVALUATION");
+	}
+
 	ID = glCreateProgram();
 	glAttachShader(ID, vertex);
 	glAttachShader(ID, fragment);
+	if (tessellationControlPath)
+		glAttachShader(ID, tessellationControl);
+	if (tessellationEvaluationPath)
+		glAttachShader(ID, tessellationEvaluation);
 	glLinkProgram(ID);
 	CheckCompileErrors(ID, "PROGRAM");
 
 	glDeleteShader(vertex);
 	glDeleteShader(fragment);
+	if (tessellationControlPath)
+		glDeleteShader(tessellationControl);
+	if (tessellationEvaluationPath)
+		glDeleteShader(tessellationEvaluation);
 }
 
 Shader::~Shader()

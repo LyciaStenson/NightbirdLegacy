@@ -15,10 +15,10 @@ public:
 	unsigned int ID;
 
 	Shader();
-	Shader(const char* vertexPath, const char* fragmentPath);
+	Shader(const char* vertexPath, const char* fragmentPath, const char* tessellationControlPath = nullptr, const char* tessellationEvaluationPath = nullptr);
 	~Shader();
 
-	void Load(const char* vertexPath, const char* fragmentPath);
+	void Load(const char* vertexPath, const char* fragmentPath, const char* tessellationControlPath = nullptr, const char* tessellationEvaluationPath = nullptr);
 
 	void Use() const;
 
