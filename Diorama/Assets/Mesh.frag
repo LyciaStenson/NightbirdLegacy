@@ -46,7 +46,6 @@ struct PointLight
 
 uniform DirectionalLight directionalLight;
 uniform sampler2DShadow directionalLightShadowMap;
-//uniform sampler2D directionalLightShadowMap;
 
 uniform PointLight pointLights[MAX_POINT_LIGHTS];
 uniform int pointLightCount;
@@ -60,26 +59,20 @@ float CalculateDirectionalShadow(vec4 fragPosLightSpace, vec3 normal, vec3 light
 	if (projCoords.z > 1.0f)
 		return 0.0f;
 	
-	//float closestDepth = texture(directionalLightShadowMap, projCoords.xy).r;
-	//float currentDepth = projCoords.z;
-	
 	float bias = max(0.01 * (1.0f - dot(normal, lightDir)), 0.001f);
-	//float shadow = 0.0f;
-	//vec2 texelSize = 1.0f / textureSize(directionalLightShadowMap, 0);
-	//for (int x = -3; x <= 3; ++x)
-	//{
-		//for (int y = -3; y <= 3; ++y)
-		//{
-			//float pcfDepth = texture(directionalLightShadowMap, projCoords.xy + vec2(x, y) * texelSize).r;
-			//shadow += currentDepth - bias > pcfDepth ? 1.0f : 0.0f;
-		//}
-	//}
-	//shadow /= 49.0f;
-	//float shadow = (currentDepth - bias) > closestDepth ? 1.0 : 0.0;
-	//float shadow = currentDepth > closestDepth ? 1.0 : 0.0;
-	//float shadow = 1.0f - texture(directionalLightShadowMap, projCoords.xyz);
-	float shadow = 1.0f - texture(directionalLightShadowMap, vec3(projCoords.xy, projCoords.z - bias));
-	return shadow;
+	
+	float shadow = 0.0f;
+	vec2 texelSize = 1.0f / textureSize(directionalLightShadowMap, 0);
+	int samples = 3;
+	for (int x = -samples / 2; x <= samples / 2; ++x)
+	{
+		for (int y = -samples / 2; y <= samples / 2; ++y)
+		{
+			vec2 offset = vec2(x, y) * texelSize;
+			shadow += texture(directionalLightShadowMap, vec3(projCoords.xy + offset, projCoords.z - bias));
+		}
+	}
+	return 1.0f - shadow / (samples * samples);
 }
 
 void main()
@@ -144,12 +137,6 @@ void main()
 	vec3 diffuse = (directionalDiffuse + pointDiffuse);
 	
 	vec3 lighting = ambient + diffuse;
-	
-	//vec3 projCoords = FragPosLightSpace.xyz / FragPosLightSpace.w;
-	//projCoords = projCoords * 0.5f + 0.5f; // Transform from NDC (-1,1) to (0,1)
-	
-	//float closestDepth = texture(directionalLightShadowMap, projCoords.xy).r;
-	//FragColor = vec4(vec3(closestDepth), 1.0); // Display depth map
 	
 	FragColor = vec4(lighting, 1.0f) * finalBaseColor;
 	//FragColor = vec4(normal, 1.0f);

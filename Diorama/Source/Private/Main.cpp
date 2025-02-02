@@ -86,7 +86,7 @@ int main()
 	flecs::entity directionalLight = engine.m_World.entity("DirectionalLight")
 		.add<TransformComponent, Global>()
 		.set<TransformComponent, Local>({ glm::vec3(), glm::quat(glm::vec3(glm::radians(-60.0f), glm::radians(135.0f), glm::radians(0.0f))) })
-		.set<BaseLightComponent>({ 0.5f, glm::vec3(1.0f, 1.0f, 1.0f), true, 4096, 4096 })
+		.set<BaseLightComponent>({ 0.95f, glm::vec3(1.0f, 1.0f, 1.0f), true, 8192, 8192 })
 		.set<DirectionalLightComponent>({ 0.05f });
 	
 	//flecs::entity pointLight1 = engine.m_World.entity("PointLight1")
@@ -107,15 +107,15 @@ int main()
 	//engine.GetResourceManager().LoadModel(engine.m_World, "survival_guitar_backpack.glb", "SurvivalBackpack");
 	engine.GetResourceManager().LoadModel(engine.m_World, "witch_treehouse.glb", "WitchTreehouse");
 	
-	engine.GetResourceManager().InstantiateModel(engine.m_World, "Cube", glm::vec3(0.0f, -0.25f, 0.0f), glm::quat(glm::vec3(glm::radians(0.0f), glm::radians(0.0f), glm::radians(0.0f))), glm::vec3(10.0f, 0.5f, 10.0f));
-	engine.GetResourceManager().InstantiateModel(engine.m_World, "Cube", glm::vec3(3.0f, 3.25f, 3.0f), glm::quat(glm::vec3(glm::radians(0.0f), glm::radians(0.0f), glm::radians(0.0f))), glm::vec3(2.0f, 1.0f, 1.0f))
-		.set<SpinComponent>({ 0.75f, glm::normalize(glm::vec3(1.0f, 1.0f, 0.0f)) });
-	engine.GetResourceManager().InstantiateModel(engine.m_World, "Cube", glm::vec3(3.0f, 2.75f, -3.0f), glm::quat(glm::vec3(glm::radians(0.0f), glm::radians(0.0f), glm::radians(0.0f))), glm::vec3(1.0f, 2.5f, 1.0f))
-		.set<SpinComponent>({ 0.75f, glm::normalize(glm::vec3(1.0f, 1.0f, 0.0f)) });
-	engine.GetResourceManager().InstantiateModel(engine.m_World, "Cube", glm::vec3(-3.0f, 3.25f, 3.0f), glm::quat(glm::vec3(glm::radians(0.0f), glm::radians(0.0f), glm::radians(0.0f))), glm::vec3(1.5f, 1.0f, 3.0f))
-		.set<SpinComponent>({ 0.75f, glm::normalize(glm::vec3(1.0f, 1.0f, 0.0f)) });
-	engine.GetResourceManager().InstantiateModel(engine.m_World, "Cube", glm::vec3(-3.0f, 2.75f, -3.0f), glm::quat(glm::vec3(glm::radians(0.0f), glm::radians(0.0f), glm::radians(0.0f))), glm::vec3(2.5f, 0.5f, 1.25f))
-		.set<SpinComponent>({ 0.75f, glm::normalize(glm::vec3(1.0f, 1.0f, 0.0f)) });
+	//engine.GetResourceManager().InstantiateModel(engine.m_World, "Cube", glm::vec3(0.0f, -0.25f, 0.0f), glm::quat(glm::vec3(glm::radians(0.0f), glm::radians(0.0f), glm::radians(0.0f))), glm::vec3(10.0f, 0.5f, 10.0f));
+	//engine.GetResourceManager().InstantiateModel(engine.m_World, "Cube", glm::vec3(3.0f, 3.25f, 3.0f), glm::quat(glm::vec3(glm::radians(0.0f), glm::radians(0.0f), glm::radians(0.0f))), glm::vec3(2.0f, 1.0f, 1.0f))
+		//.set<SpinComponent>({ 0.75f, glm::normalize(glm::vec3(1.0f, 1.0f, 0.0f)) });
+	//engine.GetResourceManager().InstantiateModel(engine.m_World, "Cube", glm::vec3(3.0f, 2.75f, -3.0f), glm::quat(glm::vec3(glm::radians(0.0f), glm::radians(0.0f), glm::radians(0.0f))), glm::vec3(1.0f, 2.5f, 1.0f))
+		//.set<SpinComponent>({ 0.75f, glm::normalize(glm::vec3(1.0f, 1.0f, 0.0f)) });
+	//engine.GetResourceManager().InstantiateModel(engine.m_World, "Cube", glm::vec3(-3.0f, 3.25f, 3.0f), glm::quat(glm::vec3(glm::radians(0.0f), glm::radians(0.0f), glm::radians(0.0f))), glm::vec3(1.5f, 1.0f, 3.0f))
+		//.set<SpinComponent>({ 0.75f, glm::normalize(glm::vec3(1.0f, 1.0f, 0.0f)) });
+	//engine.GetResourceManager().InstantiateModel(engine.m_World, "Cube", glm::vec3(-3.0f, 2.75f, -3.0f), glm::quat(glm::vec3(glm::radians(0.0f), glm::radians(0.0f), glm::radians(0.0f))), glm::vec3(2.5f, 0.5f, 1.25f))
+		//.set<SpinComponent>({ 0.75f, glm::normalize(glm::vec3(1.0f, 1.0f, 0.0f)) });
 	//engine.GetResourceManager().InstantiateModel(engine.m_World, "Cube", glm::vec3(0.0f, 3.0f, 0.0f), glm::quat(glm::vec3(glm::radians(0.0f), glm::radians(0.0f), glm::radians(0.0f))), glm::vec3(1.0f, 1.0f, 1.0f))
 		//.set<SpinComponent>({ 0.75f, glm::normalize(glm::vec3(1.0f, 1.0f, 0.0f)) });
 	//engine.GetResourceManager().InstantiateModel(engine.m_World, "Cube", glm::vec3(0.7f, 1.0f, 0.0f), glm::quat(glm::vec3(glm::radians(0.0f), glm::radians(0.0f), glm::radians(0.0f))), glm::vec3(0.1f, 0.1f, 0.1f));
@@ -127,13 +127,13 @@ int main()
 	//engine.GetResourceManager().InstantiateModel(engine.m_World, "God", glm::vec3(0.0f, 3.0f, -0.5f), glm::quat(glm::vec3(glm::radians(0.0f), glm::radians(0.0f), glm::radians(0.0f))), glm::vec3(0.001f, 0.001f, 0.001f))
 		//.set<SpinComponent>({ 0.1f, glm::vec3(0.0f, 1.0f, 0.0f) });
 	
-	engine.GetResourceManager().InstantiateModel(engine.m_World, "WitchTreehouse", glm::vec3(0.0f, 3.0f, 0.0f), glm::quat(glm::vec3(glm::radians(0.0f), glm::radians(0.0f), glm::radians(0.0f))), glm::vec3(0.0003f, 0.0003f, 0.0003f));
+	engine.GetResourceManager().InstantiateModel(engine.m_World, "WitchTreehouse", glm::vec3(0.0f, 0.0f, 0.0f), glm::quat(glm::vec3(glm::radians(0.0f), glm::radians(0.0f), glm::radians(0.0f))), glm::vec3(0.01f, 0.01f, 0.01f));
 		//.set<SpinComponent>({0.75f, glm::normalize(glm::vec3(0.0f, 1.0f, 0.0f))});
 	
 	flecs::entity player = engine.m_World.entity("Player")
 		.add<TransformComponent, Global>()
-		.set<TransformComponent, Local>({ glm::vec3(0.0f, 1.0f, 3.0f) })
-		.set<PlayerMovementComponent>({ 2.5f })
+		.set<TransformComponent, Local>({ glm::vec3(0.0f, 5.0f, 10.0f) })
+		.set<PlayerMovementComponent>({ 10.0f })
 		.set<PlayerYawComponent>({ 1.0f });
 
 	flecs::entity camera = engine.m_World.entity("Camera")
