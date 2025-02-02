@@ -378,7 +378,7 @@ void Engine::InitSystems()
 					else
 					{
 						glEnable(GL_CULL_FACE);
-						glCullFace(GL_FRONT);
+						glCullFace(GL_BACK);
 					}
 
 					if (primitive.material.hasBaseColorTexture)
@@ -552,7 +552,7 @@ void Engine::InitSystems()
 				
 				glClear(GL_DEPTH_BUFFER_BIT);
 				
-				glm::mat4 lightProjection = glm::ortho(-35.0f, 35.0f, -35.0f, 35.0f, 0.1f, 90.0f);
+				glm::mat4 lightProjection = glm::ortho(-35.0f, 35.0f, -35.0f, 35.0f, 0.1f, 95.0f);
 				glm::vec3 lightDir = glm::rotate(transformComponent->Rotation, glm::vec3(0.0f, 0.0f, -1.0f));
 				glm::mat4 lightView = glm::lookAt(lightDir * -70.0f, glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 				
