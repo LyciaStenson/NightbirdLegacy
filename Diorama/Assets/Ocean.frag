@@ -30,8 +30,8 @@ void main()
 	vec3 ambient = directionalLight.ambient * vec3(1.0f, 1.0f, 1.0f);
 
 	//vec4 fragColor = (ambient + directionalDiffuse) * color;
-	//FragColor = (ambient + directionalDiffuse) * color;
-	FragColor = color;
+	FragColor = vec4((ambient + directionalDiffuse) * color.rgb, color.a);
+	//FragColor = color;
 
 	//FragColor = vec4(fragColor, 1.0f);
 	//FragColor = vec4(Normal, 1.0f);

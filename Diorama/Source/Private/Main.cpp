@@ -126,7 +126,7 @@ int main()
 	engine.GetResourceManager().InstantiateModel(engine.m_World, "WitchTreehouse", glm::vec3(0.0f, -0.5f, 0.0f), glm::quat(), glm::vec3(0.01f, 0.01f, 0.01f));
 	
 	OceanComponent oceanComponent;
-	oceanComponent.color = glm::vec4(0.0f, 0.3f, 0.35f, 0.25f);
+	oceanComponent.color = glm::vec4(0.0f, 0.3f, 0.35f, 0.55f);
 	oceanComponent.waveAmplitude = 0.25f;
 	oceanComponent.waveFrequency = 0.5f;
 	flecs::entity ocean = engine.m_World.entity("Ocean")
@@ -136,7 +136,7 @@ int main()
 	
 	flecs::entity player = engine.m_World.entity("Player")
 		.add<TransformComponent, Global>()
-		.set<TransformComponent, Local>({ glm::vec3(0.0f, 35.0f, 45.0f) })
+		.set<TransformComponent, Local>({ glm::vec3(0.0f, 33.0f, 55.0f) })
 		.set<PlayerMovementComponent>({ 10.0f })
 		.set<PlayerYawComponent>({ 1.0f });
 
