@@ -8,10 +8,10 @@ struct OceanComponent
 {
 	float vertices[12] =
 	{
-		-50.0f,  0.0f, -50.0f,
-		-50.0f,  0.0f,  50.0f,
-		 50.0f,  0.0f, -50.0f,
-		 50.0f,  0.0f,  50.0f
+		-25.0f,  0.0f, -25.0f,
+		-25.0f,  0.0f,  25.0f,
+		 25.0f,  0.0f, -25.0f,
+		 25.0f,  0.0f,  25.0f
 	};
 
 	unsigned int VBO;
@@ -19,6 +19,8 @@ struct OceanComponent
 	
 	glm::vec3 color;
 	float radius;
+	float waveAmplitude;
+	float waveFrequency;
 	
 	Shader shader;
 };

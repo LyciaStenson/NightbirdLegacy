@@ -26,21 +26,35 @@ void main()
 	
 	vec4 uVec = p01 - p00;
 	vec4 vVec = p10 - p00;
-	vec3 normal = normalize(cross(vVec.xyz, uVec.xyz));
+	vec3 normal = normalize(cross(uVec.xyz, vVec.xyz));
 
 	vec4 p0 = (p01 - p00) * u + p00;
 	vec4 p1 = (p11 - p10) * u + p10;
 	vec4 p = (p1 - p0) * v + p0;
 	
-	float waveDisplacement = waveAmplitude * sin((time * waveFrequency) + p.x + p.y + p.z);
+	//float waveDisplacement = waveAmplitude * sin((time * waveFrequency) + p.x + p.y + p.z);
 	
-	//p += vec4(normal, 0.0f);
-	//p.xyz += normal;
+	//float waveTangentMag = waveAmplitude * waveFrequency * cos((time * waveFrequency) + p.x + p.y + p.z);
+	//float waveBitangentMag = 1.0f;
+	
+	//vec3 waveTangent = vec3(0.0f, waveTangentMag, 0.0f);
+	//vec3 waveBitangent = vec3(0.0f, 0.0f, waveBitangentMag);
+	
+	//vec3 waveTangent = vec3(1.0f, 0.0f, 0.0f);
+	//vec3 waveBitangent = vec3(0.0f, 0.0f, -1.0f);
+	
+	float waveDisplacement = waveAmplitude * sin(p.x + time);
+	
+	vec3 waveTangent = vec3(1.0f, waveAmplitude * cos(p.x + time), 0.0f);
+	vec3 waveBitangent = vec3(0.0f, 0.0f, -1.0f);
+	
 	p.xyz += normal * waveDisplacement;
 
 	FragPos = p.xyz;
-
-	Normal = mat3(transpose(inverse(model))) * normal;
+	
+	//Normal = mat3(transpose(inverse(model))) * normal;
+	
+	Normal = cross(waveTangent, waveBitangent);
 	
 	gl_Position = projection * view * model * p;
 }

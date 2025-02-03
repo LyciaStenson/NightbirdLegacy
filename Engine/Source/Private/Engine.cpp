@@ -872,25 +872,9 @@ void Engine::HandleScroll()
 
 void DebugCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam)
 {
-	switch (severity)
+	if (severity == GL_DEBUG_SEVERITY_HIGH)
 	{
-	case GL_DEBUG_SEVERITY_HIGH:
 		std::cout << "GL_DEBUG_SEVERITY_HIGH" << std::endl;
 		std::cout << message << std::endl;
-		break;
-	case GL_DEBUG_SEVERITY_MEDIUM:
-		std::cout << "GL_DEBUG_SEVERITY_MEDIUM" << std::endl;
-		std::cout << message << std::endl;
-		break;
-	case GL_DEBUG_SEVERITY_LOW:
-		std::cout << "GL_DEBUG_SEVERITY_LOW" << std::endl;
-		std::cout << message << std::endl;
-		break;
-	case GL_DEBUG_SEVERITY_NOTIFICATION:
-		//std::cout << "GL_DEBUG_SEVERITY_NOTIFICATION" << std::endl;
-		break;
-	default:
-		std::cout << "OpenGL Error Unknown severity" << std::endl;
-		break;
 	}
 }

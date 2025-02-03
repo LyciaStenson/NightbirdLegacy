@@ -118,10 +118,12 @@ int main()
 
 	//engine.GetResourceManager().InstantiateModel(engine.m_World, "Cube", glm::vec3(0.0f, 0.0f, 25.0f), glm::quat(), glm::vec3(1.0f, 1.0f, 1.0f));
 	
-	engine.GetResourceManager().InstantiateModel(engine.m_World, "WitchTreehouse", glm::vec3(0.0f, -1.5f, 0.0f), glm::quat(), glm::vec3(0.01f, 0.01f, 0.01f));
+	engine.GetResourceManager().InstantiateModel(engine.m_World, "WitchTreehouse", glm::vec3(0.0f, -0.5f, 0.0f), glm::quat(), glm::vec3(0.01f, 0.01f, 0.01f));
 	
 	OceanComponent oceanComponent;
 	oceanComponent.color = glm::vec3(0.0f, 0.3f, 0.35f);
+	oceanComponent.waveAmplitude = 0.25f;
+	oceanComponent.waveFrequency = 0.5f;
 	flecs::entity ocean = engine.m_World.entity("Ocean")
 		.add<TransformComponent, Global>()
 		.set<TransformComponent, Local>({ glm::vec3(0.0f, 0.0f, 0.0f) })
@@ -151,8 +153,8 @@ int main()
 
 				oceanComponent.shader.Use();
 
-				oceanComponent.shader.SetFloat("waveAmplitude", 0.5f);
-				oceanComponent.shader.SetFloat("waveFrequency", 0.5f);
+				oceanComponent.shader.SetFloat("waveAmplitude", oceanComponent.waveAmplitude);
+				oceanComponent.shader.SetFloat("waveFrequency", oceanComponent.waveFrequency);
 
 				glGenVertexArrays(1, &oceanComponent.VAO);
 				glGenBuffers(1, &oceanComponent.VBO);
