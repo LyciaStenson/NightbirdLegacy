@@ -16,8 +16,9 @@ struct OceanComponent
 
 	unsigned int VBO;
 	unsigned int VAO;
-
+	
 	glm::vec3 color;
-
+	float radius;
+	
 	Shader shader;
 };

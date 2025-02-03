@@ -44,7 +44,7 @@ void Shader::Load(const char* vertexPath, const char* fragmentPath, const char* 
 		}
 		if (tessellationEvaluationPath)
 		{
-			teShaderFile.open(tessellationEvaluationCode);
+			teShaderFile.open(tessellationEvaluationPath);
 			std::stringstream teShaderStream;
 			teShaderStream << teShaderFile.rdbuf();
 			teShaderFile.close();
