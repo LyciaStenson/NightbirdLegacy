@@ -17,7 +17,7 @@ struct OceanComponent
 	unsigned int VBO;
 	unsigned int VAO;
 	
-	glm::vec3 color;
+	glm::vec4 color;
 	float radius;
 	float waveAmplitude;
 	float waveFrequency;

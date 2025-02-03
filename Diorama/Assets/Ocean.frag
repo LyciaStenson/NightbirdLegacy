@@ -5,7 +5,7 @@ in vec3 Normal;
 
 out vec4 FragColor;
 
-uniform vec3 color = vec3(0.0f, 0.0f, 1.0f);
+uniform vec4 color;
 
 struct DirectionalLight
 {
@@ -19,9 +19,9 @@ uniform DirectionalLight directionalLight;
 
 void main()
 {
-	//float dist = length(FragPos.xz);
-	//if (dist > 25.0f)
-		//discard;
+	float dist = length(FragPos.xz);
+	if (dist > 25.0f)
+		discard;
 	
 	vec3 normal = normalize(Normal);
 	
@@ -29,8 +29,10 @@ void main()
 	
 	vec3 ambient = directionalLight.ambient * vec3(1.0f, 1.0f, 1.0f);
 
-	vec3 fragColor = (ambient + directionalDiffuse) * color;
+	//vec4 fragColor = (ambient + directionalDiffuse) * color;
+	//FragColor = (ambient + directionalDiffuse) * color;
+	FragColor = color;
 
-	FragColor = vec4(fragColor, 1.0f);
+	//FragColor = vec4(fragColor, 1.0f);
 	//FragColor = vec4(Normal, 1.0f);
 }

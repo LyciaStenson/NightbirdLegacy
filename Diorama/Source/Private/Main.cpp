@@ -4,6 +4,8 @@
 #include <Components/OceanComponent.h>
 #include <Components/SpinComponent.h>
 
+bool oceanWireframe = false;
+
 void KeyCallback(Engine* engine, int key, int scancode, int action, int mods)
 {
 	if (action == GLFW_RELEASE)
@@ -18,6 +20,9 @@ void KeyCallback(Engine* engine, int key, int scancode, int action, int mods)
 			break;
 		case GLFW_KEY_M:
 			engine->globalShadowMapsEnabled = !engine->globalShadowMapsEnabled;
+			break;
+		case GLFW_KEY_B:
+			oceanWireframe = !oceanWireframe;
 			break;
 		case GLFW_KEY_F11:
 			if (glfwGetWindowMonitor(engine->m_Window))
@@ -121,7 +126,7 @@ int main()
 	engine.GetResourceManager().InstantiateModel(engine.m_World, "WitchTreehouse", glm::vec3(0.0f, -0.5f, 0.0f), glm::quat(), glm::vec3(0.01f, 0.01f, 0.01f));
 	
 	OceanComponent oceanComponent;
-	oceanComponent.color = glm::vec3(0.0f, 0.3f, 0.35f);
+	oceanComponent.color = glm::vec4(0.0f, 0.3f, 0.35f, 0.25f);
 	oceanComponent.waveAmplitude = 0.25f;
 	oceanComponent.waveFrequency = 0.5f;
 	flecs::entity ocean = engine.m_World.entity("Ocean")
@@ -173,11 +178,14 @@ int main()
 	oceanInitSystem.run();
 	
 	flecs::system oceanRenderSystem = engine.m_World.system<OceanComponent, flecs::pair<TransformComponent, Global>>("OceanRenderSystem")
-		.kind(flecs::OnUpdate)
+		.kind(flecs::PostUpdate)
 		.each([&](flecs::iter& iter, size_t, OceanComponent& oceanComponent, flecs::pair<TransformComponent, Global> transformComponent)
 			{
 				glEnable(GL_CULL_FACE);
 				glCullFace(GL_BACK);
+
+				glEnable(GL_BLEND);
+				glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 				
 				int width;
 				int height;
@@ -188,7 +196,7 @@ int main()
 
 				oceanComponent.shader.Use();
 				
-				oceanComponent.shader.SetVec3("color", oceanComponent.color);
+				oceanComponent.shader.SetVec4("color", oceanComponent.color);
 				
 				oceanComponent.shader.SetFloat("time", glfwGetTime());
 
@@ -223,7 +231,8 @@ int main()
 					oceanComponent.shader.SetVec3("directionalLight.color", baseLight->color);
 				}
 				
-				//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+				if (oceanWireframe)
+					glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 				
 				glPatchParameteri(GL_PATCH_VERTICES, 4);
 				
@@ -233,7 +242,10 @@ int main()
 
 				glBindVertexArray(0);
 				
-				//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+				if (oceanWireframe)
+					glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+				glDisable(GL_BLEND);
 			}
 		);
 	
