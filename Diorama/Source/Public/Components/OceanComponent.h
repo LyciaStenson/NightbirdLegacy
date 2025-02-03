@@ -8,10 +8,10 @@ struct OceanComponent
 {
 	float vertices[12] =
 	{
-		-100.0f,  0.0f, -100.0f,
-		-100.0f,  0.0f,  100.0f,
-		 100.0f,  0.0f, -100.0f,
-		 100.0f,  0.0f,  100.0f
+		-50.0f,  0.0f, -50.0f,
+		-50.0f,  0.0f,  50.0f,
+		 50.0f,  0.0f, -50.0f,
+		 50.0f,  0.0f,  50.0f
 	};
 
 	unsigned int VBO;

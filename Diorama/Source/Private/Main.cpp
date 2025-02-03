@@ -87,8 +87,8 @@ int main()
 	flecs::entity directionalLight = engine.m_World.entity("DirectionalLight")
 		.add<TransformComponent, Global>()
 		.set<TransformComponent, Local>({ glm::vec3(), glm::quat(glm::vec3(glm::radians(-60.0f), glm::radians(135.0f), glm::radians(0.0f))) })
-		.set<BaseLightComponent>({ 0.9f, glm::vec3(1.0f, 1.0f, 1.0f), true, 8192, 8192 })
-		.set<DirectionalLightComponent>({ 0.1f });
+		.set<BaseLightComponent>({ 0.6f, glm::vec3(1.0f, 1.0f, 1.0f), true, 8192, 8192 })
+		.set<DirectionalLightComponent>({ 0.03f });
 	
 	//flecs::entity pointLight1 = engine.m_World.entity("PointLight1")
 	//	.add<TransformComponent, Global>()
@@ -116,16 +116,15 @@ int main()
 	
 	//engine.GetResourceManager().InstantiateModel(engine.m_World, "Cube", glm::vec3(0.0f, -3.0f, 0.0f), glm::quat(), glm::vec3(1000.0f, 1.0f, 1000.0f));
 
-	//engine.GetResourceManager().InstantiateModel(engine.m_World, "Cube", glm::vec3(0.0f, 0.0f, -2.0f), glm::quat(), glm::vec3(1.0f, 1.0f, 1.0f));
+	//engine.GetResourceManager().InstantiateModel(engine.m_World, "Cube", glm::vec3(0.0f, 0.0f, 25.0f), glm::quat(), glm::vec3(1.0f, 1.0f, 1.0f));
 	
-	engine.GetResourceManager().InstantiateModel(engine.m_World, "WitchTreehouse", glm::vec3(0.0f, -2.5f, 0.0f), glm::quat(glm::vec3(glm::radians(0.0f), glm::radians(0.0f), glm::radians(0.0f))), glm::vec3(0.01f, 0.01f, 0.01f));
+	engine.GetResourceManager().InstantiateModel(engine.m_World, "WitchTreehouse", glm::vec3(0.0f, -1.5f, 0.0f), glm::quat(), glm::vec3(0.01f, 0.01f, 0.01f));
 	
 	OceanComponent oceanComponent;
 	oceanComponent.color = glm::vec3(0.0f, 0.3f, 0.35f);
-	
 	flecs::entity ocean = engine.m_World.entity("Ocean")
 		.add<TransformComponent, Global>()
-		.add<TransformComponent, Local>()
+		.set<TransformComponent, Local>({ glm::vec3(0.0f, 0.0f, 0.0f) })
 		.set<OceanComponent>(oceanComponent);
 	
 	flecs::entity player = engine.m_World.entity("Player")
@@ -149,6 +148,11 @@ int main()
 		.each([](OceanComponent& oceanComponent)
 			{
 				oceanComponent.shader = Shader("Ocean.vert", "Ocean.frag", "Ocean.tcs", "Ocean.tes");
+
+				oceanComponent.shader.Use();
+
+				oceanComponent.shader.SetFloat("waveAmplitude", 0.5f);
+				oceanComponent.shader.SetFloat("waveFrequency", 0.5f);
 
 				glGenVertexArrays(1, &oceanComponent.VAO);
 				glGenBuffers(1, &oceanComponent.VBO);
@@ -186,7 +190,7 @@ int main()
 				
 				oceanComponent.shader.SetFloat("time", glfwGetTime());
 
-				oceanComponent.shader.SetFloat("tessellationFactor", 32.0f);
+				oceanComponent.shader.SetFloat("tessellationFactor", 64.0f);
 
 				glm::mat4 projection = glm::perspective(glm::radians(camera->Fov), (float)width / (float)height, 0.01f, 1000.0f);
 				oceanComponent.shader.SetMat4("projection", projection);
@@ -203,7 +207,21 @@ int main()
 				model = glm::scale(model, transformComponent->Scale);
 				oceanComponent.shader.SetMat4("model", model);
 
-				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+				if (engine.m_DirectionalLight.is_valid())
+				{
+					const TransformComponent* transform = engine.m_DirectionalLight.get<TransformComponent, Global>();
+					glm::vec3 directionalLightDir = glm::rotate(transform->Rotation, glm::vec3(0.0f, 0.0f, -1.0f));
+					
+					const BaseLightComponent* baseLight = engine.m_DirectionalLight.get<BaseLightComponent>();
+					const DirectionalLightComponent* directionalLight = engine.m_DirectionalLight.get<DirectionalLightComponent>();
+					
+					oceanComponent.shader.SetVec3("directionalLight.direction", directionalLightDir);
+					oceanComponent.shader.SetFloat("directionalLight.intensity", baseLight->intensity);
+					oceanComponent.shader.SetFloat("directionalLight.ambient", directionalLight->ambient);
+					oceanComponent.shader.SetVec3("directionalLight.color", baseLight->color);
+				}
+				
+				//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 				
 				glPatchParameteri(GL_PATCH_VERTICES, 4);
 				
@@ -213,7 +231,7 @@ int main()
 
 				glBindVertexArray(0);
 				
-				glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+				//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 			}
 		);
 	

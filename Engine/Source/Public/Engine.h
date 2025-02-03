@@ -54,6 +54,8 @@ public:
 
 	flecs::entity m_MainCamera;
 
+	flecs::entity m_DirectionalLight;
+
 	float lastX = 0.0f;
 	float lastY = 0.0f;
 	bool mouseDown = false;
@@ -84,9 +86,7 @@ private:
 	flecs::system m_RenderShutdownSystem;
 
 	flecs::query<const TransformComponent, const TransformComponent*, TransformComponent> m_GlobalTransformQuery;
-
-	flecs::entity m_DirectionalLight;
-
+	
 	flecs::query<BaseLightComponent, PointLightComponent, flecs::pair<TransformComponent, Global>> m_PointLightQuery;
 
 	RenderTarget* m_RenderTarget;
