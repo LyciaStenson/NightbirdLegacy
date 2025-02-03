@@ -203,18 +203,17 @@ int main()
 				model = glm::scale(model, transformComponent->Scale);
 				oceanComponent.shader.SetMat4("model", model);
 
-				//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 				
 				glPatchParameteri(GL_PATCH_VERTICES, 4);
 				
 				glBindVertexArray(oceanComponent.VAO);
-
-				//glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+				
 				glDrawArrays(GL_PATCHES, 0, 4);
 
 				glBindVertexArray(0);
 				
-				//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+				glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 			}
 		);
 	
