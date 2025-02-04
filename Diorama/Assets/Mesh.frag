@@ -85,16 +85,7 @@ void main()
 
 	vec3 ambient = vec3(1.0f, 1.0f, 1.0f) * directionalLight.ambient;
 	
-	vec3 normal;
-	if (hasNormalTexture)
-	{
-		normal = texture(normalTexture, normalTexCoord).rgb;
-		normal = normalize((normal * 2.0f) - 1.0f);
-	}
-	else
-	{
-		normal = normalize(Normal);
-	}
+	vec3 normal = hasNormalTexture ? normalize((texture(normalTexture, normalTexCoord).rgb * 2.0f) - 1.0f) : normalize(Normal);
 	
 	vec3 directionalLightDir = normalize(-DirectionalLightDir);
 	
@@ -139,6 +130,7 @@ void main()
 	vec3 lighting = ambient + diffuse;
 	
 	FragColor = vec4(lighting, 1.0f) * finalBaseColor;
+
 	//FragColor = vec4(normal, 1.0f);
 	//FragColor = finalBaseColor;
 	//FragColor = vec4(ambientOcclusion, ambientOcclusion, ambientOcclusion, 1.0f);

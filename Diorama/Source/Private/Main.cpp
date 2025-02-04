@@ -92,8 +92,8 @@ int main()
 	flecs::entity directionalLight = engine.m_World.entity("DirectionalLight")
 		.add<TransformComponent, Global>()
 		.set<TransformComponent, Local>({ glm::vec3(), glm::quat(glm::vec3(glm::radians(-60.0f), glm::radians(135.0f), glm::radians(0.0f))) })
-		.set<BaseLightComponent>({ 0.6f, glm::vec3(1.0f, 1.0f, 1.0f), true, 8192, 8192 })
-		.set<DirectionalLightComponent>({ 0.03f });
+		.set<BaseLightComponent>({ 1.0f, glm::vec3(1.0f, 1.0f, 1.0f), true, 8192, 8192 })
+		.set<DirectionalLightComponent>({ 0.2f });
 	
 	//flecs::entity pointLight1 = engine.m_World.entity("PointLight1")
 	//	.add<TransformComponent, Global>()
@@ -121,12 +121,12 @@ int main()
 	
 	//engine.GetResourceManager().InstantiateModel(engine.m_World, "Cube", glm::vec3(0.0f, -3.0f, 0.0f), glm::quat(), glm::vec3(1000.0f, 1.0f, 1000.0f));
 
-	//engine.GetResourceManager().InstantiateModel(engine.m_World, "Cube", glm::vec3(0.0f, 0.0f, 25.0f), glm::quat(), glm::vec3(1.0f, 1.0f, 1.0f));
+	//engine.GetResourceManager().InstantiateModel(engine.m_World, "Cube", glm::vec3(3.0f, 3.0f, 8.0f), glm::quat(), glm::vec3(1.0f, 1.0f, 1.0f));
 	
 	engine.GetResourceManager().InstantiateModel(engine.m_World, "WitchTreehouse", glm::vec3(0.0f, -0.5f, 0.0f), glm::quat(), glm::vec3(0.01f, 0.01f, 0.01f));
 	
 	OceanComponent oceanComponent;
-	oceanComponent.color = glm::vec4(0.0f, 0.3f, 0.35f, 0.55f);
+	oceanComponent.color = glm::vec4(0.0f, 0.3f, 0.35f, 0.65f);
 	oceanComponent.waveAmplitude = 0.25f;
 	oceanComponent.waveFrequency = 0.5f;
 	flecs::entity ocean = engine.m_World.entity("Ocean")
